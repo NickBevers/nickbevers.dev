@@ -1,0 +1,168 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import Reveal from "../components/Reveal.astro";
+---
+
+<BaseLayout
+  reveal
+  title="About"
+  description="Frontend developer at Spatie, in Antwerp. Having a great time building things people actually use."
+>
+  <div class="measure with-rail">
+    <div>
+      <main>
+        <section class="head">
+          <p class="eyebrow">Who is typing</p>
+          <h1>About</h1>
+        </section>
+
+        <section class="body">
+          <Reveal class="prose">
+            <p class="lede">
+              Frontend developer at Spatie, in Antwerp. Having a great time
+              building things people actually use.
+            </p>
+            <p>
+              I write frontend code for a living, which is a polite way of
+              saying I spend my days in the space between what someone asks for
+              and what they actually need. The asking part is the bit I enjoy
+              most.
+            </p>
+            <p>
+              A brief usually arrives as a sentence. Somewhere underneath it
+              there is a person with a job to do and a workflow that has never
+              quite fit. Getting to that person, understanding their needs and
+              wants, and turning them into a product that works for you and your
+              customers: that is the whole job. The code is how it gets
+              delivered.
+            </p>
+
+            <h2>Away from the screen</h2>
+            <p>
+              There is a whole section of this site for that, and it is not an
+              accident. The trips, the cooking, the things I am slowly getting
+              better at end up in the writing too. A personal site that only
+              talks about work is a résumé with extra steps.
+            </p>
+          </Reveal>
+
+          <Reveal class="portrait">
+            <div class="frame">
+              <div class="slot">
+                <span class="prompt">Portrait to come</span>
+              </div>
+              <div class="caption">
+                <span>Antwerp</span><span class="year">2026</span>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      </main>
+    </div>
+    <Rail />
+  </div>
+</BaseLayout>
+
+<style>
+  .head {
+    padding-block: 48px 22px;
+    border-bottom: var(--rule-heavy);
+  }
+  .eyebrow {
+    margin: 0 0 14px;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(34px, 4.8vw, 54px);
+    line-height: 1;
+    font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-display);
+  }
+
+  /* prose left, portrait right: 1.35fr / 1fr, so the portrait is the
+     narrower column and does not stretch to the prose's height */
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: start;
+    padding-block: 34px 60px;
+  }
+  @media (max-width: 760px) {
+    .body {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-7);
+    }
+  }
+
+  /* Scoped from .body rather than .prose: <Reveal> owns the .prose element
+     and slots these children in, so a rule scoped to .prose itself does not
+     always reach them. Anchoring on the section is stable. */
+  .body :global(.prose) {
+    font-size: var(--text-body);
+    line-height: 1.7;
+  }
+  .body :global(.prose p) {
+    margin: var(--space-5) 0 0;
+    color: var(--text-2);
+  }
+  .body :global(.prose .lede) {
+    margin: 0;
+    font-size: 19px;
+    color: var(--text);
+  }
+  .body :global(.prose h2) {
+    margin: 34px 0 0;
+    font-size: 24px;
+    font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-title);
+    color: var(--text);
+  }
+  .body :global(.prose h2 + p) {
+    margin-block-start: 14px;
+  }
+
+  .frame {
+    border: var(--border-strong);
+    background: var(--surface);
+    box-shadow: var(--bevel-soft);
+  }
+  .slot {
+    block-size: 230px;
+    margin: 8px; /* the mat between frame and image */
+    display: grid;
+    place-items: center;
+    background: var(--bg-alt);
+    border: 1px dashed var(--line-strong);
+  }
+  .prompt {
+    padding: var(--space-4);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-align: center;
+  }
+  .caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    border-top: var(--border-strong);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .year {
+    color: var(--accent);
+  }
+</style>

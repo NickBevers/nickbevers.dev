@@ -1,0 +1,79 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow?: string;
+  lede?: string;
+  updated?: Date;
+}
+const { title, description, eyebrow, lede, updated } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="measure with-rail">
+    <div>
+      <article class="art">
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{title}</h1>
+        {lede && <p class="lede">{lede}</p>}
+        <div class="prose"><slot /></div>
+      </article>
+    </div>
+    <Rail updated={updated} />
+  </div>
+</BaseLayout>
+
+<style>
+  .art { padding-block: 48px var(--space-10); max-inline-size: var(--prose); }
+  .eyebrow {
+    margin: 0 0 14px;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  h1 {
+    margin: 0; font-size: clamp(34px, 5.4vw, 50px); line-height: 1;
+    font-weight: var(--weight-black); letter-spacing: var(--tracking-display);
+  }
+  .lede {
+    margin: var(--space-4) 0 0; max-inline-size: 56ch;
+    font-size: 17px; line-height: var(--leading-body); color: var(--text-2);
+  }
+  .prose {
+    margin-block-start: var(--space-7);
+    padding-block-start: var(--space-7);
+    border-top: var(--rule-heavy);
+    font-size: var(--text-body); line-height: var(--leading-prose);
+  }
+  .prose :global(h2) {
+    margin: var(--space-8) 0 0;
+    font-size: var(--text-h2); font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-title);
+  }
+  .prose :global(h3) {
+    margin: var(--space-7) 0 0;
+    font-size: var(--text-h3); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-title);
+  }
+  .prose :global(p) { margin: var(--space-5) 0 0; }
+  .prose :global(ul), .prose :global(ol) { margin: var(--space-5) 0 0; padding-inline-start: var(--space-6); }
+  .prose :global(li) { margin-block-start: var(--space-2); }
+  .prose :global(dl) { margin: var(--space-5) 0 0; }
+  .prose :global(dt) {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .prose :global(dd) { margin: 4px 0 0; }
+  /* A link that is the whole value of a dd is a standalone target, not one
+     inline in a sentence, so it takes the 24px floor (WCAG 2.5.8). */
+  .prose :global(dd a) {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--tap-min);
+  }
+</style>

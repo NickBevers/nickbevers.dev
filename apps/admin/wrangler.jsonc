@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nickbevers-admin",
+  // No "main": the Astro Cloudflare adapter writes its own worker config
+  // into dist/ at build time and deploy reads that. Declaring main here made
+  // `astro build` fail on a clean tree, because wrangler validated a path
+  // that only exists AFTER the build it was blocking.
+  "compatibility_date": "2026-08-01",
+  // nodejs_compat gives node:crypto/node:buffer to dependencies that expect
+  // them. This app uses WebCrypto directly, but Astro's runtime does not.
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+  },
+  "observability": { "enabled": true },
+  // Secrets are set with `wrangler secret put`, never committed:
+  //   GITHUB_APP_CLIENT_ID  GITHUB_APP_CLIENT_SECRET  SESSION_SECRET
+  //   ALLOWED_LOGIN  ALLOWED_USER_ID  CONTENT_REPO
+  "vars": {},
+}

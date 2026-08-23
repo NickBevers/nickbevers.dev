@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import WindowCard from "@nb/ui/core/WindowCard.astro";
+import Button from "@nb/ui/core/Button.astro";
+---
+<BaseLayout title="Not found" description="That page does not exist." noindex>
+  <div class="measure with-rail">
+    <div>
+      <main>
+        <section class="wrap">
+          <p class="eyebrow">Error 404</p>
+          <h1>
+            This page<br />has moved on<span class="caret" aria-hidden="true"></span>
+          </h1>
+          <p class="lede">
+            Either I broke a link or you typed one hopefully. Both happen. Here is the
+            way back.
+          </p>
+
+          <div class="cta">
+            <Button variant="primary" href="/">← Back home</Button>
+            <Button variant="secondary" href="/writing/">Read something instead</Button>
+          </div>
+
+          <div class="log">
+            <WindowCard filename="not-found.log">
+              <pre class="pre"><code>GET /the-page-you-wanted
+<span class="code">404</span> Not Found
+
+Suggestions:
+  <span class="path">/writing</span>   the logbook
+  <span class="path">/about</span>     who is typing
+  <span class="path">/now</span>       current chapter</code></pre>
+            </WindowCard>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .wrap { padding-block: var(--space-10) var(--space-11); }
+  .eyebrow {
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  h1 {
+    margin: 0;
+    /* a larger, tighter scale than any other h1 on the site */
+    font-size: clamp(38px, 6vw, 76px);
+    line-height: 0.96;
+    font-weight: var(--weight-black);
+    letter-spacing: -0.04em;
+  }
+  .caret {
+    display: inline-block; inline-size: 0.12em; block-size: 0.72em;
+    margin-inline-start: 0.14em; background: var(--accent-2);
+    animation: nbBlink 1.1s step-end infinite;
+  }
+  @keyframes nbBlink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+  @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+
+  .lede {
+    margin: 22px 0 0; max-inline-size: 44ch;
+    font-size: var(--text-body); line-height: var(--leading-body); color: var(--text-2);
+  }
+  .cta { display: flex; gap: 14px; flex-wrap: wrap; margin-block: 28px 36px; }
+
+  .log { max-inline-size: 460px; }
+  .log :global(.win) { box-shadow: var(--bevel-lg); }
+  .pre {
+    margin: 0; padding: var(--space-5); overflow-x: auto;
+    font-family: var(--font-mono); font-size: 13px; line-height: 1.9;
+    color: var(--text-2);
+  }
+  .code { color: var(--warm-text); }
+  .path { color: var(--accent); }
+</style>

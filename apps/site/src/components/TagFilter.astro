@@ -1,0 +1,138 @@
+---
+/**
+ * Tag filter, no framework.
+ *
+ * The Preact version of this was correct and readable, but it cost ~10.4KB
+ * gzipped: preact core, hooks, the Astro client renderer and the island
+ * bootstrap, for a widget that is three listeners and a hidden attribute.
+ * This is the same behaviour in ~1KB inline, so the writing index drops to
+ * roughly the weight of every other page.
+ *
+ * Everything about the accessible behaviour is preserved:
+ *   - real <button>s inside a <fieldset>, aria-pressed carries state
+ *   - <output> live region announces the count, silent on first paint
+ *   - the full list is server-rendered, so JS-off users see everything
+ *   - ?tag= mirrors state; Back/Forward work
+ *   - focus stays on the pressed tag
+ */
+export interface TagCount { name: string; count: number }
+interface Props { tags: TagCount[]; label?: string; target?: string }
+const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
+---
+
+<fieldset class="wrap" data-tag-filter data-target={target}>
+  <div class="row">
+    <legend class="label">{label}</legend>
+    <div class="tags">
+      {tags.map((t, i) => (
+        <button
+          type="button"
+          class="tag"
+          data-tag={t.name}
+          aria-pressed={i === 0 ? "true" : "false"}
+          {/* No aria-label. It read "Frontend, 2 entries" while the button
+              showed "Frontend 2", so the visible text was not contained in
+              the accessible name: voice control users saying "click
+              Frontend" would not match it (WCAG 2.5.3 Label in Name).
+              The count is exposed as visually-hidden text instead, which
+              keeps the name and the label in agreement. */}
+        >
+          {t.name}<span class="count" aria-hidden="true">{t.count}</span><span
+            class="sr-only"
+          >, {t.count} {t.count === 1 ? "entry" : "entries"}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+  <output class="sr-only" aria-live="polite"></output>
+</fieldset>
+
+<script is:inline>
+  (function () {
+    var root = document.querySelector("[data-tag-filter]");
+    if (!root) return;
+    var out = root.querySelector("output");
+    var buttons = root.querySelectorAll("button[data-tag]");
+    var selector = root.dataset.target || "[data-entry]";
+    var first = true;
+
+    function apply(tag, push) {
+      // Query on every call, not once at startup. The filter renders above
+      // the entries, so a captured NodeList can be empty depending on when
+      // this runs, and an empty list silently "filters" to zero while every
+      // card stays visible.
+      var cards = document.querySelectorAll(selector);
+      var shown = 0;
+      for (var i = 0; i < cards.length; i++) {
+        var match = tag === "All" || cards[i].dataset.tag === tag;
+        cards[i].hidden = !match;
+        if (match) shown++;
+      }
+      for (var j = 0; j < buttons.length; j++) {
+        buttons[j].setAttribute("aria-pressed", String(buttons[j].dataset.tag === tag));
+      }
+      // Silent on first paint: nothing has changed yet, and an unprompted
+      // live-region message on load is noise for a screen reader.
+      out.textContent = first ? "" : shown + (shown === 1 ? " entry" : " entries") + " shown";
+      first = false;
+
+      if (push) {
+        var url = new URL(location.href);
+        if (tag === "All") url.searchParams.delete("tag");
+        else url.searchParams.set("tag", tag);
+        if (url.href !== location.href) history.replaceState(null, "", url);
+      }
+    }
+
+    root.addEventListener("click", function (e) {
+      var btn = e.target.closest("button[data-tag]");
+      if (btn) apply(btn.dataset.tag, true);
+    });
+
+    function fromUrl() {
+      var t = new URLSearchParams(location.search).get("tag");
+      var known = false;
+      for (var i = 0; i < buttons.length; i++) if (buttons[i].dataset.tag === t) known = true;
+      apply(known ? t : "All", false);
+    }
+    addEventListener("popstate", fromUrl);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fromUrl, { once: true });
+    } else {
+      fromUrl();
+    }
+  })();
+</script>
+
+<style>
+  .wrap { display: block; margin: 0; padding: 0; border: 0; min-inline-size: 0; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .label {
+    display: inline; float: none; padding: 0;
+    margin-inline-end: var(--space-1);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    min-block-size: var(--tap-min);
+    padding: 4px 10px;
+    font-family: var(--font-sans); font-size: var(--text-meta);
+    font-weight: var(--weight-bold); letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3); background: transparent;
+    border: 1px solid var(--line-strong); border-radius: var(--radius);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .tag:hover { background: var(--accent-bg); color: var(--accent); }
+  .tag[aria-pressed="true"] { color: var(--accent-on); background: var(--accent); }
+  .tag:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  .count { font-variant-numeric: tabular-nums; opacity: .65; }
+  @media (prefers-reduced-motion: reduce) { .tag { transition: none; } }
+</style>

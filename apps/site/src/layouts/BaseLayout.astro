@@ -1,0 +1,89 @@
+---
+import "../styles/global.css";
+import SEO from "../components/SEO.astro";
+import ThemeScript from "../components/ThemeScript.astro";
+import A11yScript from "../components/A11yScript.astro";
+import Scanline from "../components/Scanline.astro";
+import ScrollProgress from "../components/ScrollProgress.astro";
+import StatusStrip from "../components/StatusStrip.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import A11yMenu from "../components/A11yMenu.astro";
+import SkipMenu from "../components/SkipMenu.astro";
+
+interface Props {
+  /** Ship the scroll-reveal observer. Only pages using <Reveal> need it. */
+  reveal?: boolean;
+  title?: string;
+  description?: string;
+  type?: "website" | "article";
+  publishedAt?: Date;
+  noindex?: boolean;
+}
+const { reveal, ...props } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <ThemeScript />
+    <A11yScript />
+    <SEO {...props} />
+    <slot name="head" />
+  </head>
+  <body>
+    <SkipMenu />
+    <Scanline />
+    <ScrollProgress />
+    <slot name="banner" />
+    <StatusStrip />
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+
+    {/* Last in the DOM on purpose. A floating control placed early would sit
+        between the skip link and the page content in tab order, which is
+        exactly where a keyboard user does not want it. */}
+    <A11yMenu />
+
+    {reveal && (
+    <script is:inline>
+      // ONE observer for every .reveal on the page. Lives here rather than in
+      // the Reveal component because Astro does not deduplicate is:inline
+      // scripts: four <Reveal>s shipped four copies of this.
+      (function () {
+        if (!("IntersectionObserver" in window)) return;
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        var els = document.querySelectorAll(".reveal");
+        if (!els.length) return;
+
+        // Only hide things once we know we can reveal them again.
+        document.documentElement.setAttribute("data-reveal", "");
+
+        var io = new IntersectionObserver(function (es) {
+          for (var i = 0; i < es.length; i++) {
+            if (es[i].isIntersecting) {
+              es[i].target.classList.add("is-in");
+              io.unobserve(es[i].target);
+            }
+          }
+        }, { rootMargin: "0px 0px -10% 0px" });
+
+        for (var i = 0; i < els.length; i++) io.observe(els[i]);
+      })();
+    </script>
+    )}
+  </body>
+</html>
+
+<style>
+  /* tabindex="-1" makes the skip link land somewhere focusable, but the
+     outline on a whole-page container is noise. The skip link itself is
+     visibly focused, so this is safe. */
+  main:focus { outline: none; }
+</style>

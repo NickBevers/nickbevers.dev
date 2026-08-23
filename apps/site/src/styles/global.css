@@ -1,0 +1,195 @@
+/* Self-hosted Hanken Grotesk. Variable, so 400-800 is one file.
+   Not Google Fonts: cache partitioning killed the shared-cache argument, it
+   costs a DNS+TLS round trip on the critical path, and EU courts have ruled
+   on serving it from Europe. */
+@import "@fontsource-variable/hanken-grotesk/index.css";
+
+@import "@nb/tokens/styles.css";
+@import "@nb/tokens/reset.css";
+@import "./a11y.css";
+
+html {
+  /* A sticky header must never hide the element you just tabbed to.
+     WCAG 2.2 SC 2.4.11 Focus Not Obscured. */
+  scroll-padding-top: calc(var(--progress-h) + var(--header-h) + var(--space-3));
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background var(--dur-slow) var(--ease),
+    color var(--dur-slow) var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+}
+
+a {
+  color: var(--accent);
+}
+
+/* Links in running prose get the dotted underline; structural links opt out. */
+a:not([class]) {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+/* Prose links only. The footer sits on a fixed dark green in BOTH themes, so
+   a themed wash lands pale-on-pale there: --accent-bg behind the footer's own
+   sand hover text measured 1.60, and 1.12 before hovering. Scoping this to
+   the themed part of the page stops one rule painting over another's
+   assumptions. */
+main a:not([class]):hover,
+.prose a:not([class]):hover {
+  background: var(--accent-bg);
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+::selection {
+  background: var(--accent-bg);
+  color: var(--text);
+}
+
+.measure {
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  /* min() rather than the --gutter token alone.
+   *
+   * The token's narrow-viewport override lives in an @media (max-width:640px)
+   * block, and media-query lengths are resolved against the ROOT font size.
+   * With the accessibility menu's larger text setting the root grows, 640px
+   * of query resolves to fewer CSS pixels, a 320px viewport stops matching,
+   * and the gutter stays at its wide value: 26px of horizontal overflow, a
+   * 1.4.10 reflow failure that only appears when someone turns on the very
+   * setting meant to help them.
+   *
+   * A viewport-relative clamp cannot desynchronise from the viewport. */
+  padding-inline: min(var(--gutter), 6vw);
+}
+
+/* Content + sticky rail. align-self:start is required. A stretched grid
+   item cannot stick. Collapses to one column below --bp-rail. */
+.with-rail {
+  display: grid;
+  /* minmax(0, …) on both tracks: see the note on .heroInner. The rail is a
+     fixed width, but the content column must be allowed to shrink. */
+  grid-template-columns: minmax(0, 1fr) var(--rail);
+  gap: var(--rail-gap);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .with-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Scroll reveal: an 18px rise with a 650ms fade.
+
+   The hidden start state is gated on html[data-reveal], which the observer
+   sets only after it has confirmed it can run. Without that guard `.reveal`
+   is opacity:0 from first paint, and any script failure, or a browser
+   without IntersectionObserver: leaves the whole page invisible. The
+   comment here used to promise this behaviour while the CSS did the unsafe
+   thing; the guard is what actually delivers it. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-reveal] .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  html[data-reveal] .reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--dur-slow) var(--ease),
+      transform var(--dur-slow) var(--ease);
+  }
+}
+
+/* Shiki with theme:"css-variables" emits these. Mapping them onto the brand
+   ramps keeps code legible in both themes without a second syntax theme.
+   Every colour below was picked to clear 4.5:1 on --bg-alt and on --surface. */
+:root {
+  --astro-code-foreground: var(--text-2);
+  --astro-code-background: transparent;
+  --astro-code-token-comment: var(--text-3);
+  --astro-code-token-keyword: var(--nb-clay-800);
+  --astro-code-token-string: var(--nb-green-700);
+  --astro-code-token-function: var(--nb-sand-800);
+  --astro-code-token-constant: var(--nb-clay-800);
+  --astro-code-token-parameter: var(--text-2);
+  --astro-code-token-string-expression: var(--nb-green-700);
+  --astro-code-token-punctuation: var(--text-3);
+  --astro-code-token-link: var(--accent);
+}
+:root[data-theme="dark"] {
+  --astro-code-foreground: var(--text-2);
+  --astro-code-token-comment: var(--text-3);
+  --astro-code-token-keyword: var(--nb-sand-400);
+  --astro-code-token-string: var(--nb-green-300);
+  --astro-code-token-function: var(--nb-sand-300);
+  --astro-code-token-constant: var(--nb-sand-400);
+  --astro-code-token-parameter: var(--text-2);
+  --astro-code-token-string-expression: var(--nb-green-300);
+  --astro-code-token-punctuation: var(--text-3);
+}
+
+/* Horizontal snap rows. The photo strip on the home page and the filter row
+   on the writing index. Scrollbar hidden because on a phone the cards' own
+   edges show there is more to the right, and a scrollbar under a snap row
+   reads as a rendering artefact.
+
+   Not hidden on desktop pointer devices: there, a hidden scrollbar on a
+   scrollable region is a genuine discoverability problem. */
+.hrow {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  -webkit-overflow-scrolling: touch;
+}
+.hrow > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+@media (pointer: coarse) {
+  .hrow {
+    scrollbar-width: none;
+  }
+  .hrow::-webkit-scrollbar {
+    block-size: 0;
+  }
+}

@@ -1,0 +1,148 @@
+---
+import { SITE, SOCIAL } from "../lib/nav";
+const year = new Date().getFullYear();
+---
+
+<footer id="contact" class="ft">
+  <div class="measure">
+    <div class="top">
+      <div>
+        <p class="eyebrow">Sign the guestbook</p>
+        <h2 class="h">Say hello,<br />the old-fashioned way.</h2>
+        <a class="cta" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </div>
+      <ul class="links" role="list">
+        {SOCIAL.map((s) => (
+          <li>
+            <a href={s.href} rel={"rel" in s ? s.rel : undefined}>
+              {s.label}<span class="handle" aria-hidden="true">{s.handle} →</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="legal">
+      <span>© {year} Nick Bevers · {SITE.city}</span>
+      <span>Set in Hanken Grotesk</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Fixed dark green in both themes. A deliberate brand block, not themed.
+     All four text pairs here were measured: 13.73, 6.36, 4.74, 7.69. */
+  .ft {
+    border-top: var(--border-strong);
+    background: var(--nb-green-900);
+    color: var(--nb-green-100);
+    padding-block: 70px var(--space-7);
+  }
+  .top {
+    display: grid; grid-template-columns: 1.2fr 1fr;
+    gap: 56px; align-items: end;
+  }
+  .eyebrow {
+    margin: 0 0 18px;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--nb-green-500);
+  }
+  .h {
+    margin: 0; font-size: clamp(30px, 4.4vw, 44px); line-height: 1.03;
+    font-weight: var(--weight-black); letter-spacing: -0.03em;
+    color: var(--nb-green-050);
+  }
+  .cta {
+    display: inline-block; margin-block-start: 28px;
+    padding: 15px 26px;
+    font-size: 16px; font-weight: var(--weight-black);
+    color: var(--nb-green-900); background: var(--nb-sand-500);
+    border: 1px solid var(--nb-green-050);
+    box-shadow: 5px 5px 0 color-mix(in srgb, var(--nb-green-050) 35%, transparent);
+    text-decoration: none;
+    transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  }
+  .cta:hover {
+    transform: translate(var(--press-shift), var(--press-shift));
+    box-shadow: 2px 2px 0 color-mix(in srgb, var(--nb-green-050) 35%, transparent);
+  }
+  .cta:focus-visible { outline: var(--focus-width) solid var(--nb-green-050); outline-offset: var(--focus-offset); }
+
+  .links { display: flex; flex-direction: column; gap: 10px; list-style: none; margin: 0; padding: 0; font-size: var(--text-body-sm); }
+  .links a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    min-block-size: var(--tap-min);
+    padding: var(--space-3) var(--space-4);
+    /* Negative margin keeps the dotted rule flush with the column edge while
+       the hover wash still has room around the text. */
+    margin-inline: calc(var(--space-4) * -1);
+    border-bottom: 1px dotted color-mix(in srgb, var(--nb-green-500) 50%, transparent);
+    color: var(--nb-green-100);
+    font-weight: var(--weight-semibold);
+    text-decoration: none;
+    transition:
+      padding-inline-start var(--dur) var(--ease),
+      background var(--dur) var(--ease),
+      color var(--dur) var(--ease);
+  }
+  /* A pale sand wash, the same tint as the page bands above, so the footer
+     reads as part of the site rather than a separate slab. The scanline
+     overlay sits above this at z-index 9, so the texture carries across it.
+
+     Text must go DARK on it. The wash arrived by accident before, from the
+     global prose-link rule, and kept the footer's pale text: 1.60 for the
+     label, 1.12 before hovering. Both are in the contrast gate now. */
+  .links a:hover {
+    background: var(--footer-hover-bg);
+    color: var(--footer-hover-on);
+    padding-inline-start: 10px;
+  }
+  .links a:hover .handle { color: var(--footer-hover-2); }
+  @media (prefers-reduced-motion: reduce) {
+    .links a { transition: none; }
+    .links a:hover { padding-inline-start: var(--space-4); }
+  }
+  .links a:focus-visible { outline: var(--focus-width) solid var(--nb-green-050); outline-offset: var(--focus-offset); }
+  .handle { color: var(--nb-green-500); }
+
+  .legal {
+    display: flex; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap;
+    margin-block-start: 52px; padding-block-start: var(--space-5);
+    border-top: 1px solid color-mix(in srgb, var(--nb-green-500) 28%, transparent);
+    font-size: var(--text-meta); font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--nb-green-500);
+  }
+
+  @media (max-width: 900px) {
+    /* Extra bottom padding so the floating display-settings button has
+       something to sit over. Reserved here rather than on <body>, where it
+       would paint the page background below the footer and leave a pale
+       strip under the green. */
+    .ft { padding-block-end: 84px; }
+  }
+
+  @media (max-width: 760px) {
+    .ft { padding-block: var(--space-10) 84px; }
+    .top { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); align-items: start; }
+
+    /* No rule and no 52px gap here. Both are desktop devices: on two columns
+       that end at different heights the line does real work, but stacked the
+       last social link already closes with its own dotted border, so a
+       second rule directly beneath it just doubles up. */
+    .legal {
+      margin-block-start: var(--space-6);
+      padding-block-start: 0;
+      border-top: 0;
+      gap: var(--space-2);
+      flex-direction: column;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta { transition: none; }
+    .cta:hover { transform: none; }
+  }
+</style>

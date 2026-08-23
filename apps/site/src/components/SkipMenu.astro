@@ -1,0 +1,262 @@
+---
+/**
+ * The first thing a keyboard or screen-reader user reaches.
+ *
+ * A plain "Skip to content" link is the convention, but it offers exactly one
+ * destination. This is a small menu: skip to content, open display settings,
+ * jump to navigation, jump to the sections of this page, reach the footer.
+ *
+ * Design notes:
+ *  - It is visually hidden until focused, so it costs sighted users nothing.
+ *  - It is a <nav> of ordinary links and buttons. No roving tabindex, no
+ *    aria-activedescendant: Tab moves through it, Enter activates, Escape
+ *    dismisses. Nothing to learn and nothing to get wrong.
+ *  - Section links are built at runtime from the page's own headings, so a
+ *    new section appears here without anyone remembering to add it.
+ *  - Alt+/ opens it from anywhere, for someone who has already tabbed past.
+ */
+---
+
+<nav class="skipmenu" aria-label="Skip links" data-skipmenu>
+  <ul role="list">
+    <li><a href="#main" data-skip-first>Skip to main content</a></li>
+    <li><a href="#site-nav">Skip to navigation</a></li>
+    <li>
+      <button type="button" data-skip-settings>
+        Open display settings
+        <span class="key" aria-hidden="true">Alt + D</span>
+      </button>
+    </li>
+    <li class="sections" hidden data-skip-sections>
+      <span class="lbl" id="skip-sections-label">Sections on this page</span>
+      <ul role="list" aria-labelledby="skip-sections-label" data-skip-section-list></ul>
+    </li>
+    <li><a href="#contact">Skip to contact details</a></li>
+  </ul>
+  <p class="hint">
+    <span class="key" aria-hidden="true">Alt + /</span>
+    reopens this menu from anywhere.
+  </p>
+</nav>
+
+<script is:inline>
+  (function () {
+    var menu = document.querySelector("[data-skipmenu]");
+    if (!menu) return;
+
+    /* The menu renders at the top of <body>, so this script executes before
+       the headings it wants to index exist. Everything DOM-dependent waits
+       for the parser; the key handlers below do not need to. */
+    function onReady(fn) {
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", fn, { once: true });
+      } else {
+        fn();
+      }
+    }
+
+    /* ---- section links, built from the page's own headings ---- */
+    var main = null;
+
+    onReady(function () {
+      var wrap = menu.querySelector("[data-skip-sections]");
+      var list = menu.querySelector("[data-skip-section-list]");
+      main = document.getElementById("main");
+      if (!wrap || !list || !main) return;
+
+      var seen = 0;
+      /* Only headings that introduce a section of the page.
+         An h2 inside a teaser card or an aside is the title of a THING on the
+         page rather than a landmark within it, and listing those turns a
+         navigation aid into a second copy of the content.
+         NOT excluded by <article>: on an entry page the h2s live inside the
+         article and are exactly the sections a reader wants to jump between. */
+      var headings = main.querySelectorAll("h2");
+      for (var i = 0; i < headings.length; i++) {
+        var h = headings[i];
+        if (h.closest("aside, .win, [data-entry], .card, .lcard")) continue;
+        var text = (h.textContent || "").trim();
+        if (!text) continue;
+        // Give it an id if the author did not, so the link has a target.
+        if (!h.id) {
+          h.id =
+            "s-" +
+            text
+              .toLowerCase()
+              .replace(/[^\w\s-]/g, "")
+              .trim()
+              .replace(/\s+/g, "-")
+              .slice(0, 40);
+        }
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = "#" + h.id;
+        a.textContent = text;
+        li.appendChild(a);
+        list.appendChild(li);
+        seen++;
+      }
+      if (seen > 1) wrap.hidden = false;
+    });
+
+    /* ---- a heading is not focusable by default ---- */
+    menu.addEventListener("click", function (e) {
+      var a = e.target.closest("a[href^='#']");
+      if (!a) return;
+      var target = document.getElementById(a.getAttribute("href").slice(1));
+      if (!target) return;
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      // Let the browser do the scrolling, then move focus so the next Tab
+      // continues from the destination rather than from the menu.
+      requestAnimationFrame(function () {
+        target.focus({ preventScroll: true });
+      });
+    });
+
+    /* ---- open the display settings ---- */
+    var settings = menu.querySelector("[data-skip-settings]");
+    function openSettings() {
+      var btn = document.querySelector("[data-a11y-open]");
+      if (btn) btn.click();
+    }
+    if (settings) settings.addEventListener("click", openSettings);
+
+    /* ---- keyboard shortcuts ----
+       Alt+/ reveals the menu and focuses its first link; Alt+D goes straight
+       to the settings. Alt is used rather than a bare key so nothing is
+       stolen from someone typing, and neither combination is claimed by the
+       major screen readers or browsers. */
+    document.addEventListener("keydown", function (e) {
+      if (!e.altKey || e.ctrlKey || e.metaKey) return;
+
+      if (e.key === "/" || e.code === "Slash") {
+        e.preventDefault();
+        menu.classList.add("is-open");
+        var first = menu.querySelector("[data-skip-first]");
+        if (first) first.focus();
+      } else if (e.key === "d" || e.key === "D") {
+        e.preventDefault();
+        openSettings();
+      }
+    });
+
+    // Escape dismisses it, and focus leaving it closes it again.
+    menu.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        menu.classList.remove("is-open");
+        if (main) {
+          if (!main.hasAttribute("tabindex")) main.setAttribute("tabindex", "-1");
+          main.focus({ preventScroll: true });
+        }
+      }
+    });
+    menu.addEventListener("focusout", function (e) {
+      if (!menu.contains(e.relatedTarget)) menu.classList.remove("is-open");
+    });
+  })();
+</script>
+
+<style>
+  /* Off-screen until something inside it takes focus. Not display:none. That
+     would remove it from the tab order entirely, which is the opposite of
+     what it is for. */
+  .skipmenu {
+    position: fixed;
+    inset-block-start: var(--space-4);
+    inset-inline-start: var(--space-4);
+    z-index: 100;
+
+    inline-size: min(320px, calc(100vw - 2 * var(--space-4)));
+    padding: var(--space-4);
+
+    background: var(--surface);
+    border: var(--border-strong);
+    box-shadow: var(--bevel-lg);
+
+    transform: translateY(calc(-100% - var(--space-8)));
+    transition: transform var(--dur) var(--ease);
+  }
+  .skipmenu:focus-within,
+  .skipmenu.is-open {
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skipmenu { transition: none; }
+  }
+
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  li + li { margin-block-start: 2px; }
+
+  a,
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    inline-size: 100%;
+    min-block-size: var(--tap-min);
+    padding: 7px 9px;
+
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-semibold);
+    text-align: start;
+    color: var(--text);
+    text-decoration: none;
+
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  a:hover,
+  button:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  a:focus-visible,
+  button:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -1px;
+  }
+
+  .sections {
+    margin-block-start: var(--space-3);
+    padding-block-start: var(--space-3);
+    border-top: var(--rule-dashed);
+  }
+  .lbl {
+    display: block;
+    padding-inline: 9px;
+    margin-block-end: 4px;
+    font-size: var(--text-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .sections a { font-size: var(--text-body-sm); font-weight: var(--weight-regular); }
+
+  .key {
+    flex: none;
+    padding: 2px 6px;
+    font-size: var(--text-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+  }
+
+  .hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: var(--space-3) 0 0;
+    padding-block-start: var(--space-3);
+    border-top: var(--rule-dashed);
+    font-size: var(--text-micro);
+    line-height: 1.5;
+    color: var(--text-3);
+  }
+</style>

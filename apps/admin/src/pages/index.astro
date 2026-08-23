@@ -1,0 +1,83 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import { PUBLIC_SITE_URL } from "astro:env/client";
+
+export const prerender = false;
+const session = Astro.locals.session!;
+
+const CARDS = [
+  { href: "/posts/", title: "Posts", body: "Write, edit and publish entries. Commits straight to the repo.", status: "Phase 9" },
+  { href: "/components/", title: "Components", body: "Every component, every variant, in both themes.", status: "Phase 10" },
+  { href: "/tokens/", title: "Tokens", body: "Colour ramps and type scale, with live contrast checks.", status: "Phase 10" },
+  { href: "/health/", title: "Health", body: "Bundle sizes, budgets and a11y results from CI.", status: "Phase 11" },
+];
+---
+
+<AdminLayout title="Overview" session={session}>
+  <div class="wrap page">
+    <header class="head">
+      <p class="eyebrow">Signed in as {session.login}</p>
+      <h1>Admin</h1>
+      <p class="lede">
+        Everything here writes to the content repository or reads from it.
+        The public site is at <a href={PUBLIC_SITE_URL}>{PUBLIC_SITE_URL.replace(/^https?:\/\//, "")}</a>.
+      </p>
+    </header>
+
+    <ul class="grid" role="list">
+      {CARDS.map((c) => (
+        <li>
+          <a href={c.href} class="card">
+            <span class="status">{c.status}</span>
+            <span class="t">{c.title}</span>
+            <span class="b">{c.body}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</AdminLayout>
+
+<style>
+  .page { padding-block: var(--space-9) var(--space-11); }
+  .head { padding-block-end: var(--space-6); border-bottom: var(--rule-heavy); }
+  .eyebrow {
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  h1 {
+    margin: 0; font-size: clamp(30px, 4vw, 42px); line-height: 1;
+    font-weight: var(--weight-black); letter-spacing: var(--tracking-display);
+  }
+  .lede { margin: var(--space-4) 0 0; max-inline-size: 60ch; color: var(--text-2); }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-5); list-style: none; margin: var(--space-7) 0 0; padding: 0;
+  }
+  .card {
+    display: flex; flex-direction: column; gap: var(--space-2);
+    block-size: 100%; padding: var(--space-5);
+    border: var(--border-strong); background: var(--surface);
+    box-shadow: var(--bevel-soft);
+    color: var(--text); text-decoration: none;
+    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  }
+  .card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--warm-2);
+  }
+  .status {
+    font-size: var(--text-micro); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .t { font-size: var(--text-h3); font-weight: var(--weight-bold); letter-spacing: var(--tracking-title); }
+  .b { font-size: var(--text-caption); line-height: 1.55; color: var(--text-2); }
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .card:hover { transform: none; box-shadow: var(--bevel-soft); }
+  }
+</style>

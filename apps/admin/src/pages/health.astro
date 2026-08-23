@@ -1,0 +1,189 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+export const prerender = false;
+const session = Astro.locals.session!;
+
+/**
+ * Reads what the gates measured rather than measuring again.
+ *
+ * `pnpm budget` and `pnpm lh` write JSON; this renders it. Re-measuring here
+ * would let the panel and CI disagree, and the panel would be the one nobody
+ * trusts. A missing report means the gate had not run when the admin was
+ * built, and that is said plainly rather than shown as a zero.
+ *
+ * The reports are imported, not read from disk. This page runs on Cloudflare,
+ * where there is no filesystem, so readFile could never have worked in
+ * production no matter which path it was given. import.meta.glob resolves at
+ * build time and bakes the JSON into the bundle, which also means the numbers
+ * shown are the ones from the build that produced this page.
+ *
+ * reports/ is gitignored, so a clean checkout has none and this page says so
+ * rather than failing. To deploy an admin that shows numbers, run the gates
+ * before building it: `pnpm budget && pnpm lh && pnpm --filter admin build`.
+ */
+const found = import.meta.glob<{ default: unknown }>("../../../../reports/*.json", {
+  eager: true,
+});
+
+function load<T>(name: string): { data: T | null; error: string | null } {
+  const hit = Object.entries(found).find(([path]) => path.endsWith(`/${name}`));
+  if (!hit) {
+    return { data: null, error: `reports/${name} was not present at build time` };
+  }
+  return { data: hit[1].default as T, error: null };
+}
+
+interface BudgetRow { page: string; js: number; jsBudget: number; css: number; cssBudget: number; ok: boolean }
+interface LhRow { path: string; scores: Record<string, number> }
+
+const budget = load<{ generated: number; pages: BudgetRow[] }>("budget.json");
+const lh = load<LhRow[]>("lighthouse-mobile.json");
+
+const kb = (n: number) => `${(n / 1024).toFixed(1)}KB`;
+const pct = (n: number) => Math.round(n * 100);
+const when = (t?: number) =>
+  t ? new Date(t).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "unknown";
+---
+
+<AdminLayout title="Health" session={session}>
+  <div class="wrap page">
+    <header class="head">
+      <p class="eyebrow">From the CI gates</p>
+      <h1>Health</h1>
+      <p class="lede">
+        What <code>pnpm budget</code> and <code>pnpm lh</code> measured on their
+        last run. Nothing is recomputed here, so this cannot disagree with the
+        gate that would block a deploy.
+      </p>
+    </header>
+
+    <section>
+      <div class="shead">
+        <h2>Page weight</h2>
+        {budget.data && <span class="stamp">{when(budget.data.generated)}</span>}
+      </div>
+      {budget.error ? (
+        <p class="missing">{budget.error}. Run <code>pnpm budget</code>.</p>
+      ) : (
+        <table class="grid">
+          <thead>
+            <tr><th>Page</th><th>JS</th><th>Budget</th><th>CSS</th><th></th></tr>
+          </thead>
+          <tbody>
+            {budget.data!.pages.map((p) => {
+              const used = p.js / p.jsBudget;
+              return (
+                <tr>
+                  <th scope="row"><code>{p.page}</code></th>
+                  <td class="num">{kb(p.js)}</td>
+                  <td class="num muted">{kb(p.jsBudget)}</td>
+                  <td class="num muted">{kb(p.css)}</td>
+                  <td>
+                    <span class="meter" title={`${Math.round(used * 100)}% of budget`}>
+                      <span class="fill" style={`inline-size:${Math.min(100, used * 100)}%`} data-hot={used > 0.85}></span>
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </section>
+
+    <section>
+      <div class="shead"><h2>Lighthouse, mobile</h2></div>
+      {lh.error ? (
+        <p class="missing">{lh.error}. Run <code>pnpm lh</code>.</p>
+      ) : (
+        <table class="grid">
+          <thead>
+            <tr><th>Page</th><th>Perf</th><th>A11y</th><th>Best practice</th><th>SEO</th></tr>
+          </thead>
+          <tbody>
+            {lh.data!.map((r) => (
+              <tr>
+                <th scope="row"><code>{r.path}</code></th>
+                {["performance", "accessibility", "best-practices", "seo"].map((k) => {
+                  const v = pct(r.scores[k] ?? 0);
+                  return <td class="num"><span class="score" data-tier={v >= 95 ? "good" : v >= 80 ? "ok" : "bad"}>{v}</span></td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+
+    <section>
+      <div class="shead"><h2>Gates</h2></div>
+      <p class="note">
+        Every check <code>pnpm verify</code> runs. Each one blocks a commit if
+        it fails.
+      </p>
+      <ul class="gates" role="list">
+        {[
+          ["lint", "oxlint over every file"],
+          ["dashes", "no em dashes, anywhere"],
+          ["scope", "no scoped style that matches nothing"],
+          ["content", "alt text, link text, heading order in posts"],
+          ["contrast", "74 token pairs, both themes, scanline included"],
+          ["frontmatter", "every entry round-trips byte for byte"],
+          ["markdown", "editor highlighting is lossless, output is escaped"],
+          ["budget", "per-page weight, measured in a browser"],
+          ["a11y", "reflow, focus, target size, tab order"],
+          ["filter", "tag filter works without JavaScript"],
+          ["skip", "skip menu and its keyboard shortcuts"],
+          ["auth", "admin auth boundary, forged cookies, CSRF"],
+          ["editor", "git write path, stale sha does not overwrite"],
+        ].map(([name, what]) => (
+          <li><code>pnpm {name}</code><span>{what}</span></li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</AdminLayout>
+
+<style>
+  .page { padding-block: var(--space-9) var(--space-11); }
+  .head { padding-block-end: var(--space-6); border-bottom: var(--rule-heavy); }
+  .eyebrow { margin: 0 0 var(--space-2); font-family: var(--font-mono); font-size: var(--text-meta); color: var(--warm-text); }
+  h1 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); font-weight: var(--weight-black); letter-spacing: var(--tracking-display); }
+  .lede { margin: var(--space-3) 0 0; max-inline-size: 64ch; color: var(--text-2); }
+  code { font-family: var(--font-mono); font-size: 0.92em; }
+
+  section { padding-block-start: var(--space-8); }
+  .shead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); margin-block-end: var(--space-4); }
+  h2 { margin: 0; font-size: var(--text-h3); font-weight: var(--weight-black); letter-spacing: var(--tracking-title); }
+  .stamp { font-size: var(--text-meta); color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .note { margin: 0 0 var(--space-4); font-size: var(--text-caption); color: var(--text-3); }
+
+  .missing {
+    padding: var(--space-4); border: 1px dashed var(--line-strong);
+    background: var(--bg-alt); font-size: var(--text-caption); color: var(--text-2);
+  }
+
+  .grid { inline-size: 100%; border-collapse: collapse; font-size: var(--text-caption); }
+  .grid th, .grid td { padding: 8px 10px; text-align: start; border-bottom: var(--border-hair); }
+  .grid thead th {
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); border-bottom: var(--rule-heavy);
+  }
+  .num { text-align: end; font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+  .muted { color: var(--text-3); }
+
+  .meter { display: block; inline-size: 90px; block-size: 8px; background: var(--bg-alt); border: var(--border-hair); }
+  .fill { display: block; block-size: 100%; background: var(--accent-2); }
+  .fill[data-hot="true"] { background: var(--warm); }
+
+  .score { display: inline-block; min-inline-size: 34px; padding: 2px 6px; text-align: center; font-weight: var(--weight-bold); }
+  .score[data-tier="good"] { color: var(--accent); }
+  .score[data-tier="ok"] { color: var(--warm-on); background: var(--warm); }
+  .score[data-tier="bad"] { color: var(--accent-on); background: var(--text); }
+
+  .gates { list-style: none; margin: 0; padding: 0; }
+  .gates li { display: flex; gap: var(--space-4); padding-block: 6px; border-bottom: var(--border-hair); font-size: var(--text-caption); }
+  .gates code { inline-size: 150px; flex: none; color: var(--accent); }
+  .gates span { color: var(--text-2); }
+</style>

@@ -1,0 +1,356 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import DiagonalHero from "../components/DiagonalHero.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Reveal from "../components/Reveal.astro";
+import Button from "@nb/ui/core/Button.astro";
+import WindowCard from "@nb/ui/core/WindowCard.astro";
+import NewBadge from "@nb/ui/core/NewBadge.astro";
+import EntryCard from "@nb/ui/content/EntryCard.astro";
+import ProjectRow from "@nb/ui/content/ProjectRow.astro";
+import PhotoCard from "@nb/ui/content/PhotoCard.astro";
+import { getEntries, getLife, formatDate, readingTime } from "../lib/collections";
+import { PROJECTS } from "../lib/projects";
+
+const entries = await getEntries();
+const [latest, ...rest] = entries;
+const recent = rest.slice(0, 4);
+const life = (await getLife()).slice(0, 3);
+---
+
+<BaseLayout reveal>
+  {latest && (
+    <section class="hero">
+      <DiagonalHero />
+      <div class="measure heroInner">
+        <div class="copy">
+          <p class="eyebrow"><span class="rule" aria-hidden="true"></span>Signal found, please adjust your set</p>
+          <h1>
+            Frontend developer,<br />professional<br />question-asker<span
+              class="caret"
+              aria-hidden="true"></span>
+          </h1>
+          <p class="lede">
+            I build interfaces at Spatie in Antwerp. Three years in, the part I keep
+            coming back to is the beginning: understanding needs and wants, and turning
+            them into great products for you and your customers.
+          </p>
+          <div class="cta">
+            <Button variant="primary" href="/writing/">Read the blog →</Button>
+            <Button variant="secondary" href="#work">See what I've built</Button>
+          </div>
+        </div>
+
+        <div class="latest">
+          <WindowCard filename="latest-entry.txt" shadow="hard">
+            <Fragment slot="right"><NewBadge inline /></Fragment>
+            <a href={latest.href} class="lcard">
+              <div class="lmeta">
+                <span class="no">{latest.number}</span>
+                <span class="dot" aria-hidden="true"></span>
+                <time datetime={latest.entry.data.pubDate.toISOString()}>
+                  {formatDate(latest.entry.data.pubDate)}
+                </time>
+                <span class="dot" aria-hidden="true"></span>
+                <span>{readingTime(latest.entry.body ?? "")}</span>
+              </div>
+              <h2 class="ltitle">{latest.entry.data.title}</h2>
+              <p class="lex">{latest.entry.data.description}</p>
+              <span class="lgo">Read the entry →</span>
+            </a>
+            <a href="/writing/" class="lall">
+              <span>The whole logbook</span><span aria-hidden="true">→</span>
+            </a>
+          </WindowCard>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <div class="measure with-rail">
+    <div class="col">
+      {recent.length > 0 && (
+        <Reveal as="section" class="sec">
+          <SectionHead title="Recent entries" right="Read all →" rightHref="/writing/" />
+          <div class="grid">
+            {recent.map(({ entry, number, href }) => (
+              <EntryCard
+                variant="compact"
+                number={number}
+                date={formatDate(entry.data.pubDate)}
+                datetime={entry.data.pubDate.toISOString()}
+                title={entry.data.title}
+                excerpt={entry.data.description}
+                placeholder={entry.data.placeholder}
+                href={href}
+              />
+            ))}
+          </div>
+        </Reveal>
+      )}
+
+      <Reveal as="section" class="sec" id="work">
+        <SectionHead title="Things I've built" right="Small, useful, mine" />
+        {PROJECTS.map((p) => <ProjectRow {...p} />)}
+        <div class="wip">
+          <span class="idx">{String(PROJECTS.length + 1).padStart(2, "0")}</span>
+          <span>Under construction: more soon</span>
+          <span class="leader" aria-hidden="true"></span>
+          <span class="blink" aria-hidden="true"></span>
+        </div>
+      </Reveal>
+
+      {life.length > 0 && (
+        <Reveal as="section" class="sec">
+          <SectionHead title="Off the clock" right="Nothing to do with code" gap="loose" />
+          <div class="photos">
+            {life.map((l) => (
+              <PhotoCard
+                kicker={l.data.kicker}
+                title={l.data.title}
+                blurb={l.data.blurb}
+                photoPrompt={l.data.photoPrompt}
+              />
+            ))}
+          </div>
+          <a class="lifeNote" href="/writing/?tag=Personal">
+            <span>The photo album, the recipes, the detours.</span>
+            <span class="go">All personal entries <span class="arrow" aria-hidden="true">→</span></span>
+          </a>
+        </Reveal>
+      )}
+
+      <Reveal as="section" class="sec note">
+        <div class="noteInner">
+        <h2>A short note about this site</h2>
+        <p class="p1">
+          One page for the work, one for the writing, kept deliberately small. No
+          newsletter pop-up, no cookie banner, no infinite scroll.
+        </p>
+        <p class="p2">
+          It looks a little like the web I grew up on, because that web was more fun.
+          Everything here is hand-written, and if something is useful to you, take it.
+        </p>
+        </div>
+      </Reveal>
+    </div>
+    <Rail />
+  </div>
+</BaseLayout>
+
+<style>
+  .hero { position: relative; border-bottom: var(--border-strong); overflow: hidden; }
+  .heroInner {
+    position: relative;
+    display: grid;
+    /* minmax(0, …) not plain fr. A grid item's default min-width is auto,
+       which means it refuses to shrink below its widest unbreakable content , 
+       a tracked-caps eyebrow in a wide face, and pushes the whole column
+       past the viewport instead of wrapping. */
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    gap: 52px;
+    align-items: center;
+    padding-block: var(--space-10) 62px;
+  }
+
+  .eyebrow {
+    display: flex; align-items: center; gap: var(--space-3);
+    margin: 0 0 var(--space-5);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  .rule { inline-size: 26px; block-size: 1px; background: var(--warm); flex: none; }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(40px, 5.2vw, 66px);
+    line-height: 1;
+    font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-display);
+    /* The line breaks are authored with <br>. `text-wrap: balance` would
+       re-break them and produce four ragged lines instead of three. */
+    text-wrap: nowrap;
+  }
+  @media (max-width: 620px) {
+    /* below the grid split the fixed breaks no longer fit */
+    h1 { text-wrap: balance; }
+  }
+  .caret {
+    display: inline-block; inline-size: .13em; block-size: .78em;
+    margin-inline-start: .14em; background: var(--accent-2);
+    animation: nbBlink 1.1s step-end infinite;
+  }
+  @keyframes nbBlink { 0%, 49% { opacity: 1 } 50%, 100% { opacity: 0 } }
+  @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+
+  .lede {
+    margin: var(--space-6) 0 0; max-inline-size: 42ch;
+    font-size: var(--text-body); line-height: var(--leading-body); color: var(--text-2);
+  }
+  .cta { display: flex; gap: 14px; flex-wrap: wrap; margin-block-start: 28px; }
+
+  .lcard { display: block; padding: 22px 20px 20px; color: var(--text); text-decoration: none; }
+  .lcard:hover { background: var(--accent-bg); }
+  .lcard:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -2px; }
+  .lmeta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); margin-block-end: var(--space-3);
+  }
+  .no { color: var(--warm-text); font-variant-numeric: tabular-nums; }
+  .dot { inline-size: 4px; block-size: 4px; background: var(--warm); flex: none; }
+  .ltitle {
+    margin: 0; font-size: 25px; line-height: 1.15;
+    font-weight: var(--weight-bold); letter-spacing: var(--tracking-title);
+  }
+  .lex { margin: var(--space-3) 0 0; font-size: var(--text-body-sm); line-height: 1.55; color: var(--text-2); }
+  .lgo { display: inline-block; margin-block-start: var(--space-4); font-size: var(--text-caption); font-weight: var(--weight-bold); color: var(--accent); }
+  .lall {
+    display: flex; justify-content: space-between; align-items: center; gap: var(--space-3);
+    padding: 13px 20px; border-top: var(--rule-dashed);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); text-decoration: none;
+  }
+  .lall:hover { background: var(--accent-bg); color: var(--accent); }
+  .lall:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -2px; }
+
+  /* Scoped from .col, not the element itself. <Reveal> renders these
+     sections, so Astro's scope hash lands on Reveal.astro rather than this
+     file and a bare `.sec` rule silently matches nothing.
+
+     The first section clears the hero at 52px; the rest sit at 56px. The
+     design uses both: do not normalise them. */
+  .col :global(.sec) { padding-block-start: 56px; }
+  .col :global(.sec:first-of-type) { padding-block-start: 52px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 36px; align-items: start; }
+  /* auto-fit with a max keeps a single card at card-width instead of
+     stretching it across three columns, and reflows to 2 then 1 without
+     a breakpoint for each step. */
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 257px));
+    gap: 22px;
+    margin-block-start: var(--space-5);
+    align-items: start;
+  }
+
+  /* Below the collapse the three-up grid becomes a horizontal snap row of
+     232px cards. Stacking them vertically would put the last one three
+     screens down; swiping keeps the set legible as a set. */
+  @media (max-width: 760px) {
+    .photos {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      /* break out of the measure so cards can bleed to both edges */
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      -webkit-overflow-scrolling: touch;
+    }
+    .photos > * {
+      flex: 0 0 232px;
+      scroll-snap-align: start;
+    }
+    @media (pointer: coarse) {
+      .photos { scrollbar-width: none; }
+      .photos::-webkit-scrollbar { block-size: 0; }
+    }
+  }
+
+  /* The whole strip is the target, not just the label at the end: a 13px
+     link in a full-width bar is a small hit area for what is really one
+     invitation. One <a>, so it is also a single tab stop. */
+  .lifeNote {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: var(--space-4); flex-wrap: wrap;
+    margin-block-start: var(--space-5);
+    padding: 13px 16px;
+    border: 1px dashed var(--line-strong);
+    background: var(--warm-bg);
+    font-size: 13px; font-weight: var(--weight-semibold); color: var(--text-2);
+    text-decoration: none;
+    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  /* --accent-bg-strong, not --accent-bg: this strip already sits on
+     --warm-bg, and the two differ by 1.04. An invisible change. */
+  .lifeNote:hover {
+    background: var(--accent-bg-strong);
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+  .lifeNote:hover .go { color: var(--accent); }
+  .lifeNote:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  .go {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    white-space: nowrap; color: var(--accent);
+    transition: color var(--dur) var(--ease);
+  }
+  .arrow { transition: transform 0.3s var(--ease); }
+  .lifeNote:hover .arrow,
+  .lifeNote:focus-visible .arrow { transform: translateX(6px); }
+  @media (prefers-reduced-motion: reduce) {
+    .lifeNote, .go, .arrow { transition: none; }
+    .lifeNote:hover .arrow { transform: none; }
+  }
+
+  .wip {
+    display: flex; align-items: center; gap: var(--space-4);
+    padding: 18px 10px; margin-inline: -10px;
+    font-size: 12.5px; font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .wip .idx { inline-size: 30px; flex: none; color: var(--warm-text); font-variant-numeric: tabular-nums; }
+  .wip .leader { flex: 1 1 auto; border-bottom: var(--leader); opacity: .4; transform: translateY(-.2em); }
+  .blink { inline-size: 8px; block-size: 8px; background: var(--warm); flex: none; animation: nbBlink 1.4s step-end infinite; }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* This section has no header row and no right-hand label. The 2px rule
+     wraps the whole block rather than sitting under a heading. */
+  .col :global(.note) { padding-block: 56px 64px; }
+  .col :global(.noteInner) { padding-block-start: 28px; border-top: var(--rule-heavy); }
+  .col :global(.note h2) {
+    margin: 0 0 14px; font-size: var(--text-h2);
+    font-weight: var(--weight-black); letter-spacing: var(--tracking-title);
+  }
+  .col :global(.note .p1) { margin: 0 0 14px; font-size: var(--text-body); line-height: 1.62; max-inline-size: 64ch; }
+  .col :global(.note .p2) { margin: 0; font-size: 16.5px; line-height: 1.65; color: var(--text-2); max-inline-size: 64ch; }
+
+  @media (max-width: 900px) {
+    .heroInner { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); padding-block: var(--space-9); }
+  }
+  @media (max-width: 760px) {
+    /* Per the mobile kit: hero at 38px, one column, buttons stacked and
+       full-width. The diagonal cannot run beside the text at this width, so
+       it is dropped here and reappears as a horizontal band above the
+       contact block. */
+    .heroInner { padding-block: 34px 30px; }
+    h1 { font-size: 38px; line-height: 1.02; text-wrap: balance; }
+    .lede { margin-block-start: 18px; font-size: 16px; line-height: 1.62; max-inline-size: none; }
+    .cta { flex-direction: column; gap: 12px; margin-block-start: 24px; }
+    .cta :global(.btn) { inline-size: 100%; text-align: center; }
+    .latest { margin-block-start: 26px; }
+
+    .col :global(.sec) { padding-block-start: 40px; }
+    .col :global(.note) { padding-block: 40px 0; }
+
+    /* Excerpts go on the home page: the titles carry it, and three short
+       rows beat two long ones on a phone. */
+    .grid :global(.ex) { display: none; }
+  }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

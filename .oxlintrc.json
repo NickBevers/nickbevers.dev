@@ -1,0 +1,60 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "jsx-a11y"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  "rules": {
+    "no-console": "off",
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/click-events-have-key-events": "error",
+    "jsx-a11y/no-static-element-interactions": "error",
+    "jsx-a11y/label-has-associated-control": "error",
+    "typescript/no-explicit-any": "warn",
+    "unicorn/prefer-node-protocol": "error"
+  },
+  "overrides": [
+    {
+      "files": ["apps/admin/src/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/cloudflare*", "cloudflare:*", "@cloudflare/*"],
+                "message": "Platform access must go through src/platform/. Importing the runtime directly breaks the Coolify/node swap."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["apps/admin/src/platform/**"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    },
+    {
+      "files": ["scripts/**/*.mjs"],
+      "rules": {
+        "no-await-in-loop": "off"
+      }
+    },
+    {
+      "files": ["scripts/**/*.mjs", "apps/admin/src/lib/**/*.ts"],
+      "rules": {
+        "no-await-in-loop": "off",
+        "no-shadow": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["dist/", ".astro/", "node_modules/", "**/*.astro"]
+}

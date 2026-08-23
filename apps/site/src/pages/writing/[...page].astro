@@ -1,0 +1,123 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Rail from "../../components/Rail.astro";
+import EntryCard from "@nb/ui/content/EntryCard.astro";
+import Pagination from "@nb/ui/navigation/Pagination.astro";
+import TagFilter from "../../components/TagFilter.astro";
+import { getEntries, tagsOf, formatDate, readingTime, type NumberedEntry } from "../../lib/collections";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const list = await getEntries();
+  return paginate(list, { pageSize: 10 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page<NumberedEntry> };
+const all = await getEntries();
+const tags = tagsOf(all);
+const urlFor = (n: number) => (n === 1 ? "/writing/" : `/writing/${n}/`);
+---
+
+<BaseLayout
+  title="Writing"
+  description="Notes on frontend work, the occasional deep dive, and the non-code things worth writing down."
+>
+  <div class="measure with-rail">
+    <div>
+      <section class="head">
+        <p class="eyebrow">
+          The logbook · {all.length} {all.length === 1 ? "entry" : "entries"}
+        </p>
+        <h1>Writing</h1>
+        <p class="lede">
+          Notes on frontend work, the occasional deep dive, and the non-code things
+          worth writing down. Roughly one entry a month, no schedule promised.
+        </p>
+
+        {tags.length > 1 && <div class="filter"><TagFilter tags={tags} /></div>}
+      </section>
+
+      <section class="list">
+        <div class="grid">
+          {page.data.map(({ entry, number, href }, i) => (
+            <div data-entry data-tag={entry.data.tag}>
+              <EntryCard
+                headingLevel={2}
+                number={number}
+                date={formatDate(entry.data.pubDate)}
+                datetime={entry.data.pubDate.toISOString()}
+                tag={entry.data.tag}
+                title={entry.data.title}
+                excerpt={entry.data.description}
+                minutes={readingTime(entry.body ?? "")}
+                isNew={page.currentPage === 1 && i === 0}
+                placeholder={entry.data.placeholder}
+                href={href}
+              />
+            </div>
+          ))}
+        </div>
+
+        {page.data.length === 0 && <p class="empty">Nothing here yet.</p>}
+
+        <div class="pag">
+          <Pagination
+            page={page.currentPage}
+            lastPage={page.lastPage}
+            urlFor={urlFor}
+            prevUrl={page.url.prev}
+            nextUrl={page.url.next}
+          />
+        </div>
+      </section>
+    </div>
+    <Rail />
+  </div>
+</BaseLayout>
+
+<style>
+  .head { padding-block: 48px 22px; border-bottom: var(--rule-heavy); }
+  .eyebrow {
+    margin: 0 0 14px;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  h1 {
+    margin: 0; font-size: clamp(34px, 5.4vw, 50px); line-height: 1;
+    font-weight: var(--weight-black); letter-spacing: var(--tracking-display);
+  }
+  .lede {
+    margin: var(--space-4) 0 var(--space-6);
+    max-inline-size: 56ch; font-size: 17px;
+    line-height: var(--leading-body); color: var(--text-2);
+  }
+
+  .list { padding-block: 0 var(--space-8); }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 36px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+  @media (max-width: 760px) {
+    .head { padding-block: 30px 0; }
+    h1 { font-size: 40px; }
+    .lede { margin-block: 14px 20px; font-size: 15.5px; }
+
+    /* The filter row sticks directly beneath the collapsed header, so it
+       stays reachable while scanning a long index. --header-h-mobile is the
+       published height rather than a repeated 63. */
+    .filter {
+      position: sticky;
+      inset-block-start: var(--header-h-mobile);
+      z-index: 12;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      padding-block: 13px;
+      background: var(--bg);
+      border-top: var(--border-hair);
+      border-bottom: var(--rule-heavy);
+    }
+  }
+
+  .empty { padding-block: var(--space-8); color: var(--text-3); }
+  .pag { padding-block-start: 38px; }
+</style>

@@ -1,0 +1,60 @@
+---
+/**
+ * The real NB monogram, lifted verbatim from the design mockup: an N, a B,
+ * and the green diagonal slash that is the brand's whole graphic device.
+ *
+ * The slash slides up-right on hover (26px, -16px over .45s) in the header.
+ * `overflow: visible` on the SVG is required. The slash travels outside the
+ * viewBox, and without it the movement is clipped.
+ *
+ * `interactive` gates the hover: the rail carries the same mark, static.
+ */
+interface Props {
+  height?: number;
+  interactive?: boolean;
+  class?: string;
+}
+const { height = 30, interactive = false, class: className } = Astro.props;
+---
+
+<svg
+  viewBox="260 115 680 400"
+  style={`--logo-default:${height}px`}
+  class:list={["mark", { interactive }, className]}
+  role="img"
+  aria-label="Nick Bevers"
+>
+  <path class="ltr" d="M648.318359375,500.97802734375L573.5849609375,500.969970703125L398.1591796875,281.369384765625L335.02734375,199.758056640625L333.4755859375,199.758056640625L335.02734375,281.369384765625L335.02734375,501L275,501L275,129.062744140625L355.359375,129.062744140625L648.318359375,500.97802734375Z" />
+  <path class="ltr" d="M496.5,129.021484375L785.28125,129.021484375C823.919921875,129.021484375,853.587890625,137.5126953125,874.287109375,154.492431640625C894.986328125,171.4736328125,905.3359375,195.732177734375,905.3359375,227.266845703125C905.3359375,249.099365234375,900.1611328125,266.947265625,889.8115234375,280.80810546875C882.69140625,291,872.3203125,304.1884765625,853.69140625,308L853.69140625,308C879.5654296875,311.81298828125,895.69140625,326,905.3359375,337.988037109375C918.107421875,353.86083984375,925,374.029541015625,925,399.326416015625C925,431.902099609375,914.1337890625,457.0263671875,892.3994140625,474.699951171875C870.6650390625,492.028076171875,838.9365234375,500.980712890625,797.193359375,500.980712890625L789.1044921875,500.9951171875L742.181640625,447.149658203125L788.3857421875,447.149658203125C814.259765625,447.149658203125,833.234375,442.818359375,845.30859375,434.154296875C857.3837890625,425.491455078125,863.419921875,411.802001953125,863.419921875,393.088623046875C863.419921875,356.0087890625,838.4091796875,337.46826171875,788.3857421875,337.46826171875L660.322265625,337.46826171875L620.3134765625,286.526123046875L773.3798828125,286.526123046875C820.642578125,286.526123046875,844.2734375,268.852294921875,844.2734375,233.504638671875C844.2734375,199.543701171875,820.642578125,182.562744140625,773.3798828125,182.562744140625L538.5966796875,182.562744140625L496.5,129.021484375L496.5,129.021484375" />
+  <path class="slash" d="M464.6240234375,129L757.96875,500.9150390625L682.65625,500.9658203125L390.13671875,129.113037109375L390.279296875,129L464.6240234375,129Z" />
+</svg>
+
+<style>
+  .mark {
+    /* Two properties, not one. The `height` prop writes --logo-default as an
+       inline style ON this element, and an inline custom property beats an
+       inherited one, so a consumer setting --logo-h on an ancestor could
+       never win if both used the same name. --logo-h is the override hook;
+       --logo-default is the prop's value. */
+    block-size: var(--logo-h, var(--logo-default, 30px));
+    inline-size: auto;
+    display: block;
+    /* the slash animates outside the viewBox */
+    overflow: visible;
+  }
+  .ltr { fill: var(--text); }
+  .slash {
+    fill: var(--logo);
+    transition: transform 0.45s var(--ease);
+  }
+  /* :where keeps this at zero specificity so a parent can still override */
+  a:hover .interactive .slash,
+  a:focus-visible .interactive .slash {
+    transform: translate(26px, -16px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slash { transition: none; }
+    a:hover .interactive .slash,
+    a:focus-visible .interactive .slash { transform: none; }
+  }
+</style>

@@ -1,0 +1,144 @@
+---
+import RailPanel from "@nb/ui/content/RailPanel.astro";
+import WebBadge from "@nb/ui/core/WebBadge.astro";
+import Logo from "@nb/ui/core/Logo.astro";
+import { SOCIAL } from "../lib/nav";
+
+interface Props { updated?: Date; }
+/** One line, edited by hand. The rail is the only place it appears. */
+const NOW_LINE = "Shipping oklch-picker v1.2 →";
+const { updated } = Astro.props;
+const stamp = (updated ?? new Date()).toLocaleDateString("en-GB", {
+  day: "2-digit", month: "short", year: "numeric",
+});
+---
+
+<!-- Placed AFTER <main> in the DOM so keyboard users reach the content first,
+     even though it sits to the right visually. -->
+<aside class="rail" aria-label="About this site">
+  <RailPanel>
+    <div class="head">
+      <Logo height={20} />
+      <span class="who">Nick Bevers</span>
+    </div>
+    <div class="field">
+      <div class="lbl">Doing</div>
+      <div class="val">Frontend developer at Spatie</div>
+    </div>
+    <div class="field">
+      <div class="lbl">Based</div>
+      <div class="val">Antwerp, Belgium</div>
+    </div>
+    <a class="field live" href="/now/">
+      <div class="lbl"><span class="led" aria-hidden="true"></span>Right now</div>
+      <div class="val">{NOW_LINE}</div>
+    </a>
+    <div class="links">
+      <div class="lbl">Elsewhere</div>
+      <ul role="list">
+        {SOCIAL.map((s) => (
+          <li>
+            <a href={s.href} rel={"rel" in s ? s.rel : undefined}>
+              {s.label}<span aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+        <li><a href="/rss.xml">RSS<span aria-hidden="true">→</span></a></li>
+      </ul>
+    </div>
+  </RailPanel>
+
+  <div class="badges">
+    <WebBadge preset="handmade" tilt={-2} />
+    <WebBadge preset="rss" tilt={2} href="/rss.xml" />
+    <WebBadge preset="notrackers" tilt={-2} />
+    <WebBadge preset="viewsource" tilt={2} href="https://github.com/NickBevers" />
+  </div>
+
+  <p class="stamp">Last updated<br /><span>{stamp}</span></p>
+</aside>
+
+<style>
+  /* align-self:start is required. A stretched grid item cannot stick. */
+  .rail {
+    position: sticky;
+    inset-block-start: calc(var(--progress-h) + var(--header-h) + var(--space-6));
+    align-self: start;
+    padding-block: var(--space-9) var(--space-8);
+  }
+  @media (max-width: 900px) {
+    .rail { position: static; padding-block-start: var(--space-8); }
+  }
+
+  .head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; border-bottom: var(--rule-dashed);
+  }
+  .who {
+    font-size: 10px; font-weight: var(--weight-bold);
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3);
+  }
+
+  .field { padding: 14px 16px; border-bottom: var(--rule-dashed); }
+  a.field {
+    display: block; color: var(--text); text-decoration: none;
+    transition: background var(--dur) var(--ease);
+  }
+  a.field:hover { background: var(--accent-bg); }
+  a.field:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+  .lbl .led {
+    display: inline-block; inline-size: 6px; block-size: 6px;
+    border-radius: 50%; background: var(--accent-2);
+    margin-inline-end: 7px;
+    animation: nbPulse 2.4s infinite;
+  }
+  @keyframes nbPulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-2) 70%, transparent); }
+    70% { box-shadow: 0 0 0 7px transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) { .lbl .led { animation: none; } }
+  .lbl {
+    font-size: var(--text-micro); font-weight: var(--weight-bold);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--text-3); margin-block-end: 5px;
+  }
+  .val { font-size: var(--text-caption); font-weight: var(--weight-semibold); line-height: 1.4; }
+
+  .links { padding: 14px 16px; }
+  .links ul { display: flex; flex-direction: column; gap: 1px; list-style: none; margin: 0; padding: 0; }
+  .links a {
+    display: flex; justify-content: space-between; gap: var(--space-2);
+    min-block-size: var(--tap-min); align-items: center;
+    /* Padded, with a matching negative margin so the row still aligns to
+       the panel's 16px gutter. Without this the hover wash clips the text. */
+    padding: 5px 8px;
+    margin-inline: -8px;
+    font-size: var(--text-caption); font-weight: var(--weight-semibold);
+    color: var(--accent); text-decoration: none;
+    transition: background var(--dur) var(--ease), padding-inline-start var(--dur) var(--ease);
+  }
+  .links a:hover {
+    background: var(--accent-bg);
+    /* the design indents the row 5px on hover */
+    padding-inline-start: 13px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .links a { transition: none; }
+    .links a:hover { padding-inline-start: 8px; }
+  }
+  .links a:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+  .links a span { color: var(--text-3); }
+
+  .badges { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-block-start: 18px; }
+
+  .stamp {
+    margin-block-start: var(--space-4);
+    font-size: var(--text-micro); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); line-height: 1.9;
+  }
+  .stamp span { color: var(--accent); }
+</style>

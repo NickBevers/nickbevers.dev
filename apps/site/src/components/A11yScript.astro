@@ -1,0 +1,25 @@
+---
+/**
+ * Applies stored display preferences before first paint.
+ *
+ * Separate from the menu component and placed in <head> deliberately: if this
+ * ran with the panel at the end of <body>, someone who had chosen a larger
+ * size or the dyslexic font would see the default render first and then watch
+ * it change. Blocking and tiny is the right trade here.
+ */
+---
+<script is:inline>
+  (function () {
+    try {
+      var s = JSON.parse(localStorage.getItem("nb-a11y") || "{}");
+      var r = document.documentElement;
+      if (s.font) r.setAttribute("data-a11y-font", "dyslexic");
+      if (s.scanlines) r.setAttribute("data-a11y-scanlines", "off");
+      if (s.motion) r.setAttribute("data-a11y-motion", "off");
+      if (s.links) r.setAttribute("data-a11y-links", "underline");
+      if (s.size && s.size !== "default") r.setAttribute("data-a11y-size", s.size);
+    } catch (e) {
+      /* private mode or malformed JSON: defaults are fine */
+    }
+  })();
+</script>

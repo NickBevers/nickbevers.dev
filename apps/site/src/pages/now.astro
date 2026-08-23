@@ -1,0 +1,114 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import Reveal from "../components/Reveal.astro";
+import { NOW_ITEMS, NOW_UPDATED } from "../lib/now";
+
+const updated = NOW_UPDATED.toLocaleDateString("en-GB", {
+  day: "numeric", month: "long", year: "numeric",
+});
+---
+<BaseLayout
+  reveal
+  title="Now"
+  description="A snapshot of the current chapter, in the spirit of Derek Sivers' now page."
+>
+  <div class="measure with-rail">
+    <div>
+      <main>
+        <section class="head">
+          <p class="eyebrow">
+            <span class="led" aria-hidden="true"></span>
+            Updated <time datetime={NOW_UPDATED.toISOString()}>{updated}</time>
+          </p>
+          <h1>What I'm doing now</h1>
+          <p class="lede">
+            A snapshot of the current chapter, in the spirit of Derek Sivers' now page.
+            It goes stale on purpose.
+          </p>
+        </section>
+
+        <section class="cards">
+          {NOW_ITEMS.map((n) => (
+            <Reveal class="card">
+              <div class="meta">
+                <span class="kicker">{n.kicker}</span>
+                <span class="when">{n.meta}</span>
+              </div>
+              <h2 class="ttl">{n.title}</h2>
+              <p class="body">{n.body}</p>
+            </Reveal>
+          ))}
+        </section>
+      </main>
+    </div>
+    <Rail updated={NOW_UPDATED} />
+  </div>
+</BaseLayout>
+
+<style>
+  .head { padding-block: 48px 22px; border-bottom: var(--rule-heavy); }
+  .eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 14px;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  .led {
+    inline-size: 7px; block-size: 7px; border-radius: 50%;
+    background: var(--accent-2); flex: none;
+    animation: nbPulse 2.4s infinite;
+  }
+  @keyframes nbPulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-2) 70%, transparent); }
+    70% { box-shadow: 0 0 0 7px transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+
+  h1 {
+    margin: 0; font-size: clamp(34px, 4.8vw, 54px); line-height: 1;
+    font-weight: var(--weight-black); letter-spacing: var(--tracking-display);
+  }
+  .lede {
+    margin: var(--space-4) 0 0; max-inline-size: 56ch;
+    font-size: 17px; line-height: var(--leading-body); color: var(--text-2);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    padding-block: var(--space-7) 60px;
+  }
+  @media (max-width: 700px) {
+    .cards { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .cards :global(.card) {
+    padding: var(--space-5) 22px 22px;
+    border: var(--border-strong);
+    background: var(--surface);
+    box-shadow: 5px 5px 0 var(--soft-shadow);
+  }
+  .meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 14px;
+    padding-block-end: 11px; margin-block-end: 13px;
+    border-bottom: var(--rule-dashed);
+  }
+  .kicker {
+    font-size: 10.5px; font-weight: var(--weight-bold);
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--warm-text);
+  }
+  .when {
+    font-size: 10.5px; font-weight: var(--weight-bold);
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+    white-space: nowrap;
+  }
+  .ttl {
+    margin: 0; font-size: var(--text-h3); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-title); line-height: 1.2;
+  }
+  .body { margin: 9px 0 0; font-size: var(--text-body-sm); line-height: 1.6; color: var(--text-2); }
+</style>

@@ -1,0 +1,19 @@
+# oxfmt 0.64 does NOT format .md or .mdx. Its marketing page lists them, but
+# the shipped binary leaves both untouched (verified: a deliberately misformatted
+# .md and .mdx came back byte-identical while a .js in the same run was
+# reformatted). The compatibility matrix agrees. Native Markdown/MDX is on the
+# Q3 2026 roadmap, ported from Prettier.
+#
+# These entries are therefore belt-and-braces: they cost nothing now and stop
+# content being reflowed the day support lands, since reformatting prose churns
+# diffs and a collapsed code fence inside JSX breaks the build.
+**/*.md
+**/*.mdx
+**/content/**
+
+# Generated
+**/tokens.json
+pnpm-lock.yaml
+dist/
+.astro/
+node_modules/

@@ -1,0 +1,209 @@
+/* Accessibility preferences.
+ *
+ * Every setting is a data-attribute on <html>, applied by an inline script
+ * before first paint so nothing flashes. Each one only ever overrides tokens,
+ * never layout, so a preference cannot break the page.
+ */
+
+/* Dyslexia-friendly typeface. Weighted bottoms give each glyph a distinct
+   orientation, which helps some readers and not others: hence a toggle
+   rather than a default.
+ *
+ * Self-hosted from public/fonts/ rather than bundled. @font-face is lazy by
+ * spec, so these are fetched only when the setting is on; inlining them as
+ * data: URIs would add 33% for base64 and push ~64KB onto every page for a
+ * font most visitors never enable.
+ *
+ * Subset before adding them: `pnpm subset` takes the stock 115KB weight down
+ * to ~24KB. See public/fonts/README.md.
+ *
+ * If the files are absent the browser falls through to the next family in the
+ * stack, so the toggle degrades to a no-op rather than breaking the page.
+ */
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/fonts/opendyslexic-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html[data-a11y-font="dyslexic"] {
+  --font-sans: "OpenDyslexic", "Hanken Grotesk Variable", system-ui, sans-serif;
+
+  /* OpenDyslexic sets much wider than Hanken Grotesk at the same size. Its
+     weighted bottoms and open counters need the room. Three adjustments keep
+     it from crowding:
+     - the display clamps come down a step, so a three-line hero stays three
+       lines instead of running into the diagonal
+     - the negative tracking is relaxed to nearly zero; letterform distinction
+       is the whole point of this face, and tight tracking works against it
+     - leading opens up, which is the single most useful thing for a reader
+       who chose this setting in the first place */
+  --text-display: clamp(30px, 4.4vw, 52px);
+  --text-h1: clamp(26px, 3.6vw, 40px);
+  --text-h2: clamp(19px, 2.1vw, 23px);
+
+  --tracking-display: -0.005em;
+  --tracking-title: 0;
+  --tracking-normal: 0;
+
+  --leading-display: 1.12;
+  --leading-title: 1.3;
+  --leading-body: 1.7;
+  --leading-prose: 1.85;
+}
+
+/* The hero h1 is hand-sized rather than tokenised, so it needs its own step
+   down. text-wrap:nowrap holds the authored line breaks at the smaller size. */
+html[data-a11y-font="dyslexic"] h1 {
+  font-size: clamp(28px, 3.4vw, 44px);
+}
+
+/* Tracked uppercase is the worst case for this face: every letter is wider
+   AND separated by 0.2em. "Signal found, please adjust your set" then cannot
+   fit 320px on one line, and because the eyebrow is a flex row it will not
+   wrap by default: 25px of horizontal overflow. Relaxing the tracking and
+   letting the row wrap fixes it without touching the design at any width
+   where the string does fit. */
+html[data-a11y-font="dyslexic"] {
+  --tracking-eyebrow: 0.1em;
+  --tracking-meta: 0.08em;
+}
+/* This face is wide enough that fixed-width and non-wrapping elements start
+   pushing past a 320px viewport. Rather than chase each one, let anything
+   that is a run of tracked caps or a padded button wrap and, if a single
+   token still will not fit, break inside it.
+
+   Verified at 320/768/1440 with this font AND the largest text setting: no
+   horizontal scroll on any page. A reflow failure introduced by an
+   accessibility setting is worse than not offering the setting. */
+html[data-a11y-font="dyslexic"] :is(.eyebrow, .meta, .lmeta, .kick, .legal, .cta, .top, .bottom) {
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+
+html[data-a11y-font="dyslexic"] :is(.btn, .cta a, .tag, .wb) {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Meta rows put a date, a reading time and a tag on one line with square
+   separators. In this face that run exceeds 320px; letting it wrap keeps the
+   information rather than clipping it. */
+html[data-a11y-font="dyslexic"] time {
+  white-space: normal;
+}
+
+/* Decorative arrows are flex:none and so cannot shrink; at the smallest
+   viewport in the widest face they are what tips a row over the edge. They
+   carry no information. The link text already says where it goes, so
+   hiding them below the collapse costs nothing. */
+@media (max-width: 560px) {
+  html[data-a11y-font="dyslexic"] .arrow,
+  html[data-a11y-font="dyslexic"] .go .arrow {
+    display: none;
+  }
+}
+
+/* Turn off the scanline overlay. It is the strongest retro cue and also the
+   most likely thing to bother someone sensitive to pattern or flicker. */
+html[data-a11y-scanlines="off"] .scan {
+  display: none;
+}
+
+/* Text size.
+ *
+ * Scaling the ROOT font size is the obvious implementation and it is a trap:
+ * `@media (max-width: 640px)` resolves its length against the root, so at
+ * 125% a 320px viewport stops matching a 640px query. Every breakpoint on the
+ * site silently shifts, the hero keeps its two-column grid at phone width,
+ * and the page gains 26px of horizontal overflow. A 1.4.10 reflow failure
+ * introduced by the very setting meant to help someone read.
+ *
+ * Scaling the type tokens instead leaves layout queries where the author put
+ * them. Text gets bigger; the breakpoints do not move.
+ */
+html[data-a11y-size="large"] {
+  --text-display: clamp(42px, 6.6vw, 84px);
+  --text-h1: clamp(35px, 5.3vw, 59px);
+  --text-h2: clamp(24px, 2.9vw, 30px);
+  --text-h3: 22px;
+  --text-lead: 21px;
+  --text-body: 20px;
+  --text-body-sm: 17px;
+  --text-caption: 15.5px;
+  --text-meta: 12px;
+  --text-micro: 10.5px;
+}
+
+html[data-a11y-size="larger"] {
+  --text-display: clamp(47px, 7.4vw, 94px);
+  --text-h1: clamp(39px, 5.9vw, 66px);
+  --text-h2: clamp(27px, 3.2vw, 33px);
+  --text-h3: 24px;
+  --text-lead: 23px;
+  --text-body: 22px;
+  --text-body-sm: 19px;
+  --text-caption: 17px;
+  --text-meta: 13px;
+  --text-micro: 11.5px;
+}
+
+/* Stop all motion regardless of the OS setting: some people cannot change
+   it, and some want it off only here. */
+html[data-a11y-motion="off"] *,
+html[data-a11y-motion="off"] *::before,
+html[data-a11y-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-a11y-motion="off"] .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* The two things that blink on a step timer stop on a visible frame rather
+   than wherever the cycle happened to be. Shortening the duration alone
+   freezes them mid-blink, which can leave the NEW badge or the hero cursor
+   stuck invisible. The setting then looks like it broke something. */
+html[data-a11y-motion="off"] .caret,
+html[data-a11y-motion="off"] .blink {
+  animation: none !important;
+  opacity: 1;
+}
+/* The NEW badge's fill is animated on a pseudo-element. Stopping it at
+   opacity 1 leaves the badge on its solid colour rather than mid-fade. */
+html[data-a11y-motion="off"] .badge::before {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* The pulsing status LEDs keep their colour but stop expanding. */
+html[data-a11y-motion="off"] .led {
+  animation: none !important;
+}
+
+/* Underline every link in running text, not just on hover. Removing colour
+   as the sole means of distinguishing a link (WCAG 1.4.1). */
+/* Every link in running text, not just the unclassed ones.
+ *
+ * `:where()` on the container keeps specificity at the attribute selector
+ * alone, and !important is genuine here: this is a user preference
+ * overriding an author style, which is exactly the case !important exists
+ * for. Without it the component rules that set `text-decoration: none` on
+ * nav links, cards and buttons win, and the setting appears to do nothing. */
+html[data-a11y-links="underline"] :where(main, footer, aside) a {
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}

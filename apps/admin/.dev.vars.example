@@ -1,0 +1,8 @@
+# For real GitHub auth in dev. Copy to .dev.vars and fill in.
+# Not needed for `pnpm admin:ui` — see below.
+GITHUB_APP_CLIENT_ID=
+GITHUB_APP_CLIENT_SECRET=
+SESSION_SECRET=
+ALLOWED_LOGIN=NickBevers
+ALLOWED_USER_ID=0
+CONTENT_REPO=NickBevers/nickbevers.dev

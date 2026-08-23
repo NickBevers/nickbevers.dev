@@ -1,0 +1,65 @@
+---
+title: "A placeholder entry, so the layout has something to hold"
+description: "Not a real post. It exists to exercise the entry template: headings, prose, a code window, a pull quote, a list, and the prev/next footer."
+pubDate: 2026-08-23
+tag: "Meta"
+placeholder: true
+mentions:
+  name: "oklch-picker"
+  blurb: "MIT licensed. Free forever. Issues welcome."
+  href: "https://github.com/NickBevers"
+---
+
+import CodeWindow from "../../components/CodeWindow.astro";
+import PullQuote from "../../components/PullQuote.astro";
+
+This entry is scaffolding. It is here so the entry template has real content to
+lay out while the site is being built, and it will be deleted before anything
+real is published. Every element below is something the design calls for, so if
+one of them looks wrong here, it will look wrong on a real post too.
+
+The paragraph above gets a drop cap. It is drawn with `::first-letter`, which
+means the text stays whole in the DOM and a screen reader reads the word
+normally rather than spelling out the first letter.
+
+## A heading, to check the rhythm
+
+Section headings sit at 27px with tight tracking, and the rule beneath them is
+2px solid ink. The prose measure caps at 680px regardless of how wide the window
+gets, because a line of text that runs the full width of a desktop monitor is
+tiring to read.
+
+Body copy runs at 18px with generous leading. Links inside prose, [like this
+one](https://github.com/NickBevers), take a dotted underline rather than a solid
+one, and wash to the accent background on hover.
+
+<CodeWindow filename="palette.css">
+
+```css
+--green-700: oklch(0.42 0.03 165);
+--green-500: oklch(0.66 0.03 165);
+--green-300: oklch(0.83 0.02 165);
+```
+
+</CodeWindow>
+
+Code blocks wear terminal chrome: a dark band, three coloured dots, and the
+filename in tracked caps. The dots are decorative and hidden from assistive
+technology; the filename is real text.
+
+<PullQuote>A pull quote sits at 20px, italic, with a 3px sand rule down its left edge.</PullQuote>
+
+### A smaller heading
+
+Lists want checking too:
+
+- Unordered items, with enough space between them to read cleanly
+- A second item, slightly longer, so the wrapping behaviour is visible at the
+  full measure rather than only on short lines
+- A third, for rhythm
+
+1. Ordered lists use tabular numerals
+2. So the markers line up
+3. Even past nine
+
+That is everything the template needs to prove out.

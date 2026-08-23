@@ -1,0 +1,159 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import tokens from "@nb/tokens/tokens.json";
+
+export const prerender = false;
+const session = Astro.locals.session!;
+
+/* The same JSON the site builds from, so this cannot drift from reality.
+   Contrast is computed in the browser from resolved values rather than the
+   numbers in the comments, which is the only way it stays honest. */
+const ramps = Object.entries(tokens.ramps).reduce<Record<string, [string, string][]>>(
+  (acc, [name, value]) => {
+    const m = /^--nb-([a-z]+)-(\d{3})$/.exec(name);
+    if (!m) return acc;
+    (acc[m[1]] ??= []).push([m[2], value as string]);
+    return acc;
+  },
+  {},
+);
+for (const list of Object.values(ramps)) list.sort((a, b) => Number(b[0]) - Number(a[0]));
+
+const semantic = Object.keys(tokens.semantic.light);
+const type = Object.entries(tokens.typography);
+const space = Object.entries(tokens.spacing);
+---
+
+<AdminLayout title="Tokens" session={session}>
+  <div class="wrap page">
+    <header class="head">
+      <p class="eyebrow">Generated from packages/tokens</p>
+      <h1>Tokens</h1>
+      <p class="lede">
+        Every value the site is built from. Contrast is measured live against
+        the theme you are viewing, so switching the theme re-checks it.
+      </p>
+    </header>
+
+    <section>
+      <h2>Ramps</h2>
+      {Object.entries(ramps).map(([name, steps]) => (
+        <div class="ramp">
+          <h3>{name}</h3>
+          <div class="swatches">
+            {steps.map(([step, hex]) => (
+              <div class="sw" style={`--c:${hex}`}>
+                <span class="chip"></span>
+                <span class="k">{step}</span>
+                <span class="v">{hex}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section>
+      <h2>Semantic colours</h2>
+      <p class="note">
+        Measured in the browser. A pair below 4.5 for text, or 3 for a
+        boundary, is a failure the CI gate would also catch.
+      </p>
+      <table class="grid" data-contrast>
+        <thead>
+          <tr><th>Token</th><th>Value</th><th>On --bg</th><th>On --surface</th></tr>
+        </thead>
+        <tbody>
+          {semantic.map((name) => (
+            <tr data-token={name}>
+              <th scope="row"><code>{name}</code></th>
+              <td><span class="dot" data-swatch></span> <code data-value></code></td>
+              <td data-on-bg></td>
+              <td data-on-surface></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Type scale</h2>
+      <table class="grid">
+        <thead><tr><th>Token</th><th>Value</th><th>Sample</th></tr></thead>
+        <tbody>
+          {type.map(([k, v]) => (
+            <tr>
+              <th scope="row"><code>{k}</code></th>
+              <td><code>{v}</code></td>
+              <td>{k.startsWith("--text-") && !k.includes("tracking") && !k.includes("leading")
+                ? <span style={`font-size:${v}`}>Aa</span>
+                : <span class="muted">-</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Spacing</h2>
+      <ul class="space" role="list">
+        {space.filter(([k]) => k.startsWith("--space-")).map(([k, v]) => (
+          <li>
+            <code>{k}</code>
+            <span class="bar" style={`inline-size:${v}`}></span>
+            <code class="muted">{v}</code>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</AdminLayout>
+
+<script src="../scripts/contrast-grid.ts"></script>
+
+<style>
+  .page { padding-block: var(--space-9) var(--space-11); }
+  .head { padding-block-end: var(--space-6); border-bottom: var(--rule-heavy); }
+  .eyebrow {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; color: var(--warm-text);
+  }
+  h1 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); font-weight: var(--weight-black); letter-spacing: var(--tracking-display); }
+  .lede { margin: var(--space-3) 0 0; max-inline-size: 60ch; color: var(--text-2); }
+
+  section { padding-block-start: var(--space-8); }
+  h2 { margin: 0 0 var(--space-4); font-size: var(--text-h3); font-weight: var(--weight-black); letter-spacing: var(--tracking-title); }
+  h3 { margin: 0 0 var(--space-2); font-size: var(--text-meta); font-weight: var(--weight-bold); letter-spacing: var(--tracking-meta); text-transform: uppercase; color: var(--text-3); }
+  .note { margin: 0 0 var(--space-4); font-size: var(--text-caption); color: var(--text-3); max-inline-size: 60ch; }
+
+  .ramp { margin-block-end: var(--space-5); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: var(--space-2); }
+  .sw { border: var(--border-hair); background: var(--surface); }
+  .chip { display: block; block-size: 44px; background: var(--c); border-bottom: var(--border-hair); }
+  .k, .v { display: block; padding-inline: 6px; font-family: var(--font-mono); font-size: 11px; }
+  .k { padding-block-start: 4px; font-weight: var(--weight-bold); }
+  .v { padding-block-end: 4px; color: var(--text-3); }
+
+  .grid { inline-size: 100%; border-collapse: collapse; font-size: var(--text-caption); }
+  .grid th, .grid td { padding: 8px 10px; text-align: start; border-bottom: var(--border-hair); vertical-align: middle; }
+  .grid thead th {
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase; color: var(--text-3);
+    border-bottom: var(--rule-heavy);
+  }
+  .grid code { font-family: var(--font-mono); font-size: 12px; }
+  .dot {
+    display: inline-block; inline-size: 14px; block-size: 14px;
+    vertical-align: -2px; border: var(--border-hair);
+  }
+  .muted { color: var(--text-3); }
+
+  :global(.ratio) { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  :global(.ratio[data-pass="false"]) { color: var(--text); background: var(--warm); padding: 1px 6px; font-weight: var(--weight-bold); }
+
+  .space { list-style: none; margin: 0; padding: 0; }
+  .space li { display: flex; align-items: center; gap: var(--space-4); padding-block: 5px; }
+  .space code { inline-size: 92px; font-family: var(--font-mono); font-size: 12px; }
+  .bar { block-size: 12px; background: var(--accent-2); flex: none; }
+</style>

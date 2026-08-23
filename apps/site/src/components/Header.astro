@@ -1,0 +1,274 @@
+---
+import { NAV, isActive } from "../lib/nav";
+import ThemeToggle from "./ThemeToggle.astro";
+import Button from "@nb/ui/core/Button.astro";
+import Logo from "@nb/ui/core/Logo.astro";
+
+const path = Astro.url.pathname;
+---
+
+<header class="hd">
+  <div class="measure inner">
+    <a href="/" class="brand">
+      <Logo height={30} interactive />
+      <span class="name">Nick Bevers</span>
+    </a>
+
+    <nav id="site-nav" aria-label="Main">
+      <ul class="list" role="list">
+        {NAV.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="lnk"
+              aria-current={isActive(item.href, path) ? "page" : undefined}
+            >{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <ThemeToggle />
+      <Button variant="ink" size="sm" href="#contact" class="cta">Get in touch</Button>
+      <button
+        type="button"
+        class="burger"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        aria-label="Menu"
+      >
+        <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+
+  {/* The sheet is a sibling of the bar, not a copy of the nav: one set of
+      links, shown differently. Hidden with [hidden] so it is out of the tab
+      order when closed, without JS having to manage focus. */}
+  <nav id="mobile-nav" class="sheet" aria-label="Main, expanded" data-nav-sheet hidden>
+    <ul role="list">
+      {NAV.map((item) => (
+        <li>
+          <a href={item.href} aria-current={isActive(item.href, path) ? "page" : undefined}>
+            {item.label}
+            <span class="state" aria-hidden="true">
+              {isActive(item.href, path) ? "you are here" : "→"}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <Button variant="ink" href="#contact" class="sheetCta">Get in touch</Button>
+  </nav>
+</header>
+
+<script is:inline>
+  (function () {
+    var btn = document.querySelector("[data-nav-toggle]");
+    var sheet = document.querySelector("[data-nav-sheet]");
+    if (!btn || !sheet) return;
+
+    function setOpen(open) {
+      btn.setAttribute("aria-expanded", String(open));
+      sheet.hidden = !open;
+      document.documentElement.classList.toggle("nav-open", open);
+    }
+
+    btn.addEventListener("click", function () {
+      setOpen(btn.getAttribute("aria-expanded") !== "true");
+    });
+
+    // Escape closes and returns focus to the control that opened it.
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && btn.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+
+    // Following a link inside the sheet should close it.
+    sheet.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setOpen(false);
+    });
+
+    // Reaching the desktop layout leaves the sheet stranded open.
+    var wide = matchMedia("(min-width: 761px)");
+    wide.addEventListener("change", function (e) {
+      if (e.matches) setOpen(false);
+    });
+  })();
+</script>
+
+<style>
+  .hd {
+    position: sticky;
+    /* clears the fixed 4px progress bar, which sits at the very top of the
+       viewport: otherwise the bar overlaps the header's own top edge */
+    inset-block-start: var(--progress-h);
+    z-index: 15;
+    background: var(--bg);
+    border-bottom: var(--border-hair);
+  }
+  .inner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-6); padding-block: 15px; flex-wrap: wrap;
+    min-block-size: var(--header-h);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; color: var(--text); text-decoration: none; }
+  .name { font-size: 16px; font-weight: var(--weight-bold); letter-spacing: -0.01em; }
+
+  .list { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+  .lnk {
+    display: inline-flex; align-items: center;
+    min-block-size: var(--tap-min);
+    padding: 7px 11px;
+    font-size: var(--text-body-sm); font-weight: var(--weight-semibold);
+    color: var(--text-2); text-decoration: none;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .lnk:hover { background: var(--accent-bg); color: var(--accent); }
+  .lnk[aria-current="page"] { background: var(--accent-bg); color: var(--accent); font-weight: var(--weight-bold); }
+  .lnk:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+
+  .actions { display: flex; align-items: center; gap: var(--space-2); }
+
+  /* ---------- mobile ---------- */
+
+  .burger { display: none; }
+  .sheet { display: none; }
+
+  @media (max-width: 760px) {
+    /* 11px block padding + a 40px control + the 1px hairline = 63px, the
+       collapsed height the writing filter row sticks under. That number is
+       published as --header-h-mobile rather than repeated, so the two cannot
+       drift apart. */
+    /* Pinned rather than left to content. The writing index's filter row
+       sticks directly beneath this, and a header whose height drifts with
+       its contents would leave a gap or an overlap there. 40px control +
+       11px above and below = 62, plus the 1px hairline = 63. */
+    .inner {
+      gap: var(--space-3);
+      padding-block: 11px;
+      /* min-block-size from the desktop rule is 64px and would floor this,
+         so it is reset alongside. */
+      min-block-size: 0;
+      block-size: calc(var(--header-h-mobile) - 1px);
+      box-sizing: border-box;
+    }
+
+    /* 24px mark per the mobile kit. */
+    /* Set on the brand link, not the mark: the custom property inherits down
+       to the SVG, so this does not depend on reaching into another
+       component's scope. */
+    .brand { --logo-h: 24px; }
+    .name { font-size: 15px; line-height: 1; }
+
+    /* The inline nav and the header CTA give way to the sheet. */
+    #site-nav { display: none; }
+    .actions :global(.cta) { display: none; }
+
+    .actions { gap: 8px; }
+
+    /* Both controls are 40px squares. The theme toggle keeps its label on
+       desktop; here it is the dot alone, matching the menu button so the
+       pair reads as one unit and the header lands on exactly 63px. */
+    .actions :global(.tt) {
+      inline-size: 40px;
+      block-size: 40px;
+      padding: 0;
+      justify-content: center;
+      border: var(--border-strong);
+      background: var(--surface);
+    }
+    .actions :global(.tt .label) {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .burger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 40px;
+      block-size: 40px;
+      padding: 0;
+      color: var(--text);
+      background: var(--surface);
+      border: var(--border-strong);
+      cursor: pointer;
+    }
+    .burger:focus-visible {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+    .bars { display: flex; flex-direction: column; gap: 4px; inline-size: 17px; }
+    .bars > span {
+      block-size: 2px;
+      background: var(--text);
+      transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+    }
+    /* the three bars fold into a cross */
+    [aria-expanded="true"] .bars > span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    [aria-expanded="true"] .bars > span:nth-child(2) { opacity: 0; }
+    [aria-expanded="true"] .bars > span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .sheet {
+      display: block;
+      padding: 6px var(--gutter) 18px;
+      background: var(--surface);
+      border-top: var(--rule-dashed);
+    }
+    .sheet[hidden] { display: none; }
+    .sheet ul { list-style: none; margin: 0; padding: 0; }
+    .sheet ul a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      /* 48px rows: the whole line is the target, not just the word */
+      block-size: 48px;
+      border-bottom: var(--rule-dashed);
+      font-size: 18px;
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-title);
+      color: var(--text);
+      text-decoration: none;
+    }
+    .sheet ul a[aria-current="page"] { color: var(--accent); }
+    .sheet ul a:focus-visible {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: -2px;
+    }
+    .state { font-size: 12px; font-weight: var(--weight-regular); color: var(--text-3); }
+    /* Scoped to `.sheet ul a` above, not `.sheet a`, so it does not catch
+       this Button's own anchor. It was inheriting the row rule's
+       `color: var(--text)` and rendering ink on ink, invisible. Only the box
+       is adjusted here; the variant keeps its own colours. */
+    .sheet :global(.sheetCta) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 100%;
+      margin-block-start: 16px;
+    }
+
+    /* The sheet is part of the sticky header, so the page must not scroll
+       behind it while it is open. */
+    :global(html.nav-open) { overflow: hidden; }
+    .hd:has([aria-expanded="true"]) { border-bottom: var(--border-strong); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bars > span { transition: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .lnk { transition: none; } }
+</style>

@@ -1,0 +1,119 @@
+---
+import NewBadge from "../core/NewBadge.astro";
+
+interface Props {
+  /**
+   * Heading level for the card title. Each card is an <article> with its own
+   * title, so it should be one level below whatever heading introduces the
+   * list: h2 under a page h1 on the writing index, h3 under an h2 section
+   * head on the home page. Skipping a level breaks the document outline.
+   */
+  headingLevel?: 2 | 3;
+  /**
+   * "index" is the writing page's card: rule below, 20px title, tag in the
+   * meta line, reading time under the excerpt.
+   * "compact" is the home page's: rule above, 19px title, no tag, no time.
+   */
+  variant?: "index" | "compact";
+  number: string;
+  date: string;
+  datetime: string;
+  tag?: string;
+  title: string;
+  excerpt?: string;
+  minutes?: string;
+  isNew?: boolean;
+  href: string;
+  placeholder?: boolean;
+}
+const {
+  headingLevel = 3,
+  variant = "index",
+  number, date, datetime, tag, title, excerpt, minutes, isNew, href, placeholder,
+} = Astro.props;
+
+const Title = `h${headingLevel}` as "h2" | "h3";
+---
+
+<article class:list={["card", variant]}>
+  <a href={href} class="hit">
+    <div class="meta">
+      <span class="no">{number}</span>
+      <span class="dot" aria-hidden="true"></span>
+      <time datetime={datetime}>{date}</time>
+      {tag && (
+        <>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="tag">{tag}</span>
+        </>
+      )}
+      {placeholder && (
+        <>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="ph">Placeholder</span>
+        </>
+      )}
+    </div>
+    <Title class="ttl">{title}{isNew && <NewBadge inline />}</Title>
+    {excerpt && <p class="ex">{excerpt}</p>}
+    {minutes && <span class="min">{minutes} read</span>}
+  </a>
+</article>
+
+<style>
+  /* On the home page the rule sits ABOVE each card, introducing it. On the
+     writing index it sits BELOW, closing each row of the ledger. The design
+     uses both, deliberately. */
+  .compact { border-top: var(--border-hair); }
+  .index { border-bottom: var(--border-hair); }
+
+  /* The whole card is one link, so there is a single tab stop per entry
+     rather than one for the title and another for a "read more". */
+  .compact .hit { padding: 18px 10px 20px; }
+  .compact .ttl { font-size: 19px; }
+
+  .hit {
+    display: block;
+    padding: 20px 10px 22px;
+    margin-inline: -10px;
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    transition: background var(--dur) var(--ease);
+  }
+  .hit:hover { background: var(--warm-bg); }
+  .hit:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -1px;
+  }
+
+  .meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+    font-size: 10.5px; font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); margin-block-end: var(--space-2);
+  }
+  .no { color: var(--warm-text); font-variant-numeric: tabular-nums; }
+  .tag { color: var(--accent); }
+  .ph { color: var(--text-3); font-style: italic; letter-spacing: 0.08em; }
+  .dot { inline-size: 4px; block-size: 4px; background: var(--warm); flex: none; }
+
+  .ttl {
+    margin: 0;
+    font-size: 20px;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+  .ex {
+    margin: var(--space-2) 0 0;
+    font-size: 14.5px; line-height: 1.55; color: var(--text-2);
+  }
+  .min {
+    display: inline-block; margin-block-start: 10px;
+    font-size: 10.5px; font-weight: var(--weight-bold);
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) { .hit { transition: none; } }
+</style>

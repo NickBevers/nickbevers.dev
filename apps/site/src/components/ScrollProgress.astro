@@ -1,0 +1,59 @@
+---
+/**
+ * A 4px reading-progress bar pinned above everything.
+ *
+ * The fill is a barber-pole stripe (5px accent / 2px accent-2), not a solid
+ * block. One of the design's retro tells.
+ *
+ * Driven by a scroll listener rather than `animation-timeline: scroll()`
+ * because that is still not in Safari, and this must work everywhere or the
+ * bar reads as broken. Decorative, so aria-hidden.
+ */
+---
+<div class="track" aria-hidden="true"><div class="fill" data-progress></div></div>
+
+<script is:inline>
+  (function () {
+    var fill = document.querySelector("[data-progress]");
+    if (!fill) return;
+    var ticking = false;
+    function update() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0;
+      fill.style.width = pct + "%";
+      ticking = false;
+    }
+    addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    addEventListener("resize", update, { passive: true });
+    update();
+  })();
+</script>
+
+<style>
+  .track {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: 4px;
+    z-index: 20;
+    /* An opaque ground, not --line. The bar is fixed over scrolling content,
+       and a translucent track lets whatever passes underneath show through
+       the unfilled portion, which reads as a rendering glitch rather than a
+       progress bar. */
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--line);
+  }
+  .fill {
+    block-size: 100%;
+    inline-size: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--accent) 0px,
+      var(--accent) 5px,
+      var(--accent-2) 5px,
+      var(--accent-2) 7px
+    );
+  }
+</style>

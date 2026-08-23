@@ -1,0 +1,351 @@
+---
+/**
+ * Accessibility preferences.
+ *
+ * A native <dialog>, so focus trapping, Escape, inertness of the page behind
+ * and the top layer all come from the platform instead of ~100 lines of
+ * hand-written JS that would get one of them subtly wrong.
+ *
+ * Each control is a real <input type="checkbox"> or <select> in a <form>, so
+ * it works with a keyboard and reports its own state to assistive tech. The
+ * script only mirrors the value onto <html> and localStorage.
+ *
+ * Preferences are applied by a separate inline script in <head> (see
+ * A11yScript.astro), before first paint, so a stored setting never flashes.
+ */
+const SETTINGS = [
+  {
+    id: "font",
+    attr: "data-a11y-font",
+    on: "dyslexic",
+    label: "Dyslexia-friendly font",
+    hint: "Switches to OpenDyslexic, which weights the bottom of each letter.",
+  },
+  {
+    id: "scanlines",
+    attr: "data-a11y-scanlines",
+    on: "off",
+    label: "Hide scanlines",
+    hint: "Removes the horizontal texture over the page.",
+  },
+  {
+    id: "motion",
+    attr: "data-a11y-motion",
+    on: "off",
+    label: "Reduce motion",
+    hint: "Stops reveals, blinking and hover movement.",
+  },
+  {
+    id: "links",
+    attr: "data-a11y-links",
+    on: "underline",
+    label: "Always underline links",
+    hint: "Marks links in text by more than colour alone.",
+  },
+] as const;
+---
+
+<button
+  type="button"
+  class="trigger"
+  data-a11y-open
+  aria-haspopup="dialog"
+  aria-label="Display settings"
+>
+  {/* The standard accessibility figure. Supplied as artwork; the two paths
+      are recoloured to currentColor so it follows the button's own colour in
+      both themes rather than shipping a fixed brand green. */}
+  <svg class="glyph" viewBox="0 0 152 181" aria-hidden="true" focusable="false">
+    <path
+      d="M151.668 69.154c-1.142-5.607-6.12-9.613-11.856-9.533H12.159C6.447 59.621 1.506 63.586.284 69.154c-1.225 5.577 1.599 11.243 6.785 13.631h.043l40.95 17.994-16.657 63.2c-2.64 6.033.023 13.074 6.003 15.859 1.608.767 3.363 1.162 5.144 1.162 4.679.006 8.943-2.67 10.974-6.875l22.459-38.643 22.477 38.688c2.909 5.908 9.996 8.422 15.986 5.678 5.986-2.75 8.695-9.75 6.102-15.806l-16.653-63.186 41.032-18.025c5.252-2.342 8.087-8.09 6.739-13.676"
+    />
+    <path
+      d="M75.999 0C61.64 0 50 11.641 50 26s11.64 26 25.999 26C90.358 52 102 40.359 102 26 101.982 11.648 90.351.016 75.999 0m21.905 24h-9.958c-.447-9.127-3.962-15.582-6.845-19.4 9.177 2.203 15.933 10.004 16.805 19.4M68.057 28h15.884c-.577 10.402-5.557 16.777-7.942 19.25-2.388-2.475-7.365-8.85-7.942-19.25m0-4c.577-10.402 5.557-16.777 7.942-19.25 2.388 2.482 7.365 8.857 7.942 19.25zm13.045 23.4c2.883-3.818 6.39-10.273 6.845-19.4h9.96c-.872 9.396-7.628 17.197-16.805 19.4"
+    />
+  </svg>
+  {/* Visually hidden at every width. The figure is the standard
+      accessibility symbol and reads on its own; the word alongside it made
+      the control wider than the thing it opens without adding meaning.
+      The button's aria-label carries the accessible name. */}
+  <span class="sr-only">Display settings</span>
+</button>
+
+<dialog class="panel" data-a11y-dialog aria-labelledby="a11y-title">
+  <form method="dialog" class="inner">
+    <div class="head">
+      <h2 id="a11y-title">Display settings</h2>
+      <button type="submit" class="close" aria-label="Close display settings">&#10005;</button>
+    </div>
+
+    <p class="intro">
+      Stored on this device only. Nothing is sent anywhere.
+    </p>
+
+    <ul class="list" role="list">
+      {SETTINGS.map((s) => (
+        <li>
+          <label class="row">
+            <input type="checkbox" data-a11y-toggle={s.id} data-attr={s.attr} data-on={s.on} />
+            <span class="text">
+              <span class="lbl">{s.label}</span>
+              <span class="hint">{s.hint}</span>
+            </span>
+          </label>
+        </li>
+      ))}
+
+      <li>
+        <div class="row">
+          <span class="text">
+            <label class="lbl" for="a11y-size">Text size</label>
+            <span class="hint">Your browser's zoom also works, and scales images too.</span>
+          </span>
+          <select id="a11y-size" data-a11y-size>
+            <option value="default">Default</option>
+            <option value="large">Large</option>
+            <option value="larger">Larger</option>
+          </select>
+        </div>
+      </li>
+    </ul>
+
+    <div class="foot">
+      <button type="button" class="reset" data-a11y-reset>Reset all</button>
+      <button type="submit" class="done">Done</button>
+    </div>
+  </form>
+</dialog>
+
+<script is:inline>
+  (function () {
+    var dialog = document.querySelector("[data-a11y-dialog]");
+    var open = document.querySelector("[data-a11y-open]");
+    if (!dialog || !open) return;
+
+    var KEY = "nb-a11y";
+    var root = document.documentElement;
+    var wired = false;
+
+    var read = function () {
+      try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { return {}; }
+    };
+    var write = function (state) {
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    };
+
+    function apply(state) {
+      var toggles = dialog.querySelectorAll("[data-a11y-toggle]");
+      for (var i = 0; i < toggles.length; i++) {
+        var t = toggles[i];
+        var id = t.getAttribute("data-a11y-toggle");
+        var attr = t.getAttribute("data-attr");
+        if (state[id]) root.setAttribute(attr, t.getAttribute("data-on"));
+        else root.removeAttribute(attr);
+        t.checked = !!state[id];
+      }
+      var size = dialog.querySelector("[data-a11y-size]");
+      if (state.size && state.size !== "default") root.setAttribute("data-a11y-size", state.size);
+      else root.removeAttribute("data-a11y-size");
+      if (size) size.value = state.size || "default";
+      write(state);
+    }
+
+    /* Listeners are attached on first open, not on load. The head script has
+       already applied any stored preference, so nothing here is needed until
+       someone actually opens the panel. */
+    function wire() {
+      if (wired) return;
+      wired = true;
+      apply(read());
+
+      dialog.addEventListener("change", function (e) {
+        var t = e.target;
+        var state = read();
+        if (t.hasAttribute("data-a11y-toggle")) {
+          state[t.getAttribute("data-a11y-toggle")] = t.checked;
+        } else if (t.hasAttribute("data-a11y-size")) {
+          state.size = t.value;
+        } else return;
+        apply(state);
+      });
+
+      dialog.addEventListener("click", function (e) {
+        if (e.target === dialog) dialog.close();
+        else if (e.target.closest("[data-a11y-reset]")) apply({});
+      });
+    }
+
+    open.addEventListener("click", function () {
+      wire();
+      dialog.showModal();
+    });
+  })();
+</script>
+
+<style>
+  /* A floating control, bottom-right on desktop.
+   *
+   * position:fixed, so it stays reachable without hunting for the header , 
+   * the people most likely to want these settings are the least well served
+   * by having to scroll back up to find them.
+   *
+   * z-index sits below the scroll progress bar (20) and the skip link (100),
+   * above the scanline (9). It must never cover the skip link. */
+  .trigger {
+    position: fixed;
+    inset-block-end: var(--space-6);
+    inset-inline-end: var(--space-6);
+    z-index: 18;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* square, and comfortably past the 24px target floor */
+    inline-size: 48px;
+    block-size: 48px;
+    padding: 0;
+
+    color: var(--text);
+    background: var(--surface);
+    border: var(--border-strong);
+    box-shadow: var(--bevel);
+    cursor: pointer;
+    transition:
+      transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+  }
+  /* presses into its shadow, like every other button on the site */
+  .trigger:hover,
+  .trigger:focus-visible {
+    transform: translate(var(--press-shift), var(--press-shift));
+    box-shadow: calc(4px - var(--press-shift)) calc(4px - var(--press-shift)) 0 var(--shadow);
+  }
+  .trigger:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  .glyph {
+    inline-size: 22px;
+    block-size: auto;
+    flex: none;
+    /* fill, not color: an SVG path does not inherit `color` on its own */
+    /* Matches the hero diagonal's green rather than the darker --accent, so
+       the button reads as part of the same family. --logo-on-surface, not
+       --logo: the raw brand value is fixed and drops to 2.34 on the dark
+       surface. */
+    fill: var(--logo-on-surface);
+  }
+
+  /* Below the two-column collapse the button moves to the bottom LEFT: the
+     right thumb arc on a phone is where scroll-to-top and browser UI live,
+     and a control that sits under the thumb gets pressed by accident. */
+  @media (max-width: 900px) {
+    .trigger {
+      inset-inline-end: auto;
+      inset-inline-start: var(--space-4);
+      inset-block-end: var(--space-4);
+    }
+  }
+
+  /* Clearance for this button is reserved by the FOOTER, not by <body>.
+     Padding on the body paints the page background below the footer, which
+     leaves a pale strip under the green block: see Footer.astro. */
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .trigger { transition: none; }
+    .trigger:hover, .trigger:focus-visible { transform: none; box-shadow: var(--bevel); }
+  }
+
+  .panel {
+    inline-size: min(440px, calc(100vw - 2 * var(--space-5)));
+    padding: 0;
+    color: var(--text);
+    background: var(--surface);
+    border: var(--border-strong);
+    box-shadow: var(--bevel-lg);
+  }
+  .panel::backdrop { background: rgb(0 0 0 / 0.45); }
+
+  .inner { margin: 0; }
+  .head {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--band);
+    border-bottom: var(--border-strong);
+  }
+  h2 {
+    margin: 0; font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--band-text);
+  }
+  .close {
+    min-inline-size: var(--tap-min); min-block-size: var(--tap-min);
+    font-size: 13px; color: var(--band-text);
+    background: transparent; border: 1px solid transparent; cursor: pointer;
+  }
+  .close:hover { border-color: var(--band-text); }
+  .close:focus-visible {
+    outline: var(--focus-width) solid var(--band-text); outline-offset: -1px;
+  }
+
+  .intro {
+    margin: 0; padding: var(--space-4) var(--space-5) 0;
+    font-size: var(--text-caption); color: var(--text-3);
+  }
+
+  .list { list-style: none; margin: 0; padding: var(--space-4) var(--space-5); }
+  .list li + li { margin-block-start: var(--space-2); border-top: var(--rule-dashed); }
+  .row {
+    display: flex; align-items: start; gap: var(--space-3);
+    padding-block: var(--space-3);
+    cursor: pointer;
+  }
+  .row:has(select) { align-items: center; justify-content: space-between; cursor: default; }
+  .text { display: flex; flex-direction: column; gap: 2px; }
+  .lbl { font-size: var(--text-caption); font-weight: var(--weight-bold); }
+  .hint { font-size: var(--text-meta); line-height: 1.45; color: var(--text-3); }
+
+  input[type="checkbox"] {
+    inline-size: 18px; block-size: 18px; margin: 2px 0 0;
+    accent-color: var(--accent);
+    flex: none; cursor: pointer;
+  }
+  select {
+    min-block-size: var(--tap-min);
+    padding: 5px 8px;
+    font-family: var(--font-sans); font-size: var(--text-meta);
+    font-weight: var(--weight-bold); letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text); background: var(--bg);
+    border: 1px solid var(--line-strong); border-radius: var(--radius);
+    cursor: pointer;
+  }
+
+  .foot {
+    display: flex; justify-content: space-between; gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-top: var(--rule-dashed);
+  }
+  .reset, .done {
+    min-block-size: var(--tap-min); padding: 8px 14px;
+    font-family: var(--font-sans); font-size: var(--text-meta);
+    font-weight: var(--weight-bold); letter-spacing: var(--tracking-meta);
+    text-transform: uppercase; cursor: pointer;
+    border: 1px solid var(--line-strong); border-radius: var(--radius);
+  }
+  .reset { color: var(--text-2); background: transparent; border-color: var(--line); }
+  .reset:hover { color: var(--accent); border-color: var(--accent-2); }
+  .done { color: var(--accent-on); background: var(--accent); box-shadow: 3px 3px 0 var(--shadow); }
+  .done:hover { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
+  .reset:focus-visible, .done:focus-visible, select:focus-visible,
+  input[type="checkbox"]:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .trigger, .done { transition: none; }
+    .done:hover { transform: none; }
+  }
+</style>

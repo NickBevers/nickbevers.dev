@@ -1,0 +1,53 @@
+{
+  "name": "nickbevers-dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter site dev",
+    "build": "pnpm --filter site build",
+    "preview": "pnpm --filter site preview",
+    "contrast": "node packages/ui/src/lib/contrast-check.js",
+    "check": "pnpm -r exec astro check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt --check .",
+    "budget": "node scripts/budget.mjs",
+    "a11y": "node scripts/a11y.mjs / /writing/ /writing/hello-world/ /about/ /now/ /404.html",
+    "verify": "pnpm lint && pnpm dashes && pnpm scope && pnpm glue && pnpm content && pnpm contrast && pnpm frontmatter && pnpm markdown && pnpm --filter site build && pnpm budget && pnpm a11y && pnpm filter && pnpm skip && pnpm auth && pnpm editor",
+    "filter": "node scripts/filter-test.mjs",
+    "content": "node scripts/content-lint.mjs",
+    "auth": "pnpm --filter admin build:node && node scripts/auth-test.mjs",
+    "build:admin": "pnpm --filter admin build",
+    "scope": "node scripts/scope-lint.mjs",
+    "glue": "node scripts/glue-lint.mjs",
+    "subset": "node scripts/subset-font.mjs",
+    "skip": "node scripts/skip-test.mjs",
+    "lh": "pnpm --filter site build && node scripts/lighthouse.mjs",
+    "verify:full": "pnpm verify && pnpm lh",
+    "editor": "pnpm --filter admin build:node && node --experimental-strip-types scripts/editor-test.mjs",
+    "frontmatter": "node --experimental-strip-types scripts/frontmatter-test.mjs",
+    "admin:ui": "pnpm --filter admin preview:ui",
+    "dashes": "node scripts/no-emdash.mjs",
+    "markdown": "node --experimental-strip-types scripts/markdown-test.mjs"
+  },
+  "devDependencies": {
+    "chrome-launcher": "^1.2.1",
+    "lighthouse": "^13.4.1",
+    "oxfmt": "^0.64.0",
+    "oxlint": "^1.79.0",
+    "playwright": "^1.62.1",
+    "subset-font": "^2.5.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "packageManager": "pnpm@10.30.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  }
+}

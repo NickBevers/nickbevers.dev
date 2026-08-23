@@ -1,0 +1,190 @@
+/* Base ramps: sampled from the supplied palette sheet.
+   Four ten-step ramps plus true white/black. These never change. */
+:root {
+  --nb-grey-900: #1a1a1a;
+  --nb-grey-800: #333333;
+  --nb-grey-700: #545454;
+  --nb-grey-600: #737373;
+  --nb-grey-500: #999999;
+  --nb-grey-400: #b3b3b3;
+  --nb-grey-300: #cccccc;
+  --nb-grey-200: #e6e6e6;
+  --nb-grey-100: #f2f2f2;
+  --nb-grey-050: #fafafa;
+
+  --nb-green-900: #10221b;
+  --nb-green-800: #2d3935;
+  --nb-green-700: #435650;
+  --nb-green-600: #6f9085;
+  --nb-green-500: #8ca69d;
+  --nb-green-400: #a9bcb6;
+  --nb-green-300: #c6d2ce;
+  --nb-green-200: #d7e0dd;
+  --nb-green-100: #e5ebe9;
+  --nb-green-050: #f1f4f3;
+
+  --nb-clay-900: #3b302b;
+  --nb-clay-800: #584941;
+  --nb-clay-700: #756157;
+  --nb-clay-600: #998175;
+  --nb-clay-500: #b19f96;
+  --nb-clay-400: #c9bcb6;
+  --nb-clay-300: #d4c9c4;
+  --nb-clay-200: #e1dad6;
+  --nb-clay-100: #e9e4e2;
+  --nb-clay-050: #f6f4f3;
+
+  --nb-sand-900: #403526;
+  --nb-sand-800: #605039;
+  --nb-sand-700: #806a4c;
+  --nb-sand-600: #9f8560;
+  --nb-sand-500: #c0ae96;
+  --nb-sand-400: #cfc2af;
+  --nb-sand-300: #d9cebf;
+  --nb-sand-200: #e4ddd2;
+  --nb-sand-100: #ece7df;
+  --nb-sand-050: #f7f5f2;
+
+  --nb-white: #ffffff;
+  --nb-black: #000000;
+  --nb-logo-green: #59736a;
+}
+
+/* Semantic aliases: light (default). Components reference ONLY these.
+
+   Four values differ from the original design system. Each was changed because
+   the original failed WCAG 2.2 AA (1.4.3) against a background it is actually
+   used on. Measured ratios are in the comments; see contrast-check.js, which
+   fails the build if any of these regress.
+
+   Both semantic layers are re-assertable on any element, not just <html>, so
+   a subtree can opt into a theme by carrying data-theme itself. The admin's
+   component gallery renders every block in both themes side by side and needs
+   this; scoping the layers to :root made the dark half silently render light. */
+:root,
+[data-theme="light"] {
+  --bg: var(--nb-sand-050);
+  --bg-alt: var(--nb-sand-100);
+  --surface: var(--nb-white);
+
+  --text: var(--nb-grey-900); /* 15.99 on --bg */
+  --text-2: var(--nb-clay-800); /*  7.90 on --bg */
+
+  /* FIX 1: was clay-600 (#998175) = 2.97 on --bg-alt. FAIL.
+     clay-700 clears AA on all three light backgrounds. */
+  --text-3: var(--nb-clay-700); /*  5.35 on --bg, 4.73 on --bg-alt */
+
+  --line: rgba(26, 26, 26, 0.14); /* decorative hairline only, 1.33 */
+  --line-strong: var(--nb-grey-900); /* structural borders + focus ring */
+
+  --accent: var(--nb-green-700); /*  7.19 on --bg */
+  --accent-2: var(--nb-green-600); /*  3.21: non-text/UI only, never text */
+  /* green-100 was only a 1.11 shift from --bg, so every nav and row hover
+     read as "nothing happened". green-200 is 1.24 and still holds links at
+     5.81. The contrast gate now enforces a 1.15 floor on hover washes. */
+  --accent-bg: var(--nb-green-200);
+  /* A hover wash for elements that already sit ON --warm-bg. --accent-bg
+     is only a 1.04 shift from it, which reads as no change at all;
+     green-300 is 1.23 and still holds ink text at 11.2:1. */
+  --accent-bg-strong: var(--nb-green-300);
+
+  /* The footer is a fixed dark green in both themes, so it needs its own
+     hover pair rather than the themed --accent-bg. A pale sand wash ties
+     it back to the page bands above it; the text on it must go dark or
+     it lands pale-on-pale (the previous version measured 1.60). */
+  --footer-hover-bg: var(--nb-sand-100);
+  --footer-hover-on: var(--nb-green-900); /* 13.47 on --footer-hover-bg */
+  --footer-hover-2: var(--nb-sand-800); /*  9.72, for the handle */
+  --accent-on: var(--nb-sand-050); /*  7.19 on --accent */
+
+  /* FIX 2: --warm splits in two. sand-600 stays a decorative FILL (dots,
+     rules, badge backgrounds) where 3:1 is the bar. Text that was using it
+     moves to --warm-text. sand-700 is NOT enough: 4.18 on --bg-alt. */
+  --warm: var(--nb-sand-600); /* fill only, 3.22 on --bg */
+  --warm-text: var(--nb-sand-800); /*  7.14 on --bg, 6.31 on --bg-alt */
+  --warm-2: var(--nb-sand-300); /* soft shadow colour, decorative */
+  --warm-bg: var(--nb-clay-100);
+
+  /* FIX 3: text placed ON --warm must be ink, not sand-050 (which was 3.22). */
+  --warm-on: var(--nb-grey-900); /*  4.97 on --warm */
+  /* The NEW badge blinks between --warm and --warm-dim. Both phases carry
+     text, and animated text gets no contrast exemption, so both must
+     clear 4.5 against --warm-on. */
+  --warm-dim: var(--nb-sand-300); /* 11.21 on --warm-on */
+  /* Text on an --accent-2 fill (the project status pill). The mockup used
+     --accent-on there, which is 3.21:1 at 10px. A 1.4.3 fail. Ink clears
+     it at 4.98 and keeps the pill exactly as drawn. */
+  --pill-on: var(--nb-grey-900); /*  4.98 on --accent-2 */
+
+  --band: var(--nb-green-800);
+  --band-text: var(--nb-green-300); /*  7.73 on --band */
+
+  --shadow: var(--nb-grey-900);
+  /* The soft bevel must be visible against --bg, not just --surface.
+     clay-100 is 1.16:1 on the sand page background, which reads as no
+     shadow at all. The hard offset block is the brand's only depth cue,
+     so losing it loses the device. clay-300 is 1.49:1: present without
+     becoming a second border. */
+  --soft-shadow: var(--nb-clay-300);
+  --logo: var(--nb-logo-green);
+  /* The logo green as a foreground. Same colour as the hero diagonal in
+     light mode, but --logo is a fixed brand value that does not invert,
+     and it is only 2.34 on the dark surface. This alias lightens there. */
+  --logo-on-surface: var(--nb-logo-green); /* 5.14 on white */
+  --scan: rgba(26, 26, 26, 0.045);
+
+  --focus-ring: var(--nb-grey-900); /* 15.99 on --bg */
+}
+
+/* Semantic aliases: dark. Set data-theme="dark" on <html>, or on any element
+   to theme just that subtree. The dark ramp was already clean apart from one
+   pair. */
+[data-theme="dark"] {
+  --bg: var(--nb-green-900);
+  --bg-alt: var(--nb-green-800);
+  --surface: var(--nb-green-800);
+
+  --text: var(--nb-green-050); /* 14.98 on --bg */
+  --text-2: var(--nb-green-300); /* 10.67 on --bg */
+  /* FIX 5: green-500 was 4.61 on --surface raw, but 4.48 once the scanline
+     overlay is composited in. A fail the raw number hides. green-400 clears
+     it with headroom. Caught by contrast-check.js, not by eye. */
+  --text-3: var(--nb-green-400); /*  8.33 on --bg, 5.86 on --surface */
+
+  --line: rgba(198, 210, 206, 0.18);
+  --line-strong: var(--nb-green-500);
+
+  /* FIX 4: accent was green-400 = 3.93 on --accent-bg (green-700). FAIL.
+     green-300 clears it while staying legible on --bg and --surface. */
+  --accent: var(--nb-green-300); /* 10.67 on --bg, 5.03 on --accent-bg */
+  --accent-2: var(--nb-green-600); /*  4.74 on --bg */
+  --accent-bg: var(--nb-green-700);
+  /* green-600 would be a bigger shift but drops pale text to 3.16.
+     green-700 still moves 1.63 from --warm-bg and holds text at 7.07. */
+  --accent-bg-strong: var(--nb-green-700);
+
+  /* Unchanged in dark: the footer band is the same colour in both themes. */
+  --footer-hover-bg: var(--nb-sand-100);
+  --footer-hover-on: var(--nb-green-900);
+  --footer-hover-2: var(--nb-sand-800);
+  --accent-on: var(--nb-green-900); /* 10.67 on --accent */
+
+  --warm: var(--nb-sand-500); /*  7.69 on --bg: fine as text here */
+  --warm-text: var(--nb-sand-500);
+  --warm-2: var(--nb-sand-800);
+  --warm-bg: var(--nb-clay-900);
+  --warm-on: var(--nb-green-900); /*  7.69 on --warm */
+  --warm-dim: var(--nb-sand-300); /* 10.68 on --warm-on */
+  --pill-on: var(--nb-green-900); /*  4.74 on --accent-2 */
+
+  --band: var(--nb-green-700);
+  --band-text: var(--nb-green-100); /*  6.48 on --band */
+
+  --logo-on-surface: var(--nb-green-400); /* 6.04 on the dark --surface */
+
+  --shadow: var(--nb-green-600);
+  --soft-shadow: var(--nb-green-600); /* 4.74 on --bg */
+  --scan: rgba(241, 244, 243, 0.04);
+
+  --focus-ring: var(--nb-green-050);
+}

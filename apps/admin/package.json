@@ -1,0 +1,24 @@
+{
+  "name": "admin",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "build:node": "DEPLOY_TARGET=node astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "preview:ui": "ADMIN_PREVIEW=1 GITHUB_APP_CLIENT_ID=preview GITHUB_APP_CLIENT_SECRET=preview SESSION_SECRET=preview-secret-not-used-for-anything-real ALLOWED_LOGIN=preview ALLOWED_USER_ID=0 CONTENT_REPO=preview/preview astro dev"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.2.3",
+    "@astrojs/node": "^11.1.4",
+    "@nb/tokens": "workspace:*",
+    "@nb/ui": "workspace:*",
+    "astro": "^7.2.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.125.0"
+  }
+}
