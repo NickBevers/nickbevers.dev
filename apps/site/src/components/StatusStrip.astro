@@ -1,0 +1,68 @@
+---
+import { SITE } from "../lib/nav";
+/**
+ * The thin strip above the header. The clock is rendered server-side as a
+ * static string and progressively upgraded. No island, and no hydration
+ * flash if JS never arrives.
+ */
+---
+<div class="strip">
+  <div class="measure inner">
+    <span class="left">
+      <span class="led" aria-hidden="true"></span>
+      nickbevers.dev &nbsp;·&nbsp; {SITE.tagline}
+    </span>
+    <span class="right">
+      {SITE.city} <time data-clock aria-hidden="true"></time>
+    </span>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var el = document.querySelector("[data-clock]");
+    if (!el) return;
+    var tick = function () {
+      el.textContent = new Date().toLocaleTimeString("en-GB", {
+        hour: "2-digit", minute: "2-digit", timeZone: "Europe/Brussels",
+      });
+    };
+    tick();
+    setInterval(tick, 30000);
+  })();
+</script>
+
+<style>
+  .strip { background: var(--bg-alt); border-bottom: var(--border-strong); }
+  .inner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-4); padding-block: 7px;
+    font-size: var(--text-meta); font-weight: var(--weight-semibold);
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3);
+  }
+  .left { display: flex; align-items: center; gap: 9px; }
+  .right { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* At the narrowest viewport the strip is two tracked-caps runs on one line.
+     In a wide face at the largest text setting they no longer fit, and
+     white-space:nowrap means the clock pushes past the edge rather than
+     wrapping. The location and time are ambient detail, not information the
+     page depends on, so they step aside at 380px. */
+  @media (max-width: 380px) {
+    .right { display: none; }
+  }
+  .led {
+    inline-size: 7px; block-size: 7px; border-radius: 50%;
+    background: var(--accent-2); flex: none;
+    animation: nbPulse 2.4s infinite;
+  }
+  @keyframes nbPulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-2) 70%, transparent); }
+    70% { box-shadow: 0 0 0 7px transparent; }
+  }
+  @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+  @media (max-width: 640px) {
+    .left { gap: 7px; font-size: var(--text-micro); }
+    .right { font-size: var(--text-micro); }
+  }
+</style>

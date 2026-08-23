@@ -1,0 +1,21 @@
+---
+/**
+ * The paper-grain overlay: 1px on 4px at 4.5% ink, fixed over the viewport.
+ *
+ * No will-change. It never animates, and promoting a full-viewport layer
+ * permanently costs mobile memory. contain:strict keeps it out of layout.
+ * z-index sits below the focus-ring stacking level so it can never wash one out.
+ */
+---
+<div class="scan" aria-hidden="true"></div>
+
+<style>
+  .scan {
+    position: fixed;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+    contain: strict;
+    background-image: var(--scanlines);
+  }
+</style>

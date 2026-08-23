@@ -1,0 +1,188 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import Button from "@nb/ui/core/Button.astro";
+import Tag from "@nb/ui/core/Tag.astro";
+import NewBadge from "@nb/ui/core/NewBadge.astro";
+import WebBadge from "@nb/ui/core/WebBadge.astro";
+import WindowCard from "@nb/ui/core/WindowCard.astro";
+import LeaderRow from "@nb/ui/core/LeaderRow.astro";
+import Logo from "@nb/ui/core/Logo.astro";
+import EntryCard from "@nb/ui/content/EntryCard.astro";
+import ProjectRow from "@nb/ui/content/ProjectRow.astro";
+import PhotoCard from "@nb/ui/content/PhotoCard.astro";
+import RailPanel from "@nb/ui/content/RailPanel.astro";
+import Pagination from "@nb/ui/navigation/Pagination.astro";
+
+export const prerender = false;
+const session = Astro.locals.session!;
+---
+
+<AdminLayout title="Components" session={session}>
+  <div class="wrap page">
+    <header class="head">
+      <p class="eyebrow">packages/ui</p>
+      <h1>Components</h1>
+      <p class="lede">
+        The real components, not copies. Each block renders twice, in both
+        themes, so a token that works in one and fails in the other shows up
+        here rather than in production.
+      </p>
+    </header>
+
+    {[
+      { id: "buttons", title: "Button", note: "Four variants, two sizes. Presses into its own shadow; focus is an outline so the press cannot animate the ring away." },
+      { id: "tags", title: "Tag", note: "Chip for a category. `as=\"button\"` makes it a real control for the writing filter." },
+      { id: "badges", title: "NewBadge / WebBadge", note: "The blinking NEW marker and the 88x31 web badges. Badge colours are deliberately fixed, not themed." },
+      { id: "window", title: "WindowCard", note: "Terminal chrome. A frame for machine-quoted content, never for prose." },
+      { id: "leader", title: "LeaderRow", note: "Label, dotted leader, value. The leader is a border, not dot characters, so a screen reader does not read it out." },
+      { id: "entry", title: "EntryCard", note: "Two variants: index rules below and shows tag and reading time; compact rules above and shows neither." },
+      { id: "project", title: "ProjectRow", note: "Number, name, leader, year, sliding arrow, and a status pill." },
+      { id: "photo", title: "PhotoCard", note: "A slide mount. With no photo the frame stays empty and captioned rather than reaching for stock." },
+      { id: "rail", title: "RailPanel", note: "The bordered panel the sidebar is built from." },
+      { id: "pagination", title: "Pagination", note: "Real links to real routes, so it works without JavaScript." },
+      { id: "logo", title: "Logo", note: "The monogram. The slash slides on hover in the header only." },
+    ].map((s) => (
+      <section id={s.id}>
+        <div class="shead">
+          <h2>{s.title}</h2>
+          <a href={`#${s.id}`} class="anchor" aria-label={`Link to ${s.title}`}>#</a>
+        </div>
+        <p class="note">{s.note}</p>
+
+        <div class="themes">
+          {["light", "dark"].map((theme) => (
+            <div class="demo" data-theme={theme}>
+              <span class="tlabel">{theme}</span>
+              <div class="stage">
+                {s.id === "buttons" && (
+                  <div class="row">
+                    <Button variant="primary">Primary</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="ink">Ink</Button>
+                    <Button variant="sand">Sand</Button>
+                    <Button variant="primary" size="sm">Small</Button>
+                  </div>
+                )}
+                {s.id === "tags" && (
+                  <div class="row">
+                    <Tag>Outline</Tag>
+                    <Tag tone="active">Active</Tag>
+                    <Tag tone="solid">Solid</Tag>
+                    <Tag as="button">Button</Tag>
+                  </div>
+                )}
+                {s.id === "badges" && (
+                  <div class="row">
+                    <NewBadge />
+                    <NewBadge inline />
+                    <WebBadge preset="handmade" tilt={-2} />
+                    <WebBadge preset="rss" tilt={2} />
+                    <WebBadge preset="notrackers" tilt={-2} />
+                    <WebBadge preset="viewsource" tilt={2} />
+                  </div>
+                )}
+                {s.id === "window" && (
+                  <div style="max-inline-size:360px">
+                    <WindowCard filename="palette.css">
+                      <pre class="code">--green-700: oklch(0.42 0.03 165);</pre>
+                    </WindowCard>
+                  </div>
+                )}
+                {s.id === "leader" && (
+                  <div style="max-inline-size:320px">
+                    <LeaderRow>
+                      <Fragment slot="label">oklch-picker</Fragment>
+                      <Fragment slot="value">2026</Fragment>
+                    </LeaderRow>
+                  </div>
+                )}
+                {s.id === "entry" && (
+                  <div class="stack" style="max-inline-size:420px">
+                    <EntryCard
+                      variant="index" number="No. 047" date="12 Aug 2026"
+                      datetime="2026-08-12" tag="CSS" isNew
+                      title="Picking colours in OKLCH" minutes="8 min"
+                      excerpt="A short tour of the colour space." href="#"
+                    />
+                    <EntryCard
+                      variant="compact" number="No. 046" date="24 Jul 2026"
+                      datetime="2026-07-24" title="Two weeks off the internet"
+                      excerpt="No signal, one paper map." href="#"
+                    />
+                  </div>
+                )}
+                {s.id === "project" && (
+                  <div style="max-inline-size:520px">
+                    <ProjectRow
+                      index="01" name="oklch-picker" year="2026"
+                      status="MIT · open source"
+                      blurb="A colour picker built around OKLCH." href="#"
+                    />
+                  </div>
+                )}
+                {s.id === "photo" && (
+                  <div style="max-inline-size:240px">
+                    <PhotoCard kicker="Travel" title="Two weeks in the Ardennes"
+                      blurb="No signal, one paper map." photoPrompt="Drop a photo" />
+                  </div>
+                )}
+                {s.id === "rail" && (
+                  <div style="max-inline-size:236px">
+                    <RailPanel>
+                      <div class="railrow"><b>Doing</b><span>Frontend at Spatie</span></div>
+                    </RailPanel>
+                  </div>
+                )}
+                {s.id === "pagination" && (
+                  <Pagination page={2} lastPage={3} urlFor={(n) => `#p${n}`}
+                    prevUrl="#p1" nextUrl="#p3" />
+                )}
+                {s.id === "logo" && (
+                  <div class="row"><Logo height={40} /><Logo height={24} /></div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</AdminLayout>
+
+<style>
+  .page { padding-block: var(--space-9) var(--space-11); }
+  .head { padding-block-end: var(--space-6); border-bottom: var(--rule-heavy); }
+  .eyebrow {
+    margin: 0 0 var(--space-2); font-family: var(--font-mono);
+    font-size: var(--text-meta); color: var(--warm-text);
+  }
+  h1 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); font-weight: var(--weight-black); letter-spacing: var(--tracking-display); }
+  .lede { margin: var(--space-3) 0 0; max-inline-size: 62ch; color: var(--text-2); }
+
+  section { padding-block-start: var(--space-8); }
+  .shead { display: flex; align-items: baseline; gap: var(--space-3); }
+  h2 { margin: 0; font-size: var(--text-h3); font-weight: var(--weight-black); letter-spacing: var(--tracking-title); }
+  .anchor { color: var(--text-3); text-decoration: none; font-family: var(--font-mono); }
+  .anchor:hover { color: var(--accent); }
+  .note { margin: var(--space-2) 0 var(--space-4); max-inline-size: 70ch; font-size: var(--text-caption); color: var(--text-3); }
+
+  .themes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  @media (max-width: 820px) { .themes { grid-template-columns: 1fr; } }
+
+  /* Each demo carries its own data-theme, so the tokens inside resolve to
+     that theme regardless of what the page is set to. */
+  .demo { border: var(--border-strong); background: var(--bg); }
+  .tlabel {
+    display: block; padding: 5px 10px;
+    font-size: var(--text-micro); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); background: var(--bg-alt);
+    border-bottom: var(--border-hair);
+  }
+  .stage { padding: var(--space-5); color: var(--text); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .stack { display: flex; flex-direction: column; }
+  .code { margin: 0; padding: var(--space-3); font-family: var(--font-mono); font-size: 12px; color: var(--text-2); }
+  .railrow { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; font-size: var(--text-caption); }
+  .railrow b { font-size: var(--text-micro); letter-spacing: var(--tracking-meta); text-transform: uppercase; color: var(--text-3); }
+</style>

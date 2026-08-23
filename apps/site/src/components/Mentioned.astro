@@ -1,0 +1,56 @@
+---
+import Button from "@nb/ui/core/Button.astro";
+/**
+ * The "mentioned in this entry" card: a dashed panel naming a project the
+ * post talks about, with a link out to it.
+ *
+ * Sits outside the prose wrapper so it does not inherit the 18px/1.72
+ * reading type. flex-wrap plus a min-width on the text block drops the
+ * button below the copy on narrow viewports rather than crushing it.
+ */
+interface Props {
+  name: string;
+  blurb: string;
+  href: string;
+  label?: string;
+  cta?: string;
+}
+const {
+  name, blurb, href,
+  label = "Mentioned in this entry",
+  cta = "View on GitHub →",
+} = Astro.props;
+---
+
+<aside class="mention">
+  <div class="text">
+    <p class="lbl">{label}</p>
+    <p class="name">{name}</p>
+    <p class="blurb">{blurb}</p>
+  </div>
+  <Button variant="primary" size="sm" href={href}>{cta}</Button>
+</aside>
+
+<style>
+  .mention {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-block-start: var(--space-8);
+    padding: var(--space-5);
+    border: 1px dashed var(--line-strong);
+    background: var(--bg-alt);
+  }
+  .text { flex: 1 1 auto; min-inline-size: 220px; }
+  .lbl {
+    margin: 0 0 6px;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .name { margin: 0; font-size: 18px; font-weight: var(--weight-bold); }
+  .blurb { margin: 3px 0 0; font-size: 14.5px; color: var(--text-2); }
+</style>

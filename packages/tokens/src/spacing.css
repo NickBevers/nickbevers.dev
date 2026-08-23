@@ -1,0 +1,43 @@
+/* Layout is a fixed measure plus a fixed rail. The 2000s two-column skeleton.
+   --header-h feeds scroll-padding so a sticky header never hides focus (2.4.11). */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 52px;
+  --space-10: 64px;
+  --space-11: 80px;
+  --space-12: 96px;
+
+  --measure: 1160px;
+  --gutter: 32px;
+  --rail: 236px;
+  --rail-gap: 44px;
+  --prose: 680px;
+  --card-pad: 20px;
+  --row-pad: 20px;
+
+  --progress-h: 4px; /* the fixed reading-progress bar */
+  --header-h: 64px;
+  /* Collapsed header: 11px + a 40px control + 11px + the 1px hairline.
+     Published rather than repeated, because the writing index's filter
+     row sticks directly beneath it and the two must not drift. */
+  --header-h-mobile: 63px;
+  --tap-min: 24px; /* WCAG 2.5.8 target size floor */
+
+  --bp-rail: 900px; /* below this the rail unsticks and stacks */
+  --bp-cols: 640px; /* below this two-column indexes collapse */
+}
+
+/* The mobile kit sets an 18px gutter, tighter than the 20px I had guessed.
+   Everything on a 390px screen is measured from this. */
+@media (max-width: 640px) {
+  :root {
+    --gutter: 18px;
+  }
+}

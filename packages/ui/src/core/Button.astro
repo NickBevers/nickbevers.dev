@@ -1,0 +1,93 @@
+---
+/**
+ * Button. Renders <a> when href is set, <button> otherwise.
+ *
+ * The press effect moves the element INTO its own shadow: translate 3px
+ * down-right while the offset shrinks. Because that animates box-shadow, the
+ * focus ring must be an `outline`: a box-shadow ring would be animated away
+ * mid-press. Hover is CSS, not JS, so this ships zero bytes.
+ */
+interface Props {
+  variant?: "primary" | "secondary" | "ink" | "sand";
+  size?: "sm" | "md";
+  href?: string;
+  type?: "button" | "submit";
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  variant = "primary",
+  size = "md",
+  href,
+  type = "button",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const Tag = href ? "a" : "button";
+const attrs = href ? { href } : { type };
+---
+
+<Tag class:list={["btn", `v-${variant}`, `s-${size}`, className]} {...attrs} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-weight: var(--weight-bold);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    /* min target size, WCAG 2.5.8 */
+    min-height: var(--tap-min);
+    transition:
+      transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+  }
+
+  .s-sm { padding: 9px 16px;  font-size: var(--text-caption); --off: 3px; }
+  .s-md { padding: 13px 22px; font-size: var(--text-body-sm); --off: 4px; }
+
+  .v-primary   { color: var(--accent-on); background: var(--accent);  --sh: var(--shadow); }
+  .v-secondary { color: var(--text);      background: var(--bg);      --sh: var(--warm-2); }
+  .v-ink       { color: var(--accent-on); background: var(--text);    --sh: var(--accent-2); }
+
+  /* In dark mode --text is near-white, so an ink button becomes a white slab
+     in a dark header. It reads as a broken/inverted element rather than the
+     high-emphasis action it is. Contrast passes either way (14.98), so this
+     is a visual correction: emphasis in dark mode is the accent, not inversion. */
+  :global(:root[data-theme="dark"]) .v-ink {
+    color: var(--accent-on);
+    background: var(--accent);
+    --sh: var(--line-strong);
+  }
+  .v-sand      { color: var(--warm-on);   background: var(--warm);    --sh: var(--line-strong); }
+
+  .btn { box-shadow: var(--off) var(--off) 0 var(--sh); }
+
+  /* Colour never changes on hover, only position. Brand rule. */
+  .btn:hover,
+  .btn:focus-visible {
+    transform: translate(var(--press-shift), var(--press-shift));
+    box-shadow: calc(var(--off) - var(--press-shift)) calc(var(--off) - var(--press-shift)) 0 var(--sh);
+  }
+
+  .btn:active {
+    transform: translate(var(--off), var(--off));
+    box-shadow: 0 0 0 var(--sh);
+  }
+
+  .btn:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn { transition: none; }
+    .btn:hover, .btn:focus-visible, .btn:active { transform: none; }
+  }
+</style>

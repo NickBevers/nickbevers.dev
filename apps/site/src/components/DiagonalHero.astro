@@ -1,0 +1,35 @@
+---
+/**
+ * The brand's one graphic device: the logo's parallel stripes. An ink
+ * diagonal, a gap, a green diagonal: redrawn full-bleed at page scale.
+ * Used once per page, home only.
+ *
+ * Notes:
+ *  - The clip-paths are static. A clip-path rasterises once; animating one
+ *    forces a re-raster every frame, so this never animates.
+ *  - The clipped layers hold no text, which keeps subpixel antialiasing out
+ *    of the diagonal edges.
+ *  - They are decorative, so the whole stack is aria-hidden.
+ *  - Below the two-column breakpoint the diagonals would cut through the
+ *    headline, so they are dropped rather than redrawn.
+ */
+---
+
+<div class="stripes" aria-hidden="true">
+  <div class="tint"></div>
+  <div class="ink"></div>
+  <div class="green"></div>
+</div>
+
+<style>
+  .stripes { position: absolute; inset: 0; overflow: hidden; }
+  .stripes > * { position: absolute; inset: 0; }
+
+  .tint  { background: var(--bg-alt); clip-path: polygon(70% 0, 100% 0, 100% 100%, 100% 100%); }
+  .ink   { background: var(--text);   clip-path: polygon(59.6% 0, 61.4% 0, 91.4% 100%, 89.6% 100%); }
+  .green { background: var(--logo);   clip-path: polygon(63.4% 0, 67% 0, 97% 100%, 93.4% 100%); }
+
+  @media (max-width: 900px) {
+    .stripes { display: none; }
+  }
+</style>

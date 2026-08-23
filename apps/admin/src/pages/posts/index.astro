@@ -1,0 +1,103 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import Button from "@nb/ui/core/Button.astro";
+import { listPosts, loadPost } from "@/lib/posts";
+
+export const prerender = false;
+const session = Astro.locals.session!;
+
+let posts: Awaited<ReturnType<typeof loadPost>>[] = [];
+let error: string | null = null;
+
+try {
+  const files = await listPosts(session.token);
+  posts = (await Promise.all(files.map((f) => loadPost(session.token, f.slug)))).filter(Boolean);
+  posts.sort((a, b) => String(b!.data.pubDate ?? "").localeCompare(String(a!.data.pubDate ?? "")));
+} catch (err) {
+  error = (err as Error).message;
+}
+---
+
+<AdminLayout title="Posts" session={session}>
+  <div class="wrap page">
+    <header class="head">
+      <div>
+        <p class="eyebrow">{posts.length} {posts.length === 1 ? "entry" : "entries"}</p>
+        <h1>Posts</h1>
+      </div>
+      <Button variant="primary" href="/posts/new/">New entry →</Button>
+    </header>
+
+    {error && <p class="err" role="alert">Could not read the repository: {error}</p>}
+
+    <ul class="list" role="list">
+      {posts.map((p) => (
+        <li>
+          <a href={`/posts/${p!.slug}/`}>
+            <span class="meta">
+              <span class="date">{String(p!.data.pubDate ?? ", ")}</span>
+              {p!.data.draft && <span class="flag draft">Draft</span>}
+              {p!.data.placeholder && <span class="flag ph">Placeholder</span>}
+              <span class="tag">{p!.data.tag}</span>
+            </span>
+            <span class="t">{p!.data.title ?? p!.slug}</span>
+            <span class="path">{p!.path}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {!error && posts.length === 0 && <p class="empty">No entries yet.</p>}
+  </div>
+</AdminLayout>
+
+<style>
+  .page { padding-block: var(--space-9) var(--space-11); }
+  .head {
+    display: flex; align-items: end; justify-content: space-between;
+    gap: var(--space-6); flex-wrap: wrap;
+    padding-block-end: var(--space-6); border-bottom: var(--rule-heavy);
+  }
+  .eyebrow {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    color: var(--warm-text);
+  }
+  h1 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); font-weight: var(--weight-black); letter-spacing: var(--tracking-display); }
+
+  .list { list-style: none; margin: var(--space-6) 0 0; padding: 0; }
+  .list a {
+    display: block; padding: var(--space-4) var(--space-3);
+    margin-inline: calc(var(--space-3) * -1);
+    border-bottom: var(--border-hair);
+    color: var(--text); text-decoration: none;
+  }
+  .list a:hover { background: var(--accent-bg); }
+  .list a:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -1px; }
+
+  .meta {
+    display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .date { font-variant-numeric: tabular-nums; }
+  .tag { color: var(--accent); }
+  .flag { padding: 2px 6px; color: var(--pill-on); }
+  .draft { background: var(--warm); color: var(--warm-on); }
+  .ph { background: var(--accent-2); }
+
+  .t {
+    display: block; margin-block-start: 6px;
+    font-size: var(--text-h3); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-title);
+  }
+  .path { display: block; margin-block-start: 3px; font-family: var(--font-mono); font-size: var(--text-meta); color: var(--text-3); }
+
+  .err, .empty {
+    margin-block-start: var(--space-6); padding: var(--space-4);
+    border: 1px dashed var(--line-strong); background: var(--bg-alt);
+    font-size: var(--text-caption);
+  }
+</style>

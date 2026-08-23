@@ -1,0 +1,49 @@
+---
+import WindowCard from "@nb/ui/core/WindowCard.astro";
+/**
+ * Terminal chrome around a fenced code block. Use in MDX:
+ *
+ *   <CodeWindow filename="palette.css">
+ *   ```css
+ *   ...
+ *   ```
+ *   </CodeWindow>
+ *
+ * The fence inside renders through the `pre` override (CodeBlock), which
+ * deliberately adds no chrome so the two do not nest.
+ */
+interface Props { filename: string; }
+const { filename } = Astro.props;
+---
+<div class="wrap">
+  <WindowCard filename={filename}>
+    <div class="body"><slot /></div>
+  </WindowCard>
+</div>
+
+<style>
+  .wrap { margin-block: var(--space-7); }
+  .body { background: var(--surface); }
+</style>
+
+<script is:inline>
+  // Only tabbable when it actually overflows. A needless tab stop is its
+  // own accessibility problem.
+  (function () {
+    var sync = function () {
+      document.querySelectorAll("pre.cb").forEach(function (pre) {
+        if (pre.scrollWidth > pre.clientWidth) {
+          pre.setAttribute("tabindex", "0");
+          pre.setAttribute("role", "region");
+          pre.setAttribute("aria-label", "Code, scrollable");
+        } else {
+          pre.removeAttribute("tabindex");
+          pre.removeAttribute("role");
+          pre.removeAttribute("aria-label");
+        }
+      });
+    };
+    sync();
+    addEventListener("resize", sync, { passive: true });
+  })();
+</script>

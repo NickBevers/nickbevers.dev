@@ -1,0 +1,70 @@
+---
+/**
+ * An 88x31 web badge. The one piece of real iconography in the system, and
+ * the strongest retro cue in the rail.
+ *
+ * Colours are deliberately hard-coded rather than themed. These are artefacts
+ * of a fixed era, like a GIF button on a 2003 homepage; they look wrong if
+ * they invert with the page. Every pair below was contrast-checked as text.
+ */
+interface Props {
+  preset: "handmade" | "rss" | "notrackers" | "viewsource";
+  tilt?: number;
+  href?: string;
+  class?: string;
+}
+
+const PRESETS = {
+  handmade:   { text: "Made by hand", fg: "#f1f4f3", bg: "#435650", bd: "#10221b" }, //  7.07
+  rss:        { text: "RSS 2.0",      fg: "#403526", bg: "#d9cebf", bd: "#403526" }, //  7.66
+  notrackers: { text: "No trackers",  fg: "#f7f5f2", bg: "#1a1a1a", bd: "#1a1a1a" }, // 15.99
+  viewsource: { text: "View source",  fg: "#3b302b", bg: "#e1dad6", bd: "#3b302b" }, //  9.79
+} as const;
+
+const { preset, tilt = 0, href, class: className } = Astro.props;
+const p = PRESETS[preset];
+const Tag = href ? "a" : "span";
+const attrs = href ? { href } : {};
+---
+
+<Tag
+  class:list={["wb", className]}
+  style={`--tilt:${tilt}deg; --fg:${p.fg}; --bg:${p.bg}; --bd:${p.bd}`}
+  {...attrs}
+>{p.text}</Tag>
+
+<style>
+  .wb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* the classic 88x31 button */
+    inline-size: 88px;
+    block-size: 31px;
+    padding-inline: 4px;
+    font-family: var(--font-sans);
+    font-size: 8.5px;
+    font-weight: var(--weight-black);
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--fg);
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    box-shadow: 2px 2px 0 rgba(26, 26, 26, 0.25);
+    transition: transform var(--dur) var(--ease);
+  }
+  /* tilt alternates ±2deg down the strip, so they read as stuck-on stickers */
+  a.wb:hover,
+  a.wb:focus-visible { transform: rotate(var(--tilt)) translateY(-2px); }
+  a.wb:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wb { transition: none; }
+    a.wb:hover, a.wb:focus-visible { transform: none; }
+  }
+</style>

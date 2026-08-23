@@ -1,0 +1,74 @@
+---
+/**
+ * Real links to real routes. The design had <a href="#"> with click handlers,
+ * which meant no JS, no pagination, and no working middle-click or Back.
+ */
+interface Props {
+  page: number;
+  lastPage: number;
+  urlFor: (n: number) => string;
+  prevUrl?: string;
+  nextUrl?: string;
+}
+const { page, lastPage, urlFor, prevUrl, nextUrl } = Astro.props;
+const pages = Array.from({ length: lastPage }, (_, i) => i + 1);
+---
+
+{lastPage > 1 && (
+  <nav class="pg" aria-label="Pagination">
+    <ul role="list">
+      <li>
+        {prevUrl ? (
+          <a href={prevUrl} class="cell edge" rel="prev">← Prev</a>
+        ) : (
+          <span class="cell edge off" aria-hidden="true">← Prev</span>
+        )}
+      </li>
+      {pages.map((n) => (
+        <li>
+          <a
+            href={urlFor(n)}
+            class:list={["cell", { on: n === page }]}
+            aria-current={n === page ? "page" : undefined}
+            aria-label={`Page ${n}`}
+          >{n}</a>
+        </li>
+      ))}
+      <li>
+        {nextUrl ? (
+          <a href={nextUrl} class="cell edge" rel="next">Next →</a>
+        ) : (
+          <span class="cell edge off" aria-hidden="true">Next →</span>
+        )}
+      </li>
+    </ul>
+  </nav>
+)}
+
+<style>
+  .pg ul {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    gap: 6px; list-style: none; margin: 0; padding: 0;
+  }
+  .cell {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-inline-size: 34px; min-block-size: 34px;
+    padding-inline: 10px;
+    font-family: var(--font-sans); font-size: 13px; font-weight: var(--weight-bold);
+    color: var(--text); text-decoration: none;
+    border: var(--border-hair);
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+  .edge { padding-inline: 14px; }
+  .cell:hover { background: var(--accent-bg); color: var(--accent); }
+  .cell.on {
+    color: var(--accent-on); background: var(--accent);
+    border: var(--border-strong);
+  }
+  .cell:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  .off { color: var(--text-3); opacity: .45; }
+  @media (prefers-reduced-motion: reduce) { .cell { transition: none; } }
+</style>

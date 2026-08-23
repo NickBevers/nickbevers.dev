@@ -1,0 +1,22 @@
+/* Hanken Grotesk is self-hosted through @fontsource-variable/hanken-grotesk.
+   The app imports the package; this file only declares the fallback's metrics.
+ *
+ * This face is never painted once the real font arrives. It exists so that
+ * the text shown during `font-display: swap` occupies the same space, which
+ * is what keeps CLS at zero. `src: local(...)` means it resolves instantly
+ * with no download.
+ *
+ * It will show as "loaded" in DevTools' font list even though nothing renders
+ * in it. That is expected: local() faces resolve immediately, and the stack
+ * still puts the real family first. To check what actually painted, use the
+ * Computed pane's rendered-fonts section rather than the loaded-faces list.
+ *
+ * size-adjust is tuned against Arial, the fallback most likely to be used. */
+@font-face {
+  font-family: "Hanken Grotesk Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Liberation Sans");
+  size-adjust: 96.5%;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}

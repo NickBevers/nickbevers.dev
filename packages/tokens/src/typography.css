@@ -1,0 +1,35 @@
+/* One family does the whole site: Hanken Grotesk. The mono stack appears only
+   inside terminal-style code blocks, never in running text. */
+:root {
+  --font-sans:
+    "Hanken Grotesk Variable", "Hanken Grotesk", "Hanken Grotesk Fallback", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-display: clamp(38px, 6vw, 76px);
+  --text-h1: clamp(32px, 4.8vw, 54px);
+  --text-h2: clamp(22px, 2.6vw, 27px);
+  --text-h3: 20px;
+  --text-lead: 19px;
+  --text-body: 18px;
+  --text-body-sm: 15px;
+  --text-caption: 14px;
+  --text-meta: 11px;
+  --text-micro: 9.5px;
+
+  --leading-display: 0.99;
+  --leading-title: 1.2;
+  --leading-body: 1.6;
+  --leading-prose: 1.72;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 800;
+
+  --tracking-display: -0.035em;
+  --tracking-title: -0.02em;
+  --tracking-normal: 0;
+  --tracking-meta: 0.14em;
+  --tracking-eyebrow: 0.2em;
+}

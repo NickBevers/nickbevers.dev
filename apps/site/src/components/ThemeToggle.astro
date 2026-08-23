@@ -1,0 +1,71 @@
+---
+/**
+ * Theme toggle. ~400 bytes of inline JS rather than a Preact island. It is a
+ * single class-free attribute flip, and an island would cost 4KB of runtime
+ * plus hydration latency on every page.
+ *
+ * aria-pressed reflects "dark is on". The label is the CURRENT state, not the
+ * next one, because a toggle button announces what it does, and the pressed
+ * state carries the rest.
+ */
+---
+<button type="button" class="tt" data-theme-toggle aria-pressed="false">
+  <span class="dot" aria-hidden="true"></span>
+  <!-- Server-rendered as "Light" because the document starts light; the
+       inline script corrects it before paint if the stored theme is dark. -->
+  <span class="label" data-theme-label>Light</span>
+</button>
+
+<script is:inline>
+  (function () {
+    var btn = document.querySelector("[data-theme-toggle]");
+    if (!btn) return;
+    var label = btn.querySelector("[data-theme-label]");
+    var sync = function () {
+      var dark = document.documentElement.dataset.theme === "dark";
+      // The label names the theme currently ON.
+      if (label) label.textContent = dark ? "Dark" : "Light";
+      btn.setAttribute("aria-pressed", String(dark));
+      btn.setAttribute("title", dark ? "Switch to the light theme" : "Switch to the dark theme");
+    };
+    sync();
+    btn.addEventListener("click", function () {
+      var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem("nb-theme", next); } catch (e) {}
+      sync();
+    });
+  })();
+</script>
+
+<style>
+  .tt {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: var(--tap-min);
+    padding: 8px 11px;
+    font-family: var(--font-sans);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    background: transparent;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  }
+  .tt:hover { color: var(--accent); border-color: var(--accent-2); }
+  .tt:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  .dot {
+    inline-size: 9px; block-size: 9px;
+    border: 2px solid currentColor; border-radius: 50%;
+    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  }
+  .tt[aria-pressed="true"] .dot { background: linear-gradient(90deg, transparent 50%, currentColor 50%); }
+  @media (prefers-reduced-motion: reduce) { .tt { transition: none; } }
+</style>

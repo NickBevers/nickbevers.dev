@@ -1,0 +1,143 @@
+---
+/**
+ * A project row: number, name, dotted leader, year, sliding arrow: then a
+ * blurb with the status as a filled tag pill beside it.
+ *
+ * Matches the mockup exactly: the number is --warm (not a muted grey), the
+ * year is --text-2, the leader sits at opacity .5 with a 4px upward nudge,
+ * and the arrow slides 6px on hover.
+ */
+interface Props {
+  index: string;
+  name: string;
+  year: string;
+  status: string;
+  blurb: string;
+  href?: string;
+}
+const { index, name, year, status, blurb, href } = Astro.props;
+const Tag = href ? "a" : "div";
+const attrs = href ? { href } : {};
+---
+
+<Tag class="row" {...attrs}>
+  <div class="top">
+    <span class="idx">{index}</span>
+    <span class="name">{name}</span>
+    <span class="leader" aria-hidden="true"></span>
+    <span class="year">{year}</span>
+    <span class="arrow" aria-hidden="true">→</span>
+  </div>
+  <div class="bottom">
+    <span class="blurb">{blurb}</span>
+    <span class="pill">{status}</span>
+  </div>
+</Tag>
+
+<style>
+  .row {
+    display: block;
+    padding: var(--space-5) 10px;
+    /* bleed hover: the wash extends 10px past the column edge */
+    margin-inline: -10px;
+    border-bottom: var(--border-hair);
+    color: var(--text);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    transition: background var(--dur) var(--ease);
+  }
+  a.row:hover { background: var(--accent-bg); }
+  a.row:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -1px;
+  }
+
+  .top { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+  .idx {
+    flex: none;
+    inline-size: 30px;
+    font-size: 12px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.1em;
+    color: var(--warm-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .name {
+    /* shrinkable, so a long project name wraps instead of pushing the
+       leader and year off the side at 320px */
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    font-size: 23px;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-title);
+  }
+  .leader {
+    flex: 1 1 var(--space-8);
+    min-inline-size: var(--space-5);
+    block-size: 1px;
+    border-bottom: var(--leader);
+    opacity: 0.5;
+    transform: translateY(-4px);
+  }
+  .year {
+    flex: none;
+    font-size: 11.5px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .arrow {
+    flex: none;
+    font-size: 17px;
+    color: var(--accent);
+    transition: transform 0.3s var(--ease);
+  }
+  a.row:hover .arrow,
+  a.row:focus-visible .arrow { transform: translateX(6px); }
+
+  .bottom {
+    display: flex;
+    gap: var(--space-4);
+    margin-block-start: var(--space-2);
+    padding-inline-start: 46px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .blurb {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--text-2);
+    max-inline-size: 58ch;
+  }
+  .pill {
+    flex: none;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    /* accent-2 is a mid green: ink text on it, not the pale accent-on */
+    color: var(--pill-on);
+    background: var(--accent-2);
+  }
+
+  @media (max-width: 560px) {
+    .bottom { padding-inline-start: 0; }
+    .name { flex-basis: 100%; font-size: 20px; }
+    /* the leader is pure decoration; below the wrap it only adds clutter */
+    .leader { display: none; }
+    .idx { inline-size: auto; }
+  }
+
+  /* The row is a flex line of number, name, leader, year and arrow. In a wide
+     face at 320px that run cannot fit, and the arrow, flex:none, is what
+     pushes past the edge. Letting the row wrap keeps every part visible. */
+  .top { min-inline-size: 0; }
+  .name { overflow-wrap: anywhere; }
+  @media (prefers-reduced-motion: reduce) {
+    .row, .arrow { transition: none; }
+    a.row:hover .arrow { transform: none; }
+  }
+</style>

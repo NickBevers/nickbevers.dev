@@ -1,0 +1,213 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import Button from "@nb/ui/core/Button.astro";
+import MarkdownEditor from "@/components/MarkdownEditor.astro";
+import { loadPost, headCommit, entryPath } from "@/lib/posts";
+import { PUBLIC_SITE_URL } from "astro:env/client";
+
+export const prerender = false;
+const session = Astro.locals.session!;
+const slug = Astro.params.slug!;
+const isNew = slug === "new";
+
+let post = null;
+let head: string | undefined;
+let error: string | null = null;
+
+try {
+  head = await headCommit(session.token);
+  if (!isNew) {
+    post = await loadPost(session.token, slug);
+    if (!post) return Astro.redirect("/posts/", 302);
+  }
+} catch (err) {
+  error = (err as Error).message;
+}
+
+const today = new Date().toISOString().slice(0, 10);
+const d = post?.data ?? {};
+const TAGS = ["Frontend", "CSS", "Open source", "Process", "Personal", "Meta"];
+---
+
+<AdminLayout title={isNew ? "New entry" : String(d.title ?? slug)} session={session}>
+  <div class="wrap page">
+    <a href="/posts/" class="back">← All posts</a>
+
+    {error && <p class="err" role="alert">{error}</p>}
+
+    <form
+      id="editor"
+      data-editor
+      data-slug={isNew ? "" : slug}
+      data-path={post?.path ?? ""}
+      data-sha={post?.sha ?? ""}
+      data-head={head ?? ""}
+    >
+      <div class="grid">
+        <div class="main">
+          <label class="field">
+            <span class="lbl">Title</span>
+            <input name="title" value={String(d.title ?? "")} required maxlength="90" />
+          </label>
+
+          <label class="field">
+            <span class="lbl">Description</span>
+            <textarea name="description" rows="2" required maxlength="200">{String(d.description ?? "")}</textarea>
+          </label>
+
+          <div class="field">
+            <span class="lbl" id="body-label">
+              Body <span class="hint">Markdown or MDX. Preview is an approximation, not the built page.</span>
+            </span>
+            <MarkdownEditor name="body" value={post?.body ?? ""} />
+          </div>
+        </div>
+
+        <aside class="side">
+          <label class="field">
+            <span class="lbl">Slug</span>
+            <input name="slug" value={isNew ? "" : slug} readonly={!isNew} pattern="[a-z0-9][a-z0-9-]*" />
+            {isNew && <span class="hint">Generated from the title if left empty.</span>}
+          </label>
+
+          <label class="field">
+            <span class="lbl">Date</span>
+            <input type="date" name="pubDate" value={String(d.pubDate ?? today)} required />
+          </label>
+
+          <label class="field">
+            <span class="lbl">Tag</span>
+            <select name="tag">
+              {TAGS.map((t) => <option value={t} selected={d.tag === t}>{t}</option>)}
+            </select>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="draft" checked={d.draft !== false} />
+            <span>Draft: hidden from the built site</span>
+          </label>
+
+          <div class="actions">
+            <Button variant="secondary" size="sm" type="submit" data-save>Save</Button>
+            <Button variant="primary" size="sm" type="button" data-publish>Publish</Button>
+          </div>
+
+          <p class="status" role="status" aria-live="polite" data-status></p>
+
+          {!isNew && (
+            <p class="hint">
+              <a href={`${PUBLIC_SITE_URL}/writing/${slug}/`} rel="noreferrer">View on the site →</a>
+            </p>
+          )}
+        </aside>
+      </div>
+    </form>
+
+    {/* Shown only on a 409. Never auto-resolved: the user picks. */}
+    <dialog class="conflict" data-conflict aria-labelledby="conflict-title">
+      <div class="cinner">
+        <h2 id="conflict-title">This entry changed on GitHub</h2>
+        <p>
+          Someone, or another tab: saved this file after you opened it. Your
+          text has not been sent. Choose which version to keep.
+        </p>
+        <div class="diff">
+          <div>
+            <h3>On GitHub</h3>
+            <pre data-conflict-theirs></pre>
+          </div>
+          <div>
+            <h3>In this editor</h3>
+            <pre data-conflict-mine></pre>
+          </div>
+        </div>
+        <div class="cactions">
+          <Button variant="secondary" size="sm" type="button" data-conflict-take-theirs>
+            Load the GitHub version
+          </Button>
+          <Button variant="primary" size="sm" type="button" data-conflict-keep-mine>
+            Keep mine and overwrite
+          </Button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</AdminLayout>
+
+<script src="../../scripts/editor.ts"></script>
+<script src="../../scripts/md-editor.ts"></script>
+
+<style>
+  .page { padding-block: var(--space-7) var(--space-11); }
+  .back {
+    display: inline-flex; align-items: center; min-block-size: var(--tap-min);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--accent); text-decoration: none;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: minmax(0, 1fr) 260px;
+    gap: var(--space-7); align-items: start; margin-block-start: var(--space-5);
+  }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+  .field { display: block; margin-block-end: var(--space-5); }
+  .lbl {
+    display: block; margin-block-end: 6px;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .hint { font-weight: var(--weight-regular); letter-spacing: 0; text-transform: none; color: var(--text-3); }
+
+  input, textarea, select {
+    inline-size: 100%;
+    padding: 10px 12px;
+    font-family: var(--font-sans); font-size: var(--text-body-sm);
+    color: var(--text); background: var(--surface);
+    border: var(--border-strong); border-radius: var(--radius);
+  }
+  textarea[name="body"] { font-family: var(--font-mono); font-size: 14px; line-height: 1.7; resize: vertical; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset);
+  }
+  input[readonly] { color: var(--text-3); background: var(--bg-alt); }
+
+  .check { display: flex; gap: var(--space-3); align-items: start; margin-block-end: var(--space-5); font-size: var(--text-caption); }
+  .check input { inline-size: 18px; block-size: 18px; flex: none; margin-block-start: 2px; accent-color: var(--accent); }
+
+  .side { padding: var(--space-5); border: var(--border-strong); background: var(--surface); box-shadow: var(--bevel-soft); }
+  .actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+  .status { margin: var(--space-4) 0 0; font-size: var(--text-caption); min-block-size: 1.4em; }
+  .status[data-tone="ok"] { color: var(--accent); }
+  .status[data-tone="bad"] { color: var(--text); }
+
+  .err {
+    padding: var(--space-4); border: 1px dashed var(--line-strong);
+    background: var(--warm-bg); font-size: var(--text-caption);
+  }
+
+  .conflict {
+    inline-size: min(900px, calc(100vw - 2 * var(--space-5)));
+    padding: 0; color: var(--text); background: var(--surface);
+    border: var(--border-strong); box-shadow: var(--bevel-lg);
+  }
+  .conflict::backdrop { background: rgb(0 0 0 / 0.5); }
+  .cinner { padding: var(--space-6); }
+  .cinner h2 { margin: 0 0 var(--space-3); font-size: var(--text-h3); font-weight: var(--weight-black); }
+  .cinner p { margin: 0 0 var(--space-5); font-size: var(--text-caption); color: var(--text-2); }
+  .diff { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+  @media (max-width: 700px) { .diff { grid-template-columns: 1fr; } }
+  .diff h3 {
+    margin: 0 0 6px; font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase; color: var(--text-3);
+  }
+  .diff pre {
+    margin: 0; padding: var(--space-3); max-block-size: 40vh; overflow: auto;
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+    background: var(--bg-alt); border: var(--border-hair);
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .cactions { display: flex; gap: var(--space-3); justify-content: end; flex-wrap: wrap; margin-block-start: var(--space-5); }
+</style>

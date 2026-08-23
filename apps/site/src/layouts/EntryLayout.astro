@@ -1,0 +1,168 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Rail from "../components/Rail.astro";
+import PrevNext from "../components/PrevNext.astro";
+import Mentioned from "../components/Mentioned.astro";
+import type { NumberedEntry } from "../lib/collections";
+import { formatDate } from "../lib/collections";
+
+interface Props {
+  item: NumberedEntry;
+  minutes: string;
+  older?: NumberedEntry;
+  newer?: NumberedEntry;
+}
+const { item, minutes, older, newer } = Astro.props;
+const { data } = item.entry;
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  type="article"
+  publishedAt={data.pubDate}
+>
+  <div class="measure with-rail">
+    <div>
+      <article class="art">
+        <a href="/writing/" class="back"><span aria-hidden="true">←</span> Back to the logbook</a>
+
+        <div class="meta">
+          <span class="no">{item.number}</span>
+          <span class="dot" aria-hidden="true"></span>
+          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+          <span class="dot" aria-hidden="true"></span>
+          <span>{minutes} read</span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="tag">{data.tag}</span>
+        </div>
+
+        <h1>{data.title}</h1>
+        <p class="lede">{data.description}</p>
+
+        {data.placeholder && (
+          <p class="ph" role="note">
+            <strong>Placeholder.</strong> This entry is scaffolding for the layout, not real writing.
+          </p>
+        )}
+
+        <div class="prose"><slot /></div>
+
+        {data.mentions && (
+          <Mentioned
+            name={data.mentions.name}
+            blurb={data.mentions.blurb}
+            href={data.mentions.href}
+            cta={data.mentions.cta}
+          />
+        )}
+
+        <PrevNext older={older} newer={newer} />
+      </article>
+    </div>
+    <Rail updated={data.updatedDate ?? data.pubDate} />
+  </div>
+</BaseLayout>
+
+<style>
+  .art { padding-block: 44px var(--space-10); max-inline-size: var(--prose); }
+
+  @media (max-width: 760px) {
+    .art { padding-block: 26px var(--space-8); }
+    h1 { font-size: 32px; line-height: 1.08; }
+    .lede { margin-block-start: 16px; font-size: 17px; line-height: 1.5; }
+    /* Body copy drops one step; the prose measure is the viewport anyway. */
+    .prose { margin-block-start: 24px; padding-block-start: var(--space-6); font-size: 16.5px; line-height: 1.7; }
+    .prose :global(h2) { margin-block-start: 32px; font-size: 22px; }
+  }
+
+  .back {
+    /* standalone nav link, so it takes the 24px target floor (2.5.8).
+       The inline-in-a-sentence exception does not apply here. */
+    display: inline-flex; align-items: center;
+    min-block-size: var(--tap-min);
+    margin-block-end: 22px;
+    transition: transform var(--dur) var(--ease);
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent); text-decoration: none;
+  }
+  .back:hover,
+  .back:focus-visible {
+    text-decoration: underline; text-decoration-style: dotted;
+    /* slides left, matching the direction of its arrow */
+    transform: translateX(-4px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .back { transition: none; }
+    .back:hover, .back:focus-visible { transform: none; }
+  }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;
+    font-size: var(--text-meta); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--text-3); margin-block-end: var(--space-4);
+  }
+  .no { color: var(--warm-text); font-variant-numeric: tabular-nums; }
+  .tag { color: var(--accent); }
+  .dot { inline-size: 4px; block-size: 4px; background: var(--warm); flex: none; }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(32px, 4.2vw, 46px);
+    line-height: 1.05;
+    font-weight: var(--weight-black);
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .lede {
+    margin: var(--space-5) 0 0;
+    font-size: var(--text-lead); line-height: 1.55;
+    color: var(--text-2); font-weight: var(--weight-medium);
+    text-wrap: pretty;
+  }
+
+  .ph {
+    margin: var(--space-6) 0 0; padding: var(--space-4);
+    border: 1px dashed var(--line-strong); background: var(--bg-alt);
+    font-size: var(--text-body-sm); color: var(--text-2);
+  }
+
+  .prose {
+    margin-block-start: 30px;
+    padding-block-start: var(--space-7);
+    border-top: 1px solid var(--line);
+    font-size: var(--text-body);
+    line-height: var(--leading-prose);
+  }
+
+  /* Drop cap via ::first-letter, NOT a wrapping span. The text stays whole in
+     the DOM, so a screen reader reads the first word normally instead of
+     announcing the letter separately. */
+  .prose > :global(p:first-of-type::first-letter) {
+    float: inline-start;
+    font-size: 60px;
+    line-height: 0.82;
+    font-weight: var(--weight-black);
+    color: var(--accent);
+    margin: 5px 12px 0 0;
+  }
+
+  .prose :global(h2) {
+    margin: var(--space-8) 0 0;
+    font-size: var(--text-h2); font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-title);
+  }
+  .prose :global(h3) {
+    margin: var(--space-7) 0 0;
+    font-size: var(--text-h3); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-title);
+  }
+  .prose :global(p) { margin: var(--space-5) 0 0; }
+  .prose :global(ul), .prose :global(ol) { margin: var(--space-5) 0 0; padding-inline-start: var(--space-6); }
+  .prose :global(li) { margin-block-start: var(--space-2); }
+  .prose :global(ol) { font-variant-numeric: tabular-nums; }
+  .prose :global(img) { margin-block: var(--space-7); border: var(--border-strong); }
+  .prose :global(hr) { margin-block: var(--space-8); border: 0; border-top: var(--rule-heavy); }
+</style>

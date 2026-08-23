@@ -1,0 +1,14 @@
+---
+/**
+ * Marks a block for scroll reveal. Pure markup. The single
+ * IntersectionObserver lives in BaseLayout.
+ *
+ * It used to carry its own `is:inline` script. Astro does not deduplicate
+ * those, so four <Reveal>s on the home page shipped four copies of the same
+ * observer (1.8KB gzipped) each watching the same elements. The budget gate
+ * caught it.
+ */
+interface Props { as?: string; class?: string; id?: string }
+const { as: Tag = "div", class: className, id } = Astro.props;
+---
+<Tag class:list={["reveal", className]} id={id}><slot /></Tag>

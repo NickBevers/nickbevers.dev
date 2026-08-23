@@ -1,0 +1,63 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+import Button from "@nb/ui/core/Button.astro";
+import WindowCard from "@nb/ui/core/WindowCard.astro";
+import { readSession } from "@/lib/session";
+
+export const prerender = false;
+
+// Already signed in? Nothing to do here.
+if (await readSession(Astro)) return Astro.redirect("/", 302);
+
+const error = Astro.url.searchParams.get("error");
+const next = Astro.url.searchParams.get("next");
+const startUrl = next ? `/api/auth/start?next=${encodeURIComponent(next)}` : "/api/auth/start";
+---
+
+<AdminLayout title="Sign in">
+  <div class="wrap page">
+    <div class="card">
+      <WindowCard filename="auth.log">
+        <div class="body">
+          <h1>nickbevers.dev</h1>
+          <p class="sub">Admin panel. One account gets in.</p>
+
+          {error && <p class="err" role="alert">{error}</p>}
+
+          <Button variant="primary" href={startUrl}>Sign in with GitHub →</Button>
+
+          <p class="note">
+            Authorises this panel to commit content to the site's repository. The
+            token lives in an httpOnly cookie for eight hours and is never sent
+            to the browser.
+          </p>
+        </div>
+      </WindowCard>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .page {
+    min-block-size: 80vh;
+    display: grid;
+    place-items: center;
+    padding-block: var(--space-11);
+  }
+  .card { inline-size: min(460px, 100%); }
+  .body { padding: var(--space-7) var(--space-6) var(--space-6); }
+  h1 {
+    margin: 0; font-size: 27px; font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-title);
+  }
+  .sub { margin: var(--space-2) 0 var(--space-6); color: var(--text-2); }
+  .err {
+    margin: 0 0 var(--space-5); padding: var(--space-3) var(--space-4);
+    border: 1px dashed var(--line-strong); background: var(--warm-bg);
+    color: var(--text); font-size: var(--text-caption);
+  }
+  .note {
+    margin: var(--space-6) 0 0; font-size: var(--text-caption);
+    line-height: 1.55; color: var(--text-3);
+  }
+</style>

@@ -1,0 +1,38 @@
+/* Nothing is rounded and nothing is blurred. Depth is a hard offset block,
+   the way a 2003 layout faked a drop shadow. */
+:root {
+  --radius: 0;
+
+  --bevel: 4px 4px 0 var(--shadow);
+  --bevel-lg: 7px 7px 0 var(--shadow);
+  --bevel-soft: 6px 6px 0 var(--soft-shadow);
+  --bevel-warm: 4px 4px 0 var(--warm-2);
+  --bevel-pressed: 1px 1px 0 var(--shadow);
+
+  --border-hair: 1px solid var(--line);
+  --border-strong: 1px solid var(--line-strong);
+  --rule-heavy: 2px solid var(--line-strong);
+  --rule-dashed: 1px dashed var(--line);
+  --leader: 2px dotted var(--text-3);
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 0.15s;
+  --dur: 0.25s;
+  --dur-slow: 0.65s;
+
+  --press-shift: 3px;
+  --scanlines: repeating-linear-gradient(
+    180deg,
+    var(--scan) 0px,
+    var(--scan) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+
+  /* Focus is an OUTLINE, never a box-shadow. The button press animation
+     shrinks box-shadow from 4px to 1px, which would animate a shadow-based
+     ring out from under the user mid-press. Outline is immune and follows
+     the translate for free. Radius is 0, so it sits flush. */
+  --focus-width: 3px;
+  --focus-offset: 2px;
+}

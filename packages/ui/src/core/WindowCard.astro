@@ -1,0 +1,66 @@
+---
+/**
+ * Terminal chrome. Frames anything quoted from a machine: the latest-entry
+ * card, code blocks, the 404 log. A frame, not a theme: regular content
+ * never wears it.
+ *
+ * The three dots are decorative and hidden from assistive tech; the filename
+ * is real text.
+ */
+interface Props {
+  filename: string;
+  shadow?: "soft" | "hard" | "none";
+  class?: string;
+}
+const { filename, shadow = "soft", class: className } = Astro.props;
+---
+
+<div class:list={["win", `sh-${shadow}`, className]}>
+  <div class="chrome">
+    <span class="dots" aria-hidden="true">
+      <span class="d d1"></span><span class="d d2"></span><span class="d d3"></span>
+    </span>
+    <span class="name">{filename}</span>
+    <span class="right"><slot name="right" /></span>
+  </div>
+  <slot />
+</div>
+
+<style>
+  .win {
+    background: var(--surface);
+    border: var(--border-strong);
+    border-radius: var(--radius);
+  }
+  .sh-soft { box-shadow: var(--bevel-soft); }
+  .sh-hard { box-shadow: var(--bevel-lg); }
+  .sh-none { box-shadow: none; }
+
+  .chrome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--band);
+    border-bottom: var(--border-strong);
+  }
+  .dots { display: flex; gap: 7px; flex: none; }
+  .d { inline-size: 9px; block-size: 9px; border-radius: 50%; }
+  .d1 { background: var(--nb-green-500); }
+  .d2 { background: var(--nb-clay-500); }
+  .d3 { background: var(--nb-sand-500); }
+
+  .name {
+    margin-inline-start: 6px;
+    font-family: var(--font-sans);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--band-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .right { margin-inline-start: auto; flex: none; }
+</style>

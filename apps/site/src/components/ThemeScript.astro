@@ -1,0 +1,18 @@
+---
+/**
+ * Blocking, inlined, runs before first paint. Prevents a light flash on a
+ * dark-theme load and, because it sets the attribute before layout, adds no CLS.
+ * Deliberately not an island: this must not wait for hydration.
+ */
+---
+<script is:inline>
+  (function () {
+    try {
+      var stored = localStorage.getItem("nb-theme");
+      var theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.dataset.theme = theme;
+    } catch (e) {
+      document.documentElement.dataset.theme = "light";
+    }
+  })();
+</script>
