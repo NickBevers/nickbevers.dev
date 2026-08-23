@@ -2,10 +2,24 @@
 
 ## opendyslexic-400.woff2 / opendyslexic-700.woff2
 
-Not committed: drop your own files here. The accessibility menu's
-"Dyslexia-friendly font" toggle looks for these two paths. Until they exist
-the toggle is a no-op: `@font-face` fails to load and the browser falls
-through to Hanken Grotesk, so nothing breaks.
+Subsets of OpenDyslexic by Abbie Gonzalez, licensed under the SIL Open Font
+License 1.1. The full licence is in `OFL.txt` alongside these files, where the
+licence requires it to travel.
+
+The accessibility menu's "Dyslexia-friendly font" toggle uses these two paths.
+If they are missing the toggle is a no-op: `@font-face` fails to load and the
+browser falls through to Hanken Grotesk, so nothing breaks.
+
+### Why they are called "NB Reading" inside
+
+"OpenDyslexic" is a Reserved Font Name under the OFL, and a subset is a
+Modified Version. Clause 3 says a Modified Version must not carry the Reserved
+Font Name, so `pnpm subset` rewrites the family to "NB Reading" and the CSS
+asks for that. The copyright notice is left untouched.
+
+The filenames still say opendyslexic, which is fine: the restriction is on the
+name the font presents, not on what the file is called. Keeping it makes the
+origin obvious to anyone reading the directory.
 
 ## Subset them first
 
@@ -24,10 +38,10 @@ Measured against the real files:
 
 |     | Source  | Subset     | Saving |
 | --- | ------- | ---------- | ------ |
-| 400 | 112.6KB | **23.5KB** | −79.1% |
-| 700 | 117.5KB | **23.9KB** | −79.7% |
+| 400 | 171.7KB | **16.4KB** | −90.4% |
+| 700 | 179.7KB | **16.8KB** | −90.6% |
 
-169 glyphs: Latin letters and digits, the punctuation the design uses (→ ← ·
+170 glyphs: Latin letters and digits, the punctuation the design uses (→ ← ·
 …, curly quotes), and accents for Dutch, French and Belgian names, café,
 naïve, résumé all render. Verified in a browser, no missing-glyph boxes.
 
