@@ -63,4 +63,13 @@ pass combinations that fail on screen.
 ## Use
 
 Public to read, not licensed for reuse. Default copyright applies to the code,
-the writing and the design alike. Ask me if you want to use something.
+the writing, the design and the imagery alike. Ask me if you want to use
+something.
+
+Two exceptions, which are not mine to restrict:
+
+- **The dyslexia-friendly font** is a subset of OpenDyslexic by Abbie
+  Gonzalez, under the SIL Open Font License 1.1. The licence is in
+  `apps/site/public/fonts/OFL.txt`. It presents as "NB Reading" because
+  "OpenDyslexic" is a Reserved Font Name and a subset is a Modified Version.
+- **Dependencies** keep their own licences, listed in `pnpm-lock.yaml`.

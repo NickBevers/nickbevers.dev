@@ -20,15 +20,19 @@
  * If the files are absent the browser falls through to the next family in the
  * stack, so the toggle degrades to a no-op rather than breaking the page.
  */
+/* "NB Reading" is a subset of OpenDyslexic by Abbie Gonzalez, under the SIL
+   Open Font License. "OpenDyslexic" is a Reserved Font Name, and a subset is
+   a Modified Version, so the files this site serves carry a different family
+   name. See public/fonts/OFL.txt. */
 @font-face {
-  font-family: "OpenDyslexic";
+  font-family: "NB Reading";
   src: url("/fonts/opendyslexic-400.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "OpenDyslexic";
+  font-family: "NB Reading";
   src: url("/fonts/opendyslexic-700.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
@@ -36,9 +40,9 @@
 }
 
 html[data-a11y-font="dyslexic"] {
-  --font-sans: "OpenDyslexic", "Hanken Grotesk Variable", system-ui, sans-serif;
+  --font-sans: "NB Reading", "Hanken Grotesk Variable", system-ui, sans-serif;
 
-  /* OpenDyslexic sets much wider than Hanken Grotesk at the same size. Its
+  /* The dyslexic face sets much wider than Hanken Grotesk at the same size. Its
      weighted bottoms and open counters need the room. Three adjustments keep
      it from crowding:
      - the display clamps come down a step, so a three-line hero stays three
