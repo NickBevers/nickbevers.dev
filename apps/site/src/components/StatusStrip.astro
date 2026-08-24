@@ -10,7 +10,9 @@ import { SITE } from "../lib/nav";
   <div class="measure inner">
     <span class="left">
       <span class="led" aria-hidden="true"></span>
-      nickbevers.dev &nbsp;·&nbsp; {SITE.tagline}
+      <span class="site">nickbevers.dev</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="tagline">{SITE.tagline}</span>
     </span>
     <span class="right">
       {SITE.city} <time data-clock aria-hidden="true"></time>
@@ -40,7 +42,8 @@ import { SITE } from "../lib/nav";
     font-size: var(--text-meta); font-weight: var(--weight-semibold);
     letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3);
   }
-  .left { display: flex; align-items: center; gap: 9px; }
+  .left { display: flex; align-items: center; flex-wrap: wrap; row-gap: 2px; gap: 9px; }
+  .site, .tagline { white-space: nowrap; }
   .right { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   /* At the narrowest viewport the strip is two tracked-caps runs on one line.
