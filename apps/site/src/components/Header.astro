@@ -131,11 +131,6 @@ const path = Astro.url.pathname;
   }
   .lnk:hover { color: var(--accent); }
 
-  /* The current page is marked with a rule under the word, not a filled
-     chip. Elsewhere on the site --accent-bg is strictly a hover wash; left
-     switched on permanently it read as a stray button parked in the middle
-     of the header. A rule is the same vocabulary as the eyebrow rule and
-     the ledger borders. */
   .lnk[aria-current="page"] { color: var(--accent); font-weight: var(--weight-bold); }
   .lnk[aria-current="page"]::after {
     content: "";
@@ -186,10 +181,8 @@ const path = Astro.url.pathname;
 
     .actions { gap: 8px; }
 
-    /* Both controls are 40px squares. The toggle is borderless on desktop,
-       but here it takes the burger's box so the pair reads as one unit and
-       the header lands on exactly 63px. The label is already visually
-       hidden by the component itself. */
+    /* Both controls are 40px squares, so the pair reads as one unit and the
+       header lands on exactly 63px. */
     .actions :global(.tt) {
       inline-size: 40px;
       block-size: 40px;
