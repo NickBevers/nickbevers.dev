@@ -13,7 +13,7 @@
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt --check .",
     "budget": "node scripts/budget.mjs",
-    "a11y": "node scripts/a11y.mjs / /writing/ /writing/hello-world/ /about/ /now/ /404.html",
+    "a11y": "node scripts/a11y.mjs / /writing/ /writing/hello-world/ /about/ /now/ /work/oklch-picker/ /404.html",
     "verify": "pnpm lint && pnpm dashes && pnpm scope && pnpm glue && pnpm content && pnpm contrast && pnpm frontmatter && pnpm markdown && pnpm --filter site build && pnpm budget && pnpm a11y && pnpm filter && pnpm skip && pnpm auth && pnpm editor",
     "filter": "node scripts/filter-test.mjs",
     "content": "node scripts/content-lint.mjs",
