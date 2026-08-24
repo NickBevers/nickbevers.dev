@@ -1,9 +1,5 @@
 ---
-/**
- * Blocking, inlined, runs before first paint. Prevents a light flash on a
- * dark-theme load and, because it sets the attribute before layout, adds no CLS.
- * Deliberately not an island: this must not wait for hydration.
- */
+// Blocking, inlined, runs before first paint
 ---
 <script is:inline>
   (function () {

@@ -1,10 +1,6 @@
 ---
 import { SITE } from "../lib/nav";
-/**
- * The thin strip above the header. The clock is rendered server-side as a
- * static string and progressively upgraded. No island, and no hydration
- * flash if JS never arrives.
- */
+// The thin strip above the header
 ---
 <div class="strip">
   <div class="measure inner">
@@ -46,11 +42,7 @@ import { SITE } from "../lib/nav";
   .site, .tagline { white-space: nowrap; }
   .right { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-  /* At the narrowest viewport the strip is two tracked-caps runs on one line.
-     In a wide face at the largest text setting they no longer fit, and
-     white-space:nowrap means the clock pushes past the edge rather than
-     wrapping. The location and time are ambient detail, not information the
-     page depends on, so they step aside at 380px. */
+  /* At the narrowest viewport the strip is two tracked-caps runs on one line */
   @media (max-width: 380px) {
     .right { display: none; }
   }

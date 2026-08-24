@@ -1,12 +1,5 @@
 ---
-/**
- * The `pre` override for MDX. Preserves <pre> so whitespace and line breaks
- * survive, and adds NO chrome of its own.
- *
- * Chrome comes from wrapping a fence in <CodeWindow filename="...">. If this
- * component rendered a WindowCard too, an explicitly wrapped fence would nest
- * two sets of chrome and swallow the <pre>.
- */
+// The `pre` override for MDX
 ---
 <pre class="cb"><slot /></pre>
 
@@ -20,9 +13,7 @@
     line-height: 1.75;
     background: var(--bg-alt);
     border: var(--border-strong);
-    /* Shiki writes inline colours tuned for its own theme. Inside a window
-       the band is dark and inside prose the surface is light, so the
-       generated palette cannot suit both. Let the token colour win. */
+    /* Shiki writes inline colours tuned for its own theme */
     color: var(--text-2);
   }
   .cb :global(code) { font-family: inherit; background: none; padding: 0; }

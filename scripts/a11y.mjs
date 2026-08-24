@@ -1,8 +1,3 @@
-/**
- * Structural a11y checks that need a real browser: reflow at 320px, focus
- * visibility under the sticky header, tab order, and target sizes.
- * Complements the static contrast gate.
- */
 import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
@@ -28,10 +23,7 @@ const server = createServer((q, r) => {
 });
 const PORT = 4321;
 const BASE = `http://localhost:${PORT}`;
-/* Bind explicitly and fail loudly. Listening on a port another process
-   already holds silently tests THAT server instead. Which produced a run
-   where the accessibility suite graded the admin panel and reported the
-   site's skip link as missing. */
+// Bind explicitly and fail loudly
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(`
@@ -41,10 +33,6 @@ server.on("error", (err) => {
   }
   throw err;
 });
-/* A dev server on ::1 and a test server on 0.0.0.0 can BOTH hold this port:
-   listen() succeeds and the browser then reaches whichever the resolver
-   prefers. That produced a run where this suite silently graded the admin
-   panel and reported the site's skip link as missing. Probe before binding. */
 try {
   const res = await fetch(BASE, { signal: AbortSignal.timeout(1500) });
   const who = (await res.text()).match(/<title>([^<]*)/)?.[1] ?? "unknown";
@@ -96,9 +84,6 @@ for (const url of PAGES) {
   }
   await page.close();
 
-  // ---- content must be visible with JS disabled ----
-  // A scroll-reveal that defaults to opacity:0 and waits for JS turns any
-  // script failure into a blank page. This asserts the guard actually holds.
   {
     const ctx = await browser.newContext({ javaScriptEnabled: false });
     const nojs = await ctx.newPage();
@@ -115,10 +100,6 @@ for (const url of PAGES) {
     await ctx.close();
   }
 
-  // ---- reflow with the display settings on (1.4.10) ----
-  // An accessibility setting that introduces a horizontal scrollbar is worse
-  // than not offering it. The dyslexic face is much wider than Hanken
-  // Grotesk, so it is the case that actually breaks layouts.
   for (const [label, prefs] of [
     ["dyslexic font", { font: true }],
     ["dyslexic font + largest text", { font: true, size: "larger" }],
@@ -154,8 +135,6 @@ for (const url of PAGES) {
       // is the focused element hidden behind the sticky header?
       const hdr = document.querySelector(".hd");
       const hr = hdr ? hdr.getBoundingClientRect() : null;
-      // The skip link is MEANT to overlay the header when focused, and any
-      // fixed/sticky element positions itself. Neither is an obscured-focus bug.
       const exempt =
         el.classList.contains("skip") || cs.position === "fixed" || cs.position === "sticky";
       const behind =
@@ -180,8 +159,6 @@ for (const url of PAGES) {
     if (!info) break;
     order.push(info);
     if (info.behind) obscured++;
-    // 2.5.8 has an explicit exception for targets inline in a sentence:
-    // an author cannot enlarge them without breaking the line box.
     if ((info.w < 24 || info.h < 24) && info.w > 0 && !info.inline)
       small.push(`${info.tag}"${info.label}" ${info.w}x${info.h}`);
   }
@@ -196,11 +173,6 @@ for (const url of PAGES) {
   if (first && /skip/i.test(first.label)) ok(`skip link is first ("${first.label}")`);
   else fail(`first tab stop is not a skip link: ${first?.label}`);
 
-  // The rail is visually right of the content and must come AFTER it in the
-  // DOM, so a keyboard user reaches the article before the sidebar. Both sit
-  // inside <main>, so compare their positions directly rather than treating
-  // "outside main" as a proxy for "the rail". The skip menu and the floating
-  // settings button are also outside main and are not the rail.
   const lastContent = order.findLastIndex((o) => o.inMain && !o.inRail);
   const firstRail = order.findIndex((o) => o.inRail);
   if (firstRail >= 0 && lastContent >= 0 && firstRail < lastContent) {

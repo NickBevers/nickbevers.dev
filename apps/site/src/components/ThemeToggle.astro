@@ -1,14 +1,5 @@
 ---
-/**
- * Theme toggle. ~400 bytes of inline JS rather than a Preact island. It is a
- * single class-free attribute flip, and an island would cost 4KB of runtime
- * plus hydration latency on every page.
- *
- * aria-pressed reflects "dark is on". The label names the CURRENT state, not
- * the next one, because a toggle button announces what it does and the
- * pressed state carries the rest. It is visually hidden (the sun/moon icon
- * says it instead) but stays in the DOM as the accessible name.
- */
+// Theme toggle
 ---
 <button type="button" class="tt" data-theme-toggle aria-pressed="false">
   <span class="icon" aria-hidden="true">

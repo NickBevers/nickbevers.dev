@@ -1,11 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
-/**
- * Entries are the logbook. Numbered like a logbook too (No. 047), descending
- * from the newest. The number is derived at read time from publication order,
- * not stored, so it can never drift from reality.
- */
+// Entries are the logbook
 const entries = defineCollection({
   loader: glob({ base: "./src/content/entries", pattern: "**/*.{md,mdx}" }),
   schema: ({ image }) =>
@@ -31,9 +27,7 @@ const entries = defineCollection({
           })
           .optional(),
       })
-      // An image without a text alternative is a build failure, not a warning.
-      // This is the cheapest possible place to enforce it: the admin panel
-      // physically cannot commit an inaccessible post.
+      // An image without a text alternative is a build failure, not a warning
       .refine((d) => !d.cover || d.coverAlt, {
         message: "coverAlt is required whenever cover is set",
         path: ["coverAlt"],
@@ -63,16 +57,7 @@ const life = defineCollection({
       }),
 });
 
-/**
- * Things I've built. A collection rather than a hand-written array because
- * every project now has a detail page, so it needs a body.
- *
- * `order` drives both the displayed number and the sort, so the numbering
- * on the home page cannot drift from the order things actually appear in.
- * `href` is the project's home on the web, if it has one: it is a field on
- * the detail page, not the row's link target, so every row goes to the
- * detail page and nothing looks clickable without being clickable.
- */
+// Things I've built
 const work = defineCollection({
   loader: glob({ base: "./src/content/work", pattern: "**/*.{md,mdx}" }),
   schema: () =>

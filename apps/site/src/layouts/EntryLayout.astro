@@ -77,8 +77,7 @@ const { data } = item.entry;
   }
 
   .back {
-    /* standalone nav link, so it takes the 24px target floor (2.5.8).
-       The inline-in-a-sentence exception does not apply here. */
+    /* standalone nav link, so it takes the 24px target floor (2.5.8) */
     display: inline-flex; align-items: center;
     min-block-size: var(--tap-min);
     margin-block-end: 22px;
@@ -137,9 +136,7 @@ const { data } = item.entry;
     line-height: var(--leading-prose);
   }
 
-  /* Drop cap via ::first-letter, NOT a wrapping span. The text stays whole in
-     the DOM, so a screen reader reads the first word normally instead of
-     announcing the letter separately. */
+  /* Drop cap via ::first-letter, NOT a wrapping span */
   .prose > :global(p:first-of-type::first-letter) {
     float: inline-start;
     font-size: 60px;

@@ -1,12 +1,4 @@
-/**
- * Images in the content repository.
- *
- * Uploads go through the Contents API with base64, which is the only way to
- * commit a binary. GitHub's practical ceiling for that endpoint is around
- * 1MB before it starts refusing, and base64 inflates by a third, so anything
- * over ~700KB of source is rejected here with a clear message rather than
- * failing opaquely upstream.
- */
+// Images in the content repository
 import { gh, repo } from "./github/client";
 import { listDir } from "./github/contents";
 import { PREVIEW } from "./preview";

@@ -1,15 +1,4 @@
-/**
- * The editor's client behaviour.
- *
- * The important part is the 409 path. GitHub refuses a write whose base blob
- * has moved, and the temptation is to reload and retry. Which silently
- * discards whatever the author just typed. Instead the two versions are shown
- * side by side and the user chooses. Nothing is sent until they do.
- *
- * A bundled module rather than an inline script: this is behind auth, so the
- * page-weight argument that governs the public site does not apply, and the
- * type checking is worth more here than the bytes.
- */
+// The editor's client behaviour
 
 /** Mirrors the server's slug rule, so a bad one is caught before the round trip. */
 function slugify(s: string) {
@@ -162,8 +151,7 @@ if (form) {
     dialog.querySelector("[data-conflict-keep-mine]")!.addEventListener(
       "click",
       async () => {
-        // Adopt their sha so the write is accepted, keeping OUR text. This is
-        // an explicit overwrite, chosen by the user, not a silent retry.
+        // Adopt their sha so the write is accepted, keeping OUR text
         if (json.current) {
           sha = json.current.sha;
           form.dataset.sha = sha;

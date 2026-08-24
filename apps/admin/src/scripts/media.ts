@@ -1,6 +1,4 @@
-/**
- * Media upload: file picker, drag and drop, clipboard.
- */
+// Media upload: file picker, drag and drop, clipboard
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 if (form) {
   const input = form.querySelector<HTMLInputElement>("[data-file]")!;
@@ -27,10 +25,6 @@ if (form) {
     if (!list.length) return;
 
     let done = 0;
-    /* Sequential on purpose. Each upload is its own commit against the same
-       branch, so running them together makes every request after the first
-       race the moving head and fail on a stale sha. Slower, and it works. */
-    // oxlint-disable-next-line no-await-in-loop
     for (const file of list) {
       say(`Uploading ${file.name} (${done + 1} of ${list.length})…`);
       try {
@@ -41,7 +35,10 @@ if (form) {
           body: JSON.stringify({ name: file.name, base64, bytes: file.size }),
         });
         const json = await res.json().catch(() => ({}));
-        if (!res.ok) { say(json.error ?? `Could not upload ${file.name}.`, "bad"); return; }
+        if (!res.ok) {
+          say(json.error ?? `Could not upload ${file.name}.`, "bad");
+          return;
+        }
         done++;
       } catch (err) {
         say((err as Error).message, "bad");

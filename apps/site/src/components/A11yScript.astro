@@ -1,12 +1,5 @@
 ---
-/**
- * Applies stored display preferences before first paint.
- *
- * Separate from the menu component and placed in <head> deliberately: if this
- * ran with the panel at the end of <body>, someone who had chosen a larger
- * size or the dyslexic font would see the default render first and then watch
- * it change. Blocking and tiny is the right trade here.
- */
+// Applies stored display preferences before first paint
 ---
 <script is:inline>
   (function () {

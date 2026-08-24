@@ -1,7 +1,4 @@
-/* Self-hosted Hanken Grotesk. Variable, so 400-800 is one file.
-   Not Google Fonts: cache partitioning killed the shared-cache argument, it
-   costs a DNS+TLS round trip on the critical path, and EU courts have ruled
-   on serving it from Europe. */
+/* Self-hosted Hanken Grotesk */
 @import "@fontsource-variable/hanken-grotesk/index.css";
 
 @import "@nb/tokens/styles.css";
@@ -9,8 +6,6 @@
 @import "./a11y.css";
 
 html {
-  /* A sticky header must never hide the element you just tabbed to.
-     WCAG 2.2 SC 2.4.11 Focus Not Obscured. */
   scroll-padding-top: calc(var(--progress-h) + var(--header-h) + var(--space-3));
   scroll-behavior: smooth;
 }
@@ -51,11 +46,7 @@ a:not([class]) {
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
 }
-/* Prose links only. The footer sits on a fixed dark green in BOTH themes, so
-   a themed wash lands pale-on-pale there: --accent-bg behind the footer's own
-   sand hover text measured 1.60, and 1.12 before hovering. Scoping this to
-   the themed part of the page stops one rule painting over another's
-   assumptions. */
+/* Prose links only */
 main a:not([class]):hover,
 .prose a:not([class]):hover {
   background: var(--accent-bg);
@@ -74,26 +65,14 @@ main a:not([class]):hover,
 .measure {
   max-inline-size: var(--measure);
   margin-inline: auto;
-  /* min() rather than the --gutter token alone.
-   *
-   * The token's narrow-viewport override lives in an @media (max-width:640px)
-   * block, and media-query lengths are resolved against the ROOT font size.
-   * With the accessibility menu's larger text setting the root grows, 640px
-   * of query resolves to fewer CSS pixels, a 320px viewport stops matching,
-   * and the gutter stays at its wide value: 26px of horizontal overflow, a
-   * 1.4.10 reflow failure that only appears when someone turns on the very
-   * setting meant to help them.
-   *
-   * A viewport-relative clamp cannot desynchronise from the viewport. */
+  /* min() rather than the --gutter token alone */
   padding-inline: min(var(--gutter), 6vw);
 }
 
-/* Content + sticky rail. align-self:start is required. A stretched grid
-   item cannot stick. Collapses to one column below --bp-rail. */
+/* Content + sticky rail */
 .with-rail {
   display: grid;
-  /* minmax(0, …) on both tracks: see the note on .heroInner. The rail is a
-     fixed width, but the content column must be allowed to shrink. */
+  /* minmax(0, …) on both tracks: see the note on .heroInner */
   grid-template-columns: minmax(0, 1fr) var(--rail);
   gap: var(--rail-gap);
   align-items: start;
@@ -116,14 +95,7 @@ main a:not([class]):hover,
   border: 0;
 }
 
-/* Scroll reveal: an 18px rise with a 650ms fade.
-
-   The hidden start state is gated on html[data-reveal], which the observer
-   sets only after it has confirmed it can run. Without that guard `.reveal`
-   is opacity:0 from first paint, and any script failure, or a browser
-   without IntersectionObserver: leaves the whole page invisible. The
-   comment here used to promise this behaviour while the CSS did the unsafe
-   thing; the guard is what actually delivers it. */
+/* Scroll reveal: an 18px rise with a 650ms fade */
 @media (prefers-reduced-motion: no-preference) {
   html[data-reveal] .reveal {
     opacity: 0;
@@ -138,9 +110,7 @@ main a:not([class]):hover,
   }
 }
 
-/* Shiki with theme:"css-variables" emits these. Mapping them onto the brand
-   ramps keeps code legible in both themes without a second syntax theme.
-   Every colour below was picked to clear 4.5:1 on --bg-alt and on --surface. */
+/* Shiki with theme:"css-variables" emits these */
 :root {
   --astro-code-foreground: var(--text-2);
   --astro-code-background: transparent;
@@ -166,13 +136,7 @@ main a:not([class]):hover,
   --astro-code-token-punctuation: var(--text-3);
 }
 
-/* Horizontal snap rows. The photo strip on the home page and the filter row
-   on the writing index. Scrollbar hidden because on a phone the cards' own
-   edges show there is more to the right, and a scrollbar under a snap row
-   reads as a rendering artefact.
-
-   Not hidden on desktop pointer devices: there, a hidden scrollbar on a
-   scrollable region is a genuine discoverability problem. */
+/* Horizontal snap rows */
 .hrow {
   display: flex;
   gap: 14px;

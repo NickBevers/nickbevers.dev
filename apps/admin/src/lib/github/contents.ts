@@ -1,11 +1,4 @@
-/**
- * Single-file reads and writes through the Contents API.
- *
- * One file, one commit, and the blob `sha` gives optimistic concurrency for
- * free: send the sha you loaded, and GitHub refuses the write if anyone has
- * touched the file since. That refusal is the whole reason to use this
- * endpoint for saving rather than the Trees API.
- */
+// Single-file reads and writes through the Contents API
 import { gh, repo, encode, decode, type GitHubError } from "./client";
 
 export interface FileContent {
@@ -51,13 +44,7 @@ export async function listDir(token: string, path: string) {
   }
 }
 
-/**
- * Write one file. Omit `sha` to create, pass it to update.
- *
- * Throws ConflictError when the sha is stale. The caller must show the user
- * what changed rather than retrying, because retrying is how you silently
- * discard someone's work.
- */
+// Write one file
 export async function writeFile(
   token: string,
   opts: { path: string; text: string; message: string; sha?: string },

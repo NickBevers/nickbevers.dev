@@ -3,24 +3,7 @@ import AdminLayout from "@/layouts/AdminLayout.astro";
 export const prerender = false;
 const session = Astro.locals.session!;
 
-/**
- * Reads what the gates measured rather than measuring again.
- *
- * `pnpm budget` and `pnpm lh` write JSON; this renders it. Re-measuring here
- * would let the panel and CI disagree, and the panel would be the one nobody
- * trusts. A missing report means the gate had not run when the admin was
- * built, and that is said plainly rather than shown as a zero.
- *
- * The reports are imported, not read from disk. This page runs on Cloudflare,
- * where there is no filesystem, so readFile could never have worked in
- * production no matter which path it was given. import.meta.glob resolves at
- * build time and bakes the JSON into the bundle, which also means the numbers
- * shown are the ones from the build that produced this page.
- *
- * reports/ is gitignored, so a clean checkout has none and this page says so
- * rather than failing. To deploy an admin that shows numbers, run the gates
- * before building it: `pnpm budget && pnpm lh && pnpm --filter admin build`.
- */
+// Reads what the gates measured rather than measuring again
 const found = import.meta.glob<{ default: unknown }>("../../../../reports/*.json", {
   eager: true,
 });

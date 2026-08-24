@@ -1,13 +1,5 @@
 ---
 import Button from "@nb/ui/core/Button.astro";
-/**
- * The "mentioned in this entry" card: a dashed panel naming a project the
- * post talks about, with a link out to it.
- *
- * Sits outside the prose wrapper so it does not inherit the 18px/1.72
- * reading type. flex-wrap plus a min-width on the text block drops the
- * button below the copy on narrow viewports rather than crushing it.
- */
 interface Props {
   name: string;
   blurb: string;

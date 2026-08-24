@@ -1,11 +1,4 @@
-/**
- * YAML frontmatter, parsed and serialised without a YAML dependency.
- *
- * Deliberately small: this handles the shapes content.config.ts declares ,
- * strings, booleans, dates, and one nested object, and refuses anything it
- * does not understand rather than guessing. A general YAML parser in the
- * admin would be a much larger surface for the sake of fields no post uses.
- */
+// YAML frontmatter, parsed and serialised without a YAML dependency
 
 export interface Frontmatter {
   title: string;
@@ -92,8 +85,6 @@ function quote(v: string): string {
 export function serialise(data: Partial<Frontmatter>, body: string): string {
   const lines: string[] = ["---"];
 
-  /* Fixed order rather than object order: a stable field order means a save
-     that changes one value produces a one-line diff, not a reshuffle. */
   const ORDER: (keyof Frontmatter)[] = [
     "title",
     "description",
@@ -125,24 +116,10 @@ export function serialise(data: Partial<Frontmatter>, body: string): string {
   }
 
   lines.push("---");
-  /* The body is written back byte for byte, including whatever blank line
-     follows the closing fence. Normalising it here looked tidy but meant
-     every save rewrote the author's spacing. A diff on a file nobody
-     edited, and content changed without being asked. */
   return lines.join("\n") + "\n" + body;
 }
 
-/**
- * Serialise arbitrary flat frontmatter in a caller-supplied field order.
- *
- * `serialise` above walks a fixed list of entry fields and drops anything
- * outside it, which is right for entries and wrong for every other
- * collection. This takes the order from the collection definition instead,
- * so a new field appears in the file as soon as it is declared.
- *
- * Numbers are written bare so they round-trip as numbers; `quote()` would
- * otherwise wrap them and the schema would reject a string.
- */
+// Serialise arbitrary flat frontmatter in a caller-supplied field order
 export function serialiseFields(
   data: Record<string, unknown>,
   order: string[],

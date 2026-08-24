@@ -1,17 +1,4 @@
-/**
- * Per-page weight budget, measured from real network traffic.
- *
- * Earlier versions parsed dist/ and were wrong twice: first they missed the
- * island payload entirely (Astro boots islands from an INLINE script, so
- * counting only <script src> reported 2.5KB for a page that loads 7.9KB),
- * then they counted Preact's lazily-imported signals module that a browser
- * never actually fetches (+3KB that does not exist).
- *
- * Static analysis of bundler output kept producing plausible wrong numbers.
- * Driving a browser and recording what it downloads cannot.
- *
- * Run: pnpm budget
- */
+// Per-page weight budget, measured from real network traffic
 import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
@@ -21,28 +8,6 @@ import { gzipSync } from "node:zlib";
 
 const DIST = "apps/site/dist";
 
-/**
- * Gzipped bytes a browser downloads for this page, INCLUDING inline scripts.
- *
- * The site ships no UI framework. What it does ship is inline script the
- * design or accessibility genuinely requires:
- *
- *   theme set + toggle        ~490 B  must run before paint
- *   scroll progress bar       ~560 B
- *   a11y preferences (head)   ~230 B  must run before paint, or settings flash
- *   a11y menu                 ~900 B  listeners attach on first open
- *   skip menu                ~1600 B  builds section links from the page's
- *                                     own headings, plus Alt+/ and Alt+D
- *   mobile nav sheet          ~360 B  open/close, Escape, breakpoint reset
- *
- * Home adds the reveal observer, the writing index the tag filter, an entry
- * with code the overflow detector.
- *
- * Roughly 4KB a page, most of it accessibility. That is a deliberate trade:
- * a framework would cost 10x this for none of it. If these numbers need to
- * come down, the lever is the progress bar and the reveals: decoration ,
- * not the skip menu or the display settings.
- */
 const BUDGETS = {
   "index.html": 5000,
   "about/index.html": 5000,
@@ -115,8 +80,6 @@ for (const rel of (await pages()).toSorted()) {
   });
 
   await page.goto("http://localhost:4321" + url, { waitUntil: "networkidle" });
-  // Scroll so client:visible islands below the fold actually hydrate; a
-  // budget that only measures the initial viewport misses them.
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await page.waitForTimeout(500);
 
@@ -135,7 +98,14 @@ for (const rel of (await pages()).toSorted()) {
   const cssOk = cssBytes <= CSS_BUDGET;
   if (!jsOk || !cssOk) failed++;
 
-  report.push({ page: rel, js: jsBytes, jsBudget: budget, css: cssBytes, cssBudget: CSS_BUDGET, ok: jsOk && cssOk });
+  report.push({
+    page: rel,
+    js: jsBytes,
+    jsBudget: budget,
+    css: cssBytes,
+    cssBudget: CSS_BUDGET,
+    ok: jsOk && cssOk,
+  });
   console.log(
     `  ${jsOk && cssOk ? "ok" : "!!"} ${rel.padEnd(36)} ${String(jsBytes).padStart(6)}  ${String(budget).padStart(6)}   ${String(cssBytes).padStart(6)}` +
       `${jsOk ? "" : "  JS OVER"}${cssOk ? "" : "  CSS OVER"}`,
@@ -146,9 +116,11 @@ for (const rel of (await pages()).toSorted()) {
 await browser.close();
 server.close();
 
-/* Written for the admin health panel. The panel reports what the gate
-   measured rather than measuring again, so the two can never disagree. */
+/* Written for the admin health panel */
 mkdirSync("reports", { recursive: true });
-writeFileSync("reports/budget.json", JSON.stringify({ generated: Date.now(), pages: report }, null, 2));
+writeFileSync(
+  "reports/budget.json",
+  JSON.stringify({ generated: Date.now(), pages: report }, null, 2),
+);
 console.log(`\n  ${failed} page(s) over budget\n`);
 process.exit(failed ? 1 : 0);

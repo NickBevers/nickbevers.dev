@@ -1,10 +1,4 @@
-/**
- * Contrast gate. Parses packages/tokens/src/colors.css, resolves every var()
- * chain to a literal colour, and asserts each semantic pair meets WCAG 2.2 AA.
- *
- * Reads the real CSS rather than a hand-kept list, so a token edit that breaks
- * a pair fails CI instead of shipping. Run: pnpm contrast
- */
+// Contrast gate
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
@@ -55,10 +49,7 @@ const ratio = (a, b) => {
 /* ---------- parse the token file into light/dark scopes ---------- */
 const src = readFileSync(CSS, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 const scopes = {};
-/* Selector lists, not just :root. The semantic layers are re-assertable on any
-   element (":root, [data-theme=\"light\"]"), so match the whole list and take
-   the theme from whichever part names one. Matching only :root here made the
-   parser skip the light block entirely and report every pair as unresolved. */
+// Selector lists, not just :root
 for (const m of src.matchAll(/((?::root|\[data-theme="\w+"\])[^{]*)\{([^}]*)\}/g)) {
   const theme = /\[data-theme="(\w+)"\]/.exec(m[1])?.[1] || "light";
   scopes[theme] ??= {};
@@ -80,8 +71,6 @@ const resolveVar = (name, theme, seen = new Set()) => {
   return v.trim();
 };
 
-/* ---------- the pairs that must hold ----------
-   size: "normal" needs 4.5, "large" 3.0, "non-text" 3.0 (WCAG 1.4.3 / 1.4.11) */
 const PAIRS = [
   // body + secondary text on all three surfaces
   ["--text", "--bg", "normal"],
@@ -112,12 +101,9 @@ const PAIRS = [
   // the hover wash used on top of --warm-bg strips
   ["--text", "--accent-bg-strong", "normal"],
   ["--accent", "--accent-bg-strong", "normal"],
-  // Anything that may sit on --accent-bg when a link is hovered. The global
-  // prose-link wash once reached the fixed-dark footer and put sand-500 text
-  // on green-200 at 1.60. Neither rule knew about the other.
+  // Anything that may sit on --accent-bg when a link is hovered
   ["--text-2", "--accent-bg", "normal"],
-  // The footer's own hover pair. Fixed colours in both themes, so they are
-  // checked against each other rather than against a themed surface.
+  // The footer's own hover pair
   ["--footer-hover-on", "--footer-hover-bg", "normal"],
   ["--footer-hover-2", "--footer-hover-bg", "normal"],
   ["--band-text", "--band", "normal"],
@@ -131,20 +117,11 @@ const PAIRS = [
   ["--logo-on-surface", "--surface", "non-text"],
 ];
 
-/**
- * Decorative depth. The hard offset block is the brand's ONLY depth cue ,
- * nothing is blurred and nothing is rounded, so a shadow that disappears
- * into its background silently removes the device. These are not WCAG
- * requirements (a shadow conveys no information), so the bar is "visible",
- * not 3:1: a 1.35 floor separates "reads as an edge" from "invisible".
- * --soft-shadow was clay-100 at 1.16 and looked like no shadow at all.
- */
+// Decorative depth
 const DEPTH = [
   ["--soft-shadow", "--bg"],
   ["--shadow", "--bg"],
   ["--warm-2", "--bg"],
-  // A hover wash that barely differs from the surface it covers reads as
-  // no hover at all. --accent-bg on --warm-bg was 1.04: invisible.
   ["--accent-bg-strong", "--warm-bg"],
   ["--accent-bg", "--bg"],
 ];
@@ -152,8 +129,7 @@ const DEPTH_MIN = 1.15;
 
 const NEED = { normal: 4.5, large: 3, "non-text": 3 };
 
-/* The scanline overlay darkens every background slightly. Text must still pass
-   underneath it, so each pair is checked against the scanlined background too. */
+// The scanline overlay darkens every background slightly
 const scanned = (bgHex, theme) => {
   const scan = parse(resolveVar("--scan", theme));
   const bg = parse(bgHex);

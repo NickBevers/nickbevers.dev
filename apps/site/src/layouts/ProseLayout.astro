@@ -69,8 +69,6 @@ const { title, description, eyebrow, lede, updated } = Astro.props;
     color: var(--text-3);
   }
   .prose :global(dd) { margin: 4px 0 0; }
-  /* A link that is the whole value of a dd is a standalone target, not one
-     inline in a sentence, so it takes the 24px floor (WCAG 2.5.8). */
   .prose :global(dd a) {
     display: inline-flex;
     align-items: center;

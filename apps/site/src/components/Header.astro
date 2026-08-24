@@ -44,9 +44,7 @@ const path = Astro.url.pathname;
     </div>
   </div>
 
-  {/* The sheet is a sibling of the bar, not a copy of the nav: one set of
-      links, shown differently. Hidden with [hidden] so it is out of the tab
-      order when closed, without JS having to manage focus. */}
+  {}
   <nav id="mobile-nav" class="sheet" aria-label="Main, expanded" data-nav-sheet hidden>
     <ul role="list">
       {NAV.map((item) => (
@@ -104,8 +102,6 @@ const path = Astro.url.pathname;
 <style>
   .hd {
     position: sticky;
-    /* clears the fixed 4px progress bar, which sits at the very top of the
-       viewport: otherwise the bar overlaps the header's own top edge */
     inset-block-start: var(--progress-h);
     z-index: 15;
     background: var(--bg);
@@ -150,28 +146,16 @@ const path = Astro.url.pathname;
   .sheet { display: none; }
 
   @media (max-width: 760px) {
-    /* 11px block padding + a 40px control + the 1px hairline = 63px, the
-       collapsed height the writing filter row sticks under. That number is
-       published as --header-h-mobile rather than repeated, so the two cannot
-       drift apart. */
-    /* Pinned rather than left to content. The writing index's filter row
-       sticks directly beneath this, and a header whose height drifts with
-       its contents would leave a gap or an overlap there. 40px control +
-       11px above and below = 62, plus the 1px hairline = 63. */
+    /* Pinned rather than left to content */
     .inner {
       gap: var(--space-3);
       padding-block: 11px;
-      /* min-block-size from the desktop rule is 64px and would floor this,
-         so it is reset alongside. */
       min-block-size: 0;
       block-size: calc(var(--header-h-mobile) - 1px);
       box-sizing: border-box;
     }
 
     /* 24px mark per the mobile kit. */
-    /* Set on the brand link, not the mark: the custom property inherits down
-       to the SVG, so this does not depend on reaching into another
-       component's scope. */
     .brand { --logo-h: 24px; }
     .name { font-size: 15px; line-height: 1; }
 
@@ -181,8 +165,6 @@ const path = Astro.url.pathname;
 
     .actions { gap: 8px; }
 
-    /* Both controls are 40px squares, so the pair reads as one unit and the
-       header lands on exactly 63px. */
     .actions :global(.tt) {
       inline-size: 40px;
       block-size: 40px;
@@ -249,10 +231,6 @@ const path = Astro.url.pathname;
       outline-offset: -2px;
     }
     .state { font-size: 12px; font-weight: var(--weight-regular); color: var(--text-3); }
-    /* Scoped to `.sheet ul a` above, not `.sheet a`, so it does not catch
-       this Button's own anchor. It was inheriting the row rule's
-       `color: var(--text)` and rendering ink on ink, invisible. Only the box
-       is adjusted here; the variant keeps its own colours. */
     .sheet :global(.sheetCta) {
       display: flex;
       align-items: center;
@@ -261,8 +239,6 @@ const path = Astro.url.pathname;
       margin-block-start: 16px;
     }
 
-    /* The sheet is part of the sticky header, so the page must not scroll
-       behind it while it is open. */
     :global(html.nav-open) { overflow: hidden; }
     .hd:has([aria-expanded="true"]) { border-bottom: var(--border-strong); }
   }

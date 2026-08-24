@@ -169,8 +169,6 @@ const session = Astro.locals.session!;
   .themes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
   @media (max-width: 820px) { .themes { grid-template-columns: 1fr; } }
 
-  /* Each demo carries its own data-theme, so the tokens inside resolve to
-     that theme regardless of what the page is set to. */
   .demo { border: var(--border-strong); background: var(--bg); }
   .tlabel {
     display: block; padding: 5px 10px;

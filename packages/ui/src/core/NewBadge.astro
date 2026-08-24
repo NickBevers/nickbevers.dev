@@ -1,12 +1,5 @@
 ---
-/**
- * Blinking NEW badge. One of the two sanctioned retro artefacts.
- *
- * Two a11y notes:
- *  - ink text on the sand fill (4.97). sand-050 on sand-600 was 3.22, a fail.
- *  - the badge is usually placed inside a heading, so the visually-hidden
- *    comma stops a screen reader running "TitleNEW" together.
- */
+// Blinking NEW badge
 interface Props {
   label?: string;
   /** `inline` drops the 24px target floor for use beside larger text. */
@@ -20,10 +13,6 @@ const { label = "New", inline, class: className } = Astro.props;
 
 <style>
   .badge {
-    /* inline-flex + align-items so the badge centres its own text and sits on
-       the same baseline box as a Tag when the two are laid out side by side.
-       inline-block left the text top-aligned and the box short of the 24px
-       target floor every other chip meets. */
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -34,8 +23,6 @@ const { label = "New", inline, class: className } = Astro.props;
     font-weight: var(--weight-black);
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    /* the tracking adds a trailing gap on the last letter; pull it back so
-       the glyphs look optically centred rather than shoved left */
     text-indent: 0.16em;
     color: var(--warm-on);
     background: var(--warm);
@@ -43,14 +30,7 @@ const { label = "New", inline, class: className } = Astro.props;
     vertical-align: middle;
   }
 
-  /* The blink animates the FILL, not the whole element.
-     Fading the element to .35 opacity looked gentler than the original
-     on/off, but it put the text at 1.52:1 for half of every cycle: text
-     that is still legible-looking while failing 1.4.3. Contrast has no
-     exemption for animated content. Swapping the background between two
-     tones of the same sand ramp keeps the retro flicker while the ink
-     text stays at full opacity throughout. Worst phase: 4.97 light,
-     7.69 dark. Both verified by the contrast gate. */
+  /* The blink animates the FILL, not the whole element */
   .badge::before {
     content: "";
     position: absolute;
@@ -65,9 +45,6 @@ const { label = "New", inline, class: className } = Astro.props;
     background: var(--warm-dim);
   }
 
-  /* Inside a heading or window chrome the badge is a small marker beside
-     larger text, so the 24px target floor would make it tower over its
-     neighbour. Only free-standing badges get the full height. */
   :where(h1, h2, h3, h4) .badge,
   .badge.inline {
     min-block-size: 0;

@@ -1,12 +1,4 @@
 ---
-/**
- * A project row: number, name, dotted leader, year, sliding arrow: then a
- * blurb with the status as a filled tag pill beside it.
- *
- * Matches the mockup exactly: the number is --warm (not a muted grey), the
- * year is --text-2, the leader sits at opacity .5 with a 4px upward nudge,
- * and the arrow slides 6px on hover.
- */
 interface Props {
   index: string;
   name: string;
@@ -64,8 +56,6 @@ const attrs = href ? { href } : {};
     font-variant-numeric: tabular-nums;
   }
   .name {
-    /* shrinkable, so a long project name wraps instead of pushing the
-       leader and year off the side at 320px */
     flex: 1 1 auto;
     min-inline-size: 0;
     font-size: 23px;
@@ -132,9 +122,7 @@ const attrs = href ? { href } : {};
     .idx { inline-size: auto; }
   }
 
-  /* The row is a flex line of number, name, leader, year and arrow. In a wide
-     face at 320px that run cannot fit, and the arrow, flex:none, is what
-     pushes past the edge. Letting the row wrap keeps every part visible. */
+  /* The row is a flex line of number, name, leader, year and arrow */
   .top { min-inline-size: 0; }
   .name { overflow-wrap: anywhere; }
   @media (prefers-reduced-motion: reduce) {

@@ -1,20 +1,5 @@
 ---
-/**
- * The first thing a keyboard or screen-reader user reaches.
- *
- * A plain "Skip to content" link is the convention, but it offers exactly one
- * destination. This is a small menu: skip to content, open display settings,
- * jump to navigation, jump to the sections of this page, reach the footer.
- *
- * Design notes:
- *  - It is visually hidden until focused, so it costs sighted users nothing.
- *  - It is a <nav> of ordinary links and buttons. No roving tabindex, no
- *    aria-activedescendant: Tab moves through it, Enter activates, Escape
- *    dismisses. Nothing to learn and nothing to get wrong.
- *  - Section links are built at runtime from the page's own headings, so a
- *    new section appears here without anyone remembering to add it.
- *  - Alt+/ opens it from anywhere, for someone who has already tabbed past.
- */
+// The first thing a keyboard or screen-reader user reaches
 ---
 
 <nav class="skipmenu" aria-label="Skip links" data-skipmenu>
@@ -44,9 +29,6 @@
     var menu = document.querySelector("[data-skipmenu]");
     if (!menu) return;
 
-    /* The menu renders at the top of <body>, so this script executes before
-       the headings it wants to index exist. Everything DOM-dependent waits
-       for the parser; the key handlers below do not need to. */
     function onReady(fn) {
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", fn, { once: true });
@@ -65,12 +47,7 @@
       if (!wrap || !list || !main) return;
 
       var seen = 0;
-      /* Only headings that introduce a section of the page.
-         An h2 inside a teaser card or an aside is the title of a THING on the
-         page rather than a landmark within it, and listing those turns a
-         navigation aid into a second copy of the content.
-         NOT excluded by <article>: on an entry page the h2s live inside the
-         article and are exactly the sections a reader wants to jump between. */
+      // Only headings that introduce a section of the page
       var headings = main.querySelectorAll("h2");
       for (var i = 0; i < headings.length; i++) {
         var h = headings[i];
@@ -106,8 +83,6 @@
       var target = document.getElementById(a.getAttribute("href").slice(1));
       if (!target) return;
       if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-      // Let the browser do the scrolling, then move focus so the next Tab
-      // continues from the destination rather than from the menu.
       requestAnimationFrame(function () {
         target.focus({ preventScroll: true });
       });
@@ -121,11 +96,6 @@
     }
     if (settings) settings.addEventListener("click", openSettings);
 
-    /* ---- keyboard shortcuts ----
-       Alt+/ reveals the menu and focuses its first link; Alt+D goes straight
-       to the settings. Alt is used rather than a bare key so nothing is
-       stolen from someone typing, and neither combination is claimed by the
-       major screen readers or browsers. */
     document.addEventListener("keydown", function (e) {
       if (!e.altKey || e.ctrlKey || e.metaKey) return;
 
@@ -157,9 +127,7 @@
 </script>
 
 <style>
-  /* Off-screen until something inside it takes focus. Not display:none. That
-     would remove it from the tab order entirely, which is the opposite of
-     what it is for. */
+  /* Off-screen until something inside it takes focus */
   .skipmenu {
     position: fixed;
     inset-block-start: var(--space-4);

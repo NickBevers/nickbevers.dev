@@ -1,12 +1,4 @@
-/**
- * Collection definitions for the admin.
- *
- * posts.ts hardcodes the entries directory and the entry frontmatter shape.
- * Rather than copy it per content type, each collection declares its path,
- * its fields and its title field once here, and the generic read/write
- * helpers in content.ts work off that. Adding a fourth type is a new entry
- * in this file, not a new set of routes.
- */
+// Collection definitions for the admin
 
 export type FieldType = "text" | "textarea" | "number" | "url" | "date" | "boolean";
 

@@ -1,8 +1,4 @@
-/**
- * Behavioural tests for the skip menu. The first thing a keyboard user hits.
- * Drives real key presses rather than calling handlers, because the point is
- * whether Tab/Enter/Escape/Alt behave, not whether the functions exist.
- */
+// Behavioural tests for the skip menu
 import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
@@ -28,10 +24,7 @@ const server = createServer((q, r) => {
 });
 const PORT = 4321;
 const BASE = `http://localhost:${PORT}`;
-/* Bind explicitly and fail loudly. Listening on a port another process
-   already holds silently tests THAT server instead. Which produced a run
-   where the accessibility suite graded the admin panel and reported the
-   site's skip link as missing. */
+// Bind explicitly and fail loudly
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(`
@@ -41,10 +34,6 @@ server.on("error", (err) => {
   }
   throw err;
 });
-/* A dev server on ::1 and a test server on 0.0.0.0 can BOTH hold this port:
-   listen() succeeds and the browser then reaches whichever the resolver
-   prefers. That produced a run where this suite silently graded the admin
-   panel and reported the site's skip link as missing. Probe before binding. */
 try {
   const res = await fetch(BASE, { signal: AbortSignal.timeout(1500) });
   const who = (await res.text()).match(/<title>([^<]*)/)?.[1] ?? "unknown";
@@ -92,8 +81,7 @@ check(
   `first tab stop is "${a.text}": expected the skip menu`,
 );
 
-// 2. the menu becomes visible when focused.
-// Wait for the slide-in transition; measuring immediately catches it mid-flight.
+// 2
 await page.waitForTimeout(400);
 const visible = await page.evaluate(() => {
   const m = document.querySelector("[data-skipmenu]");
@@ -194,8 +182,6 @@ check(
     const l = document.querySelector("[data-skip-section-list]");
     return l ? [...l.querySelectorAll("a")].map((a) => a.textContent.trim()) : [];
   });
-  // An entry's h2s ARE its sections, but they live inside <article>: the
-  // exclusion must not swallow them.
   check(
     secs.length > 0,
     `entry page lists ${secs.length} section(s) (${secs.slice(0, 2).join(", ")})`,

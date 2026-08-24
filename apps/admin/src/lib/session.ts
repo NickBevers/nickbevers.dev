@@ -1,12 +1,4 @@
-/**
- * Session and CSRF cookies.
- *
- * The session holds a GitHub token with write access to the content repo, so
- * it is httpOnly (an XSS in the editor must not be able to read it), Secure,
- * SameSite=Lax (Lax not Strict, or the OAuth redirect back from GitHub
- * arrives without the cookie), and `__Host-` prefixed, which pins it to this
- * exact origin and forbids a subdomain from setting it.
- */
+// Session and CSRF cookies
 import type { APIContext } from "astro";
 import { platform, type SessionPayload } from "@/platform";
 

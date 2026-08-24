@@ -1,17 +1,4 @@
-/**
- * Catches styles that silently match nothing.
- *
- * Astro scopes a component's <style> with a hash applied to the elements that
- * component renders. Pass a class to a child component: <Reveal class="sec">
- *, and the element belongs to the CHILD's scope, so a bare `.sec { }` rule in
- * the parent compiles fine, ships, and matches nothing.
- *
- * That is how the homepage lost every section's padding without a single
- * error. This flags any class handed to a child component that the same file
- * then styles without :global().
- *
- * Run: pnpm scope
- */
+// Catches styles that silently match nothing
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, extname } from "node:path";
 
@@ -40,13 +27,9 @@ for (const root of ROOTS) {
 
     const styleMatch = /<style(?![^>]*\bis:global\b)[^>]*>([\s\S]*?)<\/style>/.exec(src);
     if (!styleMatch) continue;
-    // Strip comments first: a rule discussed in prose ("a bare `.sec` rule
-    // matches nothing") is not a rule. Replace with spaces so offsets hold.
     const css = styleMatch[1].replace(/\/\*[\s\S]*?\*\//g, (c) => " ".repeat(c.length));
 
-    // Only IMPORTED components own their own scope. A capitalised name that
-    // is a local variable holding a tag string: `const Tag = href ? "a" : "div"`
-    //: renders a plain element in THIS file's scope, so it is not a problem.
+    // Only IMPORTED components own their own scope
     const imported = new Set(
       [...src.matchAll(/^\s*import\s+([A-Z][\w]*)\s+from/gm)].map((m) => m[1]),
     );
@@ -69,8 +52,6 @@ for (const root of ROOTS) {
       const bare = new RegExp(`(^|[^(\\w-])\\.${cls}(?![\\w-])`, "gm");
       let flagged = false;
       for (const m of css.matchAll(bare)) {
-        // Is this occurrence inside a :global(...)? Count unbalanced opens
-        // back to the start of the selector (the previous } or ;).
         const selStart = Math.max(css.lastIndexOf("}", m.index), css.lastIndexOf(";", m.index)) + 1;
         const before = css.slice(selStart, m.index);
         const opens = (before.match(/:global\(/g) ?? []).length;

@@ -12,8 +12,7 @@ export const GET: APIRoute = async (ctx) => {
   const returned = ctx.url.searchParams.get("state");
   const stored = takeState(ctx);
 
-  // CSRF: the state we minted must come back unchanged. Checked before the
-  // code is spent, so a forged callback never reaches GitHub.
+  // CSRF: the state we minted must come back unchanged
   if (!code || !returned || !stored || returned !== stored) {
     return deny(ctx, "Invalid or expired sign-in attempt. Try again.");
   }
@@ -34,8 +33,7 @@ export const GET: APIRoute = async (ctx) => {
     return deny(ctx, "Could not read your GitHub account.");
   }
 
-  // The gate. A valid GitHub login is not authorisation. This panel has
-  // exactly one user. No session is created for anyone else.
+  // The gate
   if (!isAllowed(user)) {
     return deny(ctx, "That account is not allowed to use this panel.");
   }

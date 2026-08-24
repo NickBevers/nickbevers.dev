@@ -1,18 +1,4 @@
-/**
- * Lints .md/.mdx content, because oxlint cannot.
- *
- * oxlint 1.79 reports "No files found to lint" for .mdx: verified against an
- * identical .jsx file that produced three jsx-a11y warnings. Native Markdown
- * support is on the oxc Q3 2026 roadmap; until then the a11y rules that matter
- * most in prose (images without alt text, links that say "click here") are
- * unchecked. This covers that gap.
- *
- * Deliberately small: it checks what actually goes wrong in a blog post, and
- * defers anything structural to the Zod schema in content.config.ts, which
- * already fails the build on a cover image without coverAlt.
- *
- * Run: pnpm content
- */
+// Lints .md/.mdx content, because oxlint cannot
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, extname } from "node:path";
 

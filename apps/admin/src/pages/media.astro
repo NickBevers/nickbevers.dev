@@ -25,9 +25,7 @@ const kb = (n: number) => (n ? `${(n / 1024).toFixed(0)}KB` : "");
     </header>
 
     <p class="lede">
-      {/* &#32; not a plain space: the compiler drops a newline that sits
-          between text and an adjacent tag, which silently glued these
-          words to the <code> elements. See scripts/glue-lint.mjs. */}
+      {}
       Images committed to the repository, where Astro's&#32;<code
         >&lt;Image&gt;</code
       >&#32;optimises them at build time. Reference one from a post's&#32;<code

@@ -1,9 +1,4 @@
-/**
- * The /now page's cards. Hand-maintained: four short entries, edited whenever
- * they stop being true. A now page is only worth having if it is current.
- *
- * Bump NOW_UPDATED whenever you touch this list.
- */
+// The /now page's cards
 export const NOW_UPDATED = new Date("2026-08-23");
 
 export const NOW_ITEMS = [

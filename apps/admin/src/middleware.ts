@@ -1,10 +1,4 @@
-/**
- * Auth gate on every route.
- *
- * Default-deny: the allowlist is of PUBLIC paths, so a new page is protected
- * unless it is explicitly opened. The opposite arrangement: listing the
- * protected paths: leaks whatever someone forgets to add.
- */
+// Auth gate on every route
 import { defineMiddleware } from "astro:middleware";
 import { readSession } from "@/lib/session";
 import { PREVIEW, previewSession } from "@/lib/preview";
@@ -14,10 +8,7 @@ const PUBLIC = new Set(["/login", "/login/", "/api/auth/start", "/api/auth/callb
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url;
 
-  /* UI preview: hand every route a fake session and skip GitHub entirely.
-     PREVIEW is `import.meta.env.DEV && ADMIN_PREVIEW=1`, and the DEV half is
-     folded to false in any build, so this branch does not exist in
-     production output. */
+  // UI preview: hand every route a fake session and skip GitHub entirely
   if (PREVIEW) {
     context.locals.session = previewSession;
     if (pathname === "/login" || pathname === "/login/") {

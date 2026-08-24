@@ -1,11 +1,4 @@
-/**
- * Generic content operations, driven by a CollectionDef.
- *
- * Same shape as posts.ts, but the directory comes from the collection rather
- * than a module constant, so one set of routes serves every content type.
- * Entries keep their own module: they have publish semantics and a richer
- * editor that the simpler types do not need.
- */
+// Generic content operations, driven by a CollectionDef
 import { listDir, readFile, writeFile } from "./github/contents";
 import { parse, serialiseFields, slugify } from "./frontmatter";
 import type { CollectionDef } from "./collections";
@@ -14,11 +7,6 @@ import { ConflictError } from "./github/client";
 
 type Data = Record<string, unknown>;
 
-/**
- * The frontmatter parser returns strings and booleans only, so a numeric
- * field comes back as "1" and would fail the collection schema on build.
- * Coerce back to the declared type on read.
- */
 function typed(col: CollectionDef, data: Data): Data {
   const out: Data = { ...data };
   for (const f of col.fields) {
@@ -80,7 +68,11 @@ export async function saveItem(
   }
   return writeFile(token, {
     path,
-    text: serialiseFields(opts.data, col.fields.map((f) => f.name), opts.body),
+    text: serialiseFields(
+      opts.data,
+      col.fields.map((f) => f.name),
+      opts.body,
+    ),
     sha: opts.sha,
     message: `${verb} ${title}`,
   });

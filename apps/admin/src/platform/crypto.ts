@@ -1,14 +1,4 @@
-/**
- * HMAC-signed session tokens over WebCrypto.
- *
- * WebCrypto is the one primitive both workerd and modern Node expose the same
- * way, so this file is shared by both platform implementations rather than
- * duplicated. No node:crypto import, which would break the Workers build.
- *
- * The payload is signed, not encrypted: it is opaque to the browser only in
- * the sense that it cannot be forged. It still holds a GitHub token, so the
- * cookie is httpOnly and Secure and must never be read by client JS.
- */
+// HMAC-signed session tokens over WebCrypto
 import type { SessionPayload, SessionStore } from "./types";
 
 const enc = new TextEncoder();

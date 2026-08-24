@@ -1,12 +1,5 @@
 ---
-/**
- * An 88x31 web badge. The one piece of real iconography in the system, and
- * the strongest retro cue in the rail.
- *
- * Colours are deliberately hard-coded rather than themed. These are artefacts
- * of a fixed era, like a GIF button on a 2003 homepage; they look wrong if
- * they invert with the page. Every pair below was contrast-checked as text.
- */
+// An 88x31 web badge
 interface Props {
   preset: "handmade" | "rss" | "notrackers" | "viewsource";
   tilt?: number;
@@ -56,8 +49,7 @@ const attrs = href ? { href } : {};
     box-shadow: 2px 2px 0 rgba(26, 26, 26, 0.25);
     transition: transform var(--dur) var(--ease);
   }
-  /* tilt alternates ±2deg down the strip, so they read as stuck-on stickers.
-     Hover is on .wb, not a.wb: the unlinked badges are stickers too. */
+  /* tilt alternates ±2deg down the strip, so they read as stuck-on stickers */
   .wb:hover,
   a.wb:focus-visible { transform: rotate(var(--tilt)) translateY(-2px); }
   a.wb:focus-visible {

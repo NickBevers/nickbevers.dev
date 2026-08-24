@@ -9,12 +9,6 @@ export const POST: APIRoute = (ctx) => {
   return ctx.redirect("/login", 302);
 };
 
-/**
- * Explicit 405 rather than letting the route 404.
- *
- * The middleware already blocks an unauthenticated GET here, and Astro's own
- * CSRF check blocks a cross-origin POST. Stating the method contract means
- * the refusal does not depend on either of those happening to fire first.
- */
+// Explicit 405 rather than letting the route 404
 export const GET: APIRoute = () =>
   new Response("Use POST to sign out.", { status: 405, headers: { allow: "POST" } });

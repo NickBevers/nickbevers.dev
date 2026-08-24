@@ -1,23 +1,3 @@
-/**
- * UI preview mode: run the admin without GitHub, for working on the interface.
- *
- * Two independent guards, both of which must hold:
- *
- *   1. import.meta.env.DEV: true only under `astro dev`. A production build
- *      folds it to false, so PREVIEW is a compile-time constant `false` there
- *      and every guarded branch is unreachable. The module still appears in
- *      the bundle, but setting ADMIN_PREVIEW=1 against a built server changes
- *      nothing: verified: it still redirects to /login.
- *   2. ADMIN_PREVIEW=1 in the environment, so `pnpm dev` on its own still
- *      exercises the real auth path, and the bypass is always deliberate.
- *      Read through import.meta.env, not process.env: the Cloudflare adapter
- *      runs dev in workerd, where process.env is not populated from the
- *      shell. Vite exposes it via envPrefix in astro.config.
- *
- * When active the middleware injects a fake session and every GitHub call is
- * served from the fixtures below. Nothing reaches the network, and no token
- * exists to leak.
- */
 import type { SessionPayload } from "@/platform";
 import type { Frontmatter } from "./frontmatter";
 
@@ -26,8 +6,7 @@ export const PREVIEW = import.meta.env.DEV && import.meta.env.ADMIN_PREVIEW === 
 export const previewSession: SessionPayload = {
   login: "preview",
   userId: 0,
-  // Not a credential. Any request carrying it is intercepted before it
-  // reaches fetch(), and PREVIEW is false in every build.
+  // Not a credential
   token: "preview-no-token",
   expiresAt: Math.floor(Date.now() / 1000) + 86400,
 };
@@ -91,9 +70,6 @@ Every OKLCH colour is lightness, chroma and hue. That is it.
   },
 ];
 
-/* A mutable copy, so saving in preview behaves like saving: the list updates,
-   the sha advances, and a second save with the old sha conflicts exactly as
-   it would against GitHub. */
 let store = structuredClone(FIXTURES);
 let shaCounter = 100;
 
@@ -142,13 +118,7 @@ export const previewReset = () => {
 
 export const previewHead = () => "preview-head";
 
-/**
- * Generic collection fixtures, keyed by collection.
- *
- * The store above is entry-shaped and entry-only. Rather than widen it and
- * risk changing how the posts editor behaves in preview, the other content
- * types get their own store with the same semantics.
- */
+// Generic collection fixtures, keyed by collection
 interface GenericFixture {
   slug: string;
   path: string;
@@ -201,7 +171,14 @@ export const previewLoadItem = (key: string, slug: string) =>
 
 export function previewSaveItem(
   key: string,
-  opts: { slug: string; data: Record<string, unknown>; body: string; sha?: string; dir: string; ext: string },
+  opts: {
+    slug: string;
+    data: Record<string, unknown>;
+    body: string;
+    sha?: string;
+    dir: string;
+    ext: string;
+  },
 ) {
   const list = (genericStore[key] ??= []);
   const existing = list.find((f) => f.slug === opts.slug);

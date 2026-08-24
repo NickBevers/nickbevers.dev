@@ -46,16 +46,12 @@ const { reveal, ...props } = Astro.props;
     </main>
     <Footer />
 
-    {/* Last in the DOM on purpose. A floating control placed early would sit
-        between the skip link and the page content in tab order, which is
-        exactly where a keyboard user does not want it. */}
+    {/* Last in the DOM on purpose */}
     <A11yMenu />
 
     {reveal && (
     <script is:inline>
-      // ONE observer for every .reveal on the page. Lives here rather than in
-      // the Reveal component because Astro does not deduplicate is:inline
-      // scripts: four <Reveal>s shipped four copies of this.
+      // ONE observer for every .reveal on the page
       (function () {
         if (!("IntersectionObserver" in window)) return;
         if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -82,8 +78,5 @@ const { reveal, ...props } = Astro.props;
 </html>
 
 <style>
-  /* tabindex="-1" makes the skip link land somewhere focusable, but the
-     outline on a whole-page container is noise. The skip link itself is
-     visibly focused, so this is safe. */
   main:focus { outline: none; }
 </style>

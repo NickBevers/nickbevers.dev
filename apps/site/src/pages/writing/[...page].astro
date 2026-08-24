@@ -102,9 +102,6 @@ const urlFor = (n: number) => (n === 1 ? "/writing/" : `/writing/${n}/`);
     h1 { font-size: 40px; }
     .lede { margin-block: 14px 20px; font-size: 15.5px; }
 
-    /* The filter row sticks directly beneath the collapsed header, so it
-       stays reachable while scanning a long index. --header-h-mobile is the
-       published height rather than a repeated 63. */
     .filter {
       position: sticky;
       inset-block-start: var(--header-h-mobile);

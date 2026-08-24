@@ -1,24 +1,5 @@
 ---
-/**
- * The brand's one graphic device: the logo's parallel stripes. An ink
- * diagonal, a gap, a green diagonal: redrawn full-bleed at page scale.
- * Used once per page, home only.
- *
- * Notes:
- *  - 38deg matches the logo mark's slash (Logo.astro's .slash drifts ~293px
- *    over a ~372px height), so the full-bleed version and the monogram read
- *    as the same device.
- *  - The two rules are px-thick and skewed, never sized in a percentage of
- *    the container. A percentage tracks viewport WIDTH while the hero's
- *    height barely moves, which flattens the diagonal on wide screens.
- *  - The tint wash is viewport-relative on purpose: it is a background that
- *    has to reach the screen edge, not a shape whose proportions matter.
- *  - Nothing here animates, and the bands hold no text, which keeps
- *    subpixel antialiasing off the diagonal edges.
- *  - Decorative, so the whole stack is aria-hidden.
- *  - Below the two-column breakpoint the diagonals would cut through the
- *    headline, so they are dropped rather than redrawn.
- */
+// The brand's one graphic device: the logo's parallel stripes
 ---
 
 <div class="stripes" aria-hidden="true">
@@ -28,12 +9,7 @@
 </div>
 
 <style>
-  /* A zero-width anchor marking the content edge, not the viewport edge.
-     .hero is full-bleed but the code window beside these stripes sits in
-     .measure, which stops growing and centres itself; anchoring to the
-     viewport let the stripes slide away from that window on anything wider.
-     The inset mirrors .measure's own padding-inline calc. The bands hang
-     off this box, so it never has to be as wide as the graphic. */
+  /* A zero-width anchor marking the content edge, not the viewport edge */
   .stripes {
     position: absolute;
     inset-block: 0;
@@ -42,9 +18,6 @@
     overflow: visible;
   }
 
-  /* Full height of the hero, skewed around the top-right corner, so the
-     drift (tan(angle) * height) follows the hero's real height rather than
-     a guessed overscan. */
   .stripes > * {
     position: absolute;
     inset-block: 0;
@@ -52,8 +25,6 @@
     transform-origin: 100% 0;
   }
 
-  /* offsets run leftward from the anchor; the tint is a band beside the
-     rules, not a fill, so paper shows on both sides of it */
   .tint  { background: var(--bg-alt); inset-inline-end: -40px; inline-size: 320px; }
   .ink   { background: var(--text);   inset-inline-end: 120px; inline-size: 16px; }
   .green { background: var(--logo);   inset-inline-end: 152px; inline-size: 32px; }

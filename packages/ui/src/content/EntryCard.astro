@@ -2,18 +2,8 @@
 import NewBadge from "../core/NewBadge.astro";
 
 interface Props {
-  /**
-   * Heading level for the card title. Each card is an <article> with its own
-   * title, so it should be one level below whatever heading introduces the
-   * list: h2 under a page h1 on the writing index, h3 under an h2 section
-   * head on the home page. Skipping a level breaks the document outline.
-   */
+  // Heading level for the card title
   headingLevel?: 2 | 3;
-  /**
-   * "index" is the writing page's card: rule below, 20px title, tag in the
-   * meta line, reading time under the excerpt.
-   * "compact" is the home page's: rule above, 19px title, no tag, no time.
-   */
   variant?: "index" | "compact";
   number: string;
   date: string;
@@ -61,14 +51,9 @@ const Title = `h${headingLevel}` as "h2" | "h3";
 </article>
 
 <style>
-  /* On the home page the rule sits ABOVE each card, introducing it. On the
-     writing index it sits BELOW, closing each row of the ledger. The design
-     uses both, deliberately. */
   .compact { border-top: var(--border-hair); }
   .index { border-bottom: var(--border-hair); }
 
-  /* The whole card is one link, so there is a single tab stop per entry
-     rather than one for the title and another for a "read more". */
   .compact .hit { padding: 18px 10px 20px; }
   .compact .ttl { font-size: 19px; }
 

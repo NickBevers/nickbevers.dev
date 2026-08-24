@@ -1,5 +1,4 @@
-/* One family does the whole site: Hanken Grotesk. The mono stack appears only
-   inside terminal-style code blocks, never in running text. */
+/* One family does the whole site: Hanken Grotesk */
 :root {
   --font-sans:
     "Hanken Grotesk Variable", "Hanken Grotesk", "Hanken Grotesk Fallback", system-ui, sans-serif;

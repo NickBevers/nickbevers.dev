@@ -1,13 +1,4 @@
-/**
- * Auth boundary tests for the admin.
- *
- * Runs the real Node build behind a real HTTP server and drives it with fetch.
- * The value here is that it tests what an attacker actually touches: routes
- * and cookies: rather than the functions in isolation, which is where an
- * auth bug hides.
- *
- * Run: pnpm auth
- */
+// Auth boundary tests for the admin
 import { spawn } from "node:child_process";
 import { setTimeout as sleep } from "node:timers/promises";
 
@@ -75,9 +66,6 @@ for (const path of ["/", "/posts/", "/components/", "/tokens/", "/health/"]) {
 
 // 2. protected API routes answer 401, not a redirect
 {
-  // 401 from our middleware, or 403 from Astro's own cross-origin CSRF check
-  // (which fires first for a bodyless POST). Either is a refusal; what must
-  // never happen is a 2xx.
   const res = await fetch(`${BASE}/api/posts/save`, { method: "POST", redirect: "manual" });
   check(
     res.status === 401 || res.status === 403 || res.status === 404,
@@ -154,9 +142,6 @@ let stateCookie = "";
 
 // 8. logout must not be a GET
 {
-  // Must never clear a session on GET: a logout that works from an <img src>
-  // is a CSRF hole. 405 is the route's own answer; 401 means middleware
-  // caught it first. Both refuse.
   const res = await fetch(`${BASE}/api/auth/logout`, { redirect: "manual" });
   check(
     res.status === 405 || res.status === 401,

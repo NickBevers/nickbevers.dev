@@ -1,14 +1,4 @@
-/**
- * Multi-file atomic commits through the Git Data API.
- *
- * Publishing can touch a post and a colocated image together. Doing that
- * through the Contents API would be two commits with a broken state in
- * between. A post referencing an image that does not exist yet. Trees is
- * four requests but one commit, so the repository is never half-published.
- *
- * It also asserts the parent commit, which catches "someone pushed while you
- * were editing" at the branch level rather than only per-file.
- */
+// Multi-file atomic commits through the Git Data API
 import { gh, repo, encode, ConflictError } from "./client";
 
 export interface FileChange {
@@ -26,12 +16,7 @@ export async function headCommit(token: string, branch = "main") {
   return ref.object.sha;
 }
 
-/**
- * Commit several files at once.
- *
- * `expectedHead` is the commit the caller believed was current. If the branch
- * has moved since, this refuses rather than building on a stale base.
- */
+// Commit several files at once
 export async function commitFiles(
   token: string,
   opts: {
@@ -77,8 +62,7 @@ export async function commitFiles(
     body: JSON.stringify({ message: opts.message, tree: tree.sha, parents: [head] }),
   });
 
-  // 4. move the branch. Not forced: if the ref moved between step 1 and here,
-  //    GitHub rejects it and nothing is lost.
+  // 4
   await gh(token, `${base}/git/refs/heads/${branch}`, {
     method: "PATCH",
     body: JSON.stringify({ sha: made.sha, force: false }),

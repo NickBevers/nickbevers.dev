@@ -1,5 +1,3 @@
-/* The admin borrows the site's tokens so the component showcase renders
-   components in their real context, not an approximation of it. */
 @import "@nb/tokens/styles.css";
 @import "@nb/tokens/reset.css";
 

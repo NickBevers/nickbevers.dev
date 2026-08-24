@@ -1,14 +1,4 @@
-/**
- * Node implementation of the platform seam. The Coolify path.
- *
- * Identical to the Cloudflare one today, because everything the admin needs
- * is WebCrypto and the Fetch API, both of which modern Node provides. The
- * file exists so the divergence has somewhere to go, and so CI can prove the
- * Node build still compiles.
- *
- * Behind a reverse proxy Node sees http even when the client used https, so
- * the forwarded-proto header decides.
- */
+// Node implementation of the platform seam
 import { createSessionStore } from "./crypto";
 import type { Platform } from "./types";
 

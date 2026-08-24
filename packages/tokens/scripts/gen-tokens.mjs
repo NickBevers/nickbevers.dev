@@ -1,6 +1,4 @@
-/* Regenerates src/tokens.json from the CSS token files.
-   The admin inspector reads the JSON; the site reads the CSS. Generating one
-   from the other means they cannot disagree. */
+// Regenerates src/tokens.json from the CSS token files
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";

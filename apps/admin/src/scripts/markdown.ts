@@ -1,28 +1,11 @@
-/**
- * A small markdown tokeniser and renderer for the editor.
- *
- * Deliberately not the site's pipeline. The site renders MDX through Astro at
- * build time, which needs a build; this runs on every keystroke in a browser.
- * The preview is a reading aid, not a proof of the final render, and it is
- * labelled as such.
- *
- * Everything is escaped before any markup is produced. The input is the
- * author's own text, but the same function renders content that will be
- * committed, and an editor that executes its own draft is a bad habit.
- */
+// A small markdown tokeniser and renderer for the editor
 
 export const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /* ---------------------------------------------------------------- highlight */
 
-/**
- * Wrap markdown syntax in spans for the highlight layer.
- *
- * Line-oriented: block syntax is decided per line, inline syntax within it.
- * A full parser would be more correct and much slower, and this only has to
- * be right enough to help the eye.
- */
+// Wrap markdown syntax in spans for the highlight layer
 export function highlight(src: string): string {
   const lines = src.split("\n");
   let inFence = false;
@@ -127,9 +110,7 @@ export function render(src: string): string {
       continue;
     }
 
-    // An MDX component: shown as a placeholder rather than executed. The
-    // preview cannot run the site's components, and pretending otherwise
-    // would misrepresent the final page.
+    // An MDX component: shown as a placeholder rather than executed
     const mdx = /^\s*<\/?([A-Z][\w.]*)/.exec(line);
     if (mdx) {
       out.push(`<div class="mdx">&lt;${escapeHtml(mdx[1])} /&gt; renders on the site</div>`);
@@ -164,7 +145,10 @@ export function render(src: string): string {
       continue;
     }
 
-    if (!line.trim()) { i++; continue; }
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
 
     const para: string[] = [];
     while (
@@ -201,13 +185,7 @@ export const TOOLS: Record<string, Wrap> = {
   quote: { before: "", linePrefix: "> ", placeholder: "Quoted text" },
 };
 
-/**
- * Apply a tool to a textarea, preserving undo.
- *
- * Uses execCommand("insertText") where available: assigning to .value wipes
- * the browser's undo stack, so Cmd+Z after a toolbar press would throw away
- * everything typed before it.
- */
+// Apply a tool to a textarea, preserving undo
 export function applyTool(el: HTMLTextAreaElement, tool: Wrap) {
   const { selectionStart: start, selectionEnd: end, value } = el;
   const selected = value.slice(start, end);

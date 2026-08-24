@@ -1,9 +1,4 @@
-/**
- * Behavioural test for the tag filter island. Checks the things that make it
- * an accessible progressive enhancement rather than merely a working widget:
- * no-JS completeness, live-region announcements, focus retention, URL sync
- * and deep links.
- */
+// Behavioural test for the tag filter island
 import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { readFileSync, existsSync } from "node:fs";
@@ -29,10 +24,7 @@ const server = createServer((q, r) => {
 });
 const PORT = 4321;
 const BASE = `http://localhost:${PORT}`;
-/* Bind explicitly and fail loudly. Listening on a port another process
-   already holds silently tests THAT server instead. Which produced a run
-   where the accessibility suite graded the admin panel and reported the
-   site's skip link as missing. */
+// Bind explicitly and fail loudly
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(`
@@ -42,10 +34,6 @@ server.on("error", (err) => {
   }
   throw err;
 });
-/* A dev server on ::1 and a test server on 0.0.0.0 can BOTH hold this port:
-   listen() succeeds and the browser then reaches whichever the resolver
-   prefers. That produced a run where this suite silently graded the admin
-   panel and reported the site's skip link as missing. Probe before binding. */
 try {
   const res = await fetch(BASE, { signal: AbortSignal.timeout(1500) });
   const who = (await res.text()).match(/<title>([^<]*)/)?.[1] ?? "unknown";
@@ -105,8 +93,7 @@ const buttons = p.locator("fieldset button");
 const n = await buttons.count();
 check(n > 1, `filter hydrated with ${n} tags`, `filter did not hydrate (${n} buttons)`);
 
-// Accessible names must read cleanly and agree in number. A bare numeral
-// beside the label produces "Frontend 2"; "1 entries" is simply wrong.
+// Accessible names must read cleanly and agree in number
 const names = await p
   .locator("fieldset button")
   .evaluateAll((bs) => bs.map((b) => b.getAttribute("aria-label") || b.textContent.trim()));

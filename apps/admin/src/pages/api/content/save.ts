@@ -30,17 +30,12 @@ export const POST: APIRoute = async (ctx) => {
   if (!col) return json({ error: "Unknown collection" }, 400);
   if (typeof payload.body !== "string") return json({ error: "body is required" }, 400);
 
-  /* A new item has no slug yet: derive one from the title field so the
-     caller never has to invent a filename. */
   const slug = payload.slug || slugify(String(payload.data?.[col.titleField] ?? ""));
   if (!slug) return json({ error: `${col.one} needs a ${col.titleField}` }, 400);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(slug)) {
     return json({ error: "A slug may only contain lowercase letters, numbers and hyphens." }, 400);
   }
 
-  /* Coerce to the declared types before writing: every value arrives from a
-     form as a string, and a number written as "1" fails the site's schema
-     at build time rather than here. */
   const data: Record<string, unknown> = {};
   for (const f of col.fields) {
     const v = payload.data?.[f.name];

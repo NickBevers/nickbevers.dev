@@ -1,5 +1,4 @@
-/* Nothing is rounded and nothing is blurred. Depth is a hard offset block,
-   the way a 2003 layout faked a drop shadow. */
+/* Nothing is rounded and nothing is blurred */
 :root {
   --radius: 0;
 
@@ -29,10 +28,7 @@
     transparent 4px
   );
 
-  /* Focus is an OUTLINE, never a box-shadow. The button press animation
-     shrinks box-shadow from 4px to 1px, which would animate a shadow-based
-     ring out from under the user mid-press. Outline is immune and follows
-     the translate for free. Radius is 0, so it sits flush. */
+  /* Focus is an OUTLINE, never a box-shadow */
   --focus-width: 3px;
   --focus-offset: 2px;
 }

@@ -1,10 +1,4 @@
-/**
- * Post operations, shared by the routes.
- *
- * The content path is derived once here rather than repeated: every write
- * lands under src/content/entries and nowhere else, so a bug in a route
- * cannot commit to an arbitrary path in the repo.
- */
+// Post operations, shared by the routes
 import { listDir, readFile, writeFile } from "./github/contents";
 import { commitFiles, headCommit as ghHeadCommit } from "./github/trees";
 import { ConflictError } from "./github/client";
@@ -71,13 +65,7 @@ export async function savePost(
   });
 }
 
-/**
- * Publish: clear the draft flag, stamp the date, and commit atomically.
- *
- * Uses Trees rather than Contents so that publishing can grow to touch more
- * than one file. A colocated image, an index: without ever leaving the
- * repository in a half-published state.
- */
+// Publish: clear the draft flag, stamp the date, and commit atomically
 export async function publishPost(
   token: string,
   opts: {

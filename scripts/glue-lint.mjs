@@ -1,33 +1,8 @@
-/**
- * The Astro compiler drops a newline that sits directly between text and an
- * adjacent tag, so
- *
- *   a post's
- *   <code>cover</code> field
- *
- * ships as "post's<code>cover</code>" with the space gone. It renders as two
- * words glued together and nothing warns you; it was found in a screenshot.
- *
- * Any deliberate no-space case (punctuation, an opening bracket) is already
- * written on one line, so requiring the break to be explicit costs nothing.
- * Write &#32; where the space matters.
- */
 import { readFileSync } from "node:fs";
 import { globSync } from "node:fs";
 
 const files = globSync("apps/*/src/**/*.astro");
 
-/* Only a tag that sits INSIDE a run of prose can glue two words together, and
-   only when text is on both sides of the line break.
-
-   Three earlier versions of this check were too broad. Matching any tag gave
-   85 hits, all fine. Adding <span> re-flagged the status strip, where the two
-   sides are flex children 679px apart: reading textContent across them looks
-   glued but renders correctly. <pre> keeps its newlines, so it never glues
-   either, and the file is skipped whole.
-
-   What is left is the case actually found in a screenshot: prose, an inline
-   <code>, prose. */
 const INLINE = "code|a|em|strong|b|i|kbd|abbr|small|sup|sub";
 const OPEN = new RegExp(`^<(${INLINE})[\\s>]`, "i");
 const CLOSE = new RegExp(`</(${INLINE})>$`, "i");

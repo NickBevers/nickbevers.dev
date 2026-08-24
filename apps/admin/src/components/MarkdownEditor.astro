@@ -1,16 +1,5 @@
 ---
-/**
- * Markdown editor: toolbar, syntax highlighting, live preview.
- *
- * The highlighting is a coloured <pre> sitting exactly behind a transparent
- * <textarea>. The textarea stays a real textarea, so selection, undo, IME,
- * spellcheck, autofill and every keyboard shortcut behave natively. A
- * contenteditable would give richer rendering and break all of it.
- *
- * The two layers must share identical metrics or the caret drifts from the
- * text under it. Font, size, leading, padding and wrapping are set once on a
- * shared class rather than twice.
- */
+// Markdown editor: toolbar, syntax highlighting, live preview
 interface Props {
   name: string;
   value?: string;
@@ -46,8 +35,7 @@ const TOOLS = [
 
   <div class="panes">
     <div class="pane write">
-      {/* The highlighted copy. aria-hidden: the textarea beside it carries the
-          real content, and announcing both would double every word. */}
+      {/* The highlighted copy */}
       <pre class="hl" data-md-hl aria-hidden="true"></pre>
       <textarea
         id={name}
@@ -104,8 +92,7 @@ const TOOLS = [
   .write { position: relative; }
   .editor[data-preview] .write { border-right: var(--border-hair); }
 
-  /* The two layers. Every metric here must match exactly or the caret and
-     the highlighted glyph beneath it drift apart as the line grows. */
+  /* The two layers */
   .hl,
   .write textarea {
     margin: 0;
@@ -134,8 +121,6 @@ const TOOLS = [
     inline-size: 100%;
     min-block-size: 420px;
     resize: vertical;
-    /* Transparent text over the highlighted layer; the caret stays visible
-       because caret-color is set independently. */
     color: transparent;
     caret-color: var(--text);
     background: transparent;

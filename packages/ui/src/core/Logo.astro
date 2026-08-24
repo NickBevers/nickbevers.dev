@@ -1,14 +1,4 @@
 ---
-/**
- * The real NB monogram, lifted verbatim from the design mockup: an N, a B,
- * and the green diagonal slash that is the brand's whole graphic device.
- *
- * The slash slides up-right on hover (26px, -16px over .45s) in the header.
- * `overflow: visible` on the SVG is required. The slash travels outside the
- * viewBox, and without it the movement is clipped.
- *
- * `interactive` gates the hover: the rail carries the same mark, static.
- */
 interface Props {
   height?: number;
   interactive?: boolean;
@@ -31,11 +21,7 @@ const { height = 30, interactive = false, class: className } = Astro.props;
 
 <style>
   .mark {
-    /* Two properties, not one. The `height` prop writes --logo-default as an
-       inline style ON this element, and an inline custom property beats an
-       inherited one, so a consumer setting --logo-h on an ancestor could
-       never win if both used the same name. --logo-h is the override hook;
-       --logo-default is the prop's value. */
+    /* Two properties, not one */
     block-size: var(--logo-h, var(--logo-default, 30px));
     inline-size: auto;
     display: block;

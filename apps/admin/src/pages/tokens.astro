@@ -5,9 +5,7 @@ import tokens from "@nb/tokens/tokens.json";
 export const prerender = false;
 const session = Astro.locals.session!;
 
-/* The same JSON the site builds from, so this cannot drift from reality.
-   Contrast is computed in the browser from resolved values rather than the
-   numbers in the comments, which is the only way it stays honest. */
+// The same JSON the site builds from, so this cannot drift from reality
 const ramps = Object.entries(tokens.ramps).reduce<Record<string, [string, string][]>>(
   (acc, [name, value]) => {
     const m = /^--nb-([a-z]+)-(\d{3})$/.exec(name);

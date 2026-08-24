@@ -11,13 +11,7 @@ const visible = <T extends { data: { draft: boolean } }>(e: T) =>
 const byNewest = (a: { data: { pubDate: Date } }, b: { data: { pubDate: Date } }) =>
   b.data.pubDate.getTime() - a.data.pubDate.getTime();
 
-/**
- * Entries, newest first, each carrying its logbook number.
- *
- * The number counts up from the oldest post, so the newest always holds the
- * highest. Deriving it here rather than storing it in frontmatter means
- * deleting or backdating a post renumbers the set automatically.
- */
+// Entries, newest first, each carrying its logbook number
 export async function getEntries() {
   const all = (await getCollection("entries")).filter(visible).toSorted(byNewest);
   const total = all.length;
@@ -34,12 +28,7 @@ export async function getLife() {
   return (await getCollection("life")).filter(visible).toSorted(byNewest);
 }
 
-/**
- * Projects in display order, each carrying its two-digit index.
- *
- * The index comes from position after sorting, not from frontmatter, so
- * reordering or deleting a project renumbers the rest automatically.
- */
+// Projects in display order, each carrying its two-digit index
 export async function getWork() {
   const all = (await getCollection("work"))
     .filter(visible)

@@ -1,13 +1,4 @@
-/**
- * Lighthouse against the real production build, on this machine.
- *
- * Mobile emulation by default. That is the profile the site is being
- * designed for, and desktop scores flatter a build in ways that hide real
- * problems on a phone.
- *
- * Run: pnpm lh            (mobile)
- *      pnpm lh -- desktop
- */
+// Lighthouse against the real production build, on this machine
 import { createServer } from "node:http";
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, extname } from "node:path";
@@ -41,8 +32,6 @@ const server = createServer((q, r) => {
   }
   r.writeHead(200, {
     "content-type": MIME[extname(p)] || "application/octet-stream",
-    // Match what a real host sends, or Lighthouse flags missing caching and
-    // compression that production would actually provide.
     "cache-control": extname(p) === ".html" ? "no-cache" : "max-age=31536000,immutable",
   });
   r.end(readFileSync(p));
@@ -51,11 +40,7 @@ await new Promise((r) => server.listen(PORT, r));
 
 const pct = (n) => Math.round(n * 100);
 const desktop = process.argv.includes("desktop");
-/* Pin the binary to Playwright's bundled Chromium.
-   chrome-launcher searches the machine for an installed browser and, on macOS,
-   can pick one the user is actually using. This script kills what it launches,
-   so an unpinned run closed a real browser window with real tabs in it. The
-   bundled binary is headless, private to this repo, and safe to kill. */
+// Pin the binary to Playwright's bundled Chromium
 const chrome = await launch({
   chromePath: chromium.executablePath(),
   chromeFlags: ["--headless=new", "--no-sandbox"],

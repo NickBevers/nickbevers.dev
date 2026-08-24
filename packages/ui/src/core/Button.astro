@@ -1,12 +1,5 @@
 ---
-/**
- * Button. Renders <a> when href is set, <button> otherwise.
- *
- * The press effect moves the element INTO its own shadow: translate 3px
- * down-right while the offset shrinks. Because that animates box-shadow, the
- * focus ring must be an `outline`: a box-shadow ring would be animated away
- * mid-press. Hover is CSS, not JS, so this ships zero bytes.
- */
+// Button
 interface Props {
   variant?: "primary" | "secondary" | "ink" | "sand";
   size?: "sm" | "md";
@@ -56,10 +49,6 @@ const attrs = href ? { href } : { type };
   .v-secondary { color: var(--text);      background: var(--bg);      --sh: var(--warm-2); }
   .v-ink       { color: var(--accent-on); background: var(--text);    --sh: var(--accent-2); }
 
-  /* In dark mode --text is near-white, so an ink button becomes a white slab
-     in a dark header. It reads as a broken/inverted element rather than the
-     high-emphasis action it is. Contrast passes either way (14.98), so this
-     is a visual correction: emphasis in dark mode is the accent, not inversion. */
   :global(:root[data-theme="dark"]) .v-ink {
     color: var(--accent-on);
     background: var(--accent);

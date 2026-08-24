@@ -1,11 +1,4 @@
-/**
- * No em dashes, anywhere.
- *
- * A house style rule, enforced rather than remembered. Covers source and the
- * built output, so one cannot slip in through a component that renders it.
- *
- * Run: pnpm dashes
- */
+// No em dashes, anywhere
 import { readdir, readFile } from "node:fs/promises";
 import { join, extname, relative } from "node:path";
 

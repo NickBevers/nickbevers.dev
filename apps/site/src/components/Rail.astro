@@ -112,8 +112,6 @@ const stamp = (updated ?? new Date()).toLocaleDateString("en-GB", {
   .links a {
     display: flex; justify-content: space-between; gap: var(--space-2);
     min-block-size: var(--tap-min); align-items: center;
-    /* Padded, with a matching negative margin so the row still aligns to
-       the panel's 16px gutter. Without this the hover wash clips the text. */
     padding: 5px 8px;
     margin-inline: -8px;
     font-size: var(--text-caption); font-weight: var(--weight-semibold);

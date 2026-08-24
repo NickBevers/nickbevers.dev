@@ -1,6 +1,4 @@
-/**
- * Wires the markdown editor: highlighting, toolbar, shortcuts, preview.
- */
+// Wires the markdown editor: highlighting, toolbar, shortcuts, preview
 import { highlight, render, applyTool, TOOLS } from "./markdown";
 
 for (const root of document.querySelectorAll<HTMLElement>("[data-md]")) {
@@ -14,8 +12,6 @@ for (const root of document.querySelectorAll<HTMLElement>("[data-md]")) {
   let previewOn = false;
 
   function paint() {
-    // A trailing newline collapses in the <pre>, which shortens the highlight
-    // layer and lets the last line drift out from under the caret.
     hl!.innerHTML = highlight(input!.value) + "\n";
     if (previewOn && out) out.innerHTML = render(input!.value);
   }

@@ -1,11 +1,4 @@
-/**
- * Round-trip tests for the frontmatter parser.
- *
- * This code rewrites files in the content repository, so the failure mode is
- * silent data loss: a field the parser does not understand vanishes on the
- * next save. Every real post's shape is checked here, plus the characters
- * that break naive YAML handling: colons, quotes, em dashes, accents.
- */
+// Round-trip tests for the frontmatter parser
 import { parse, serialise, slugify } from "../apps/admin/src/lib/frontmatter.ts";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";

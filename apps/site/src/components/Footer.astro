@@ -29,8 +29,7 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  /* Fixed dark green in both themes. A deliberate brand block, not themed.
-     All four text pairs here were measured: 13.73, 6.36, 4.74, 7.69. */
+  /* Fixed dark green in both themes */
   .ft {
     border-top: var(--border-strong);
     background: var(--nb-green-900);
@@ -76,8 +75,6 @@ const year = new Date().getFullYear();
     gap: 14px;
     min-block-size: var(--tap-min);
     padding: var(--space-3) var(--space-4);
-    /* Negative margin keeps the dotted rule flush with the column edge while
-       the hover wash still has room around the text. */
     margin-inline: calc(var(--space-4) * -1);
     border-bottom: 1px dotted color-mix(in srgb, var(--nb-green-500) 50%, transparent);
     color: var(--nb-green-100);
@@ -88,13 +85,6 @@ const year = new Date().getFullYear();
       background var(--dur) var(--ease),
       color var(--dur) var(--ease);
   }
-  /* A pale sand wash, the same tint as the page bands above, so the footer
-     reads as part of the site rather than a separate slab. The scanline
-     overlay sits above this at z-index 9, so the texture carries across it.
-
-     Text must go DARK on it. The wash arrived by accident before, from the
-     global prose-link rule, and kept the footer's pale text: 1.60 for the
-     label, 1.12 before hovering. Both are in the contrast gate now. */
   .links a:hover {
     background: var(--footer-hover-bg);
     color: var(--footer-hover-on);
@@ -118,10 +108,6 @@ const year = new Date().getFullYear();
   }
 
   @media (max-width: 900px) {
-    /* Extra bottom padding so the floating display-settings button has
-       something to sit over. Reserved here rather than on <body>, where it
-       would paint the page background below the footer and leave a pale
-       strip under the green. */
     .ft { padding-block-end: 84px; }
   }
 
@@ -129,10 +115,7 @@ const year = new Date().getFullYear();
     .ft { padding-block: var(--space-10) 84px; }
     .top { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); align-items: start; }
 
-    /* No rule and no 52px gap here. Both are desktop devices: on two columns
-       that end at different heights the line does real work, but stacked the
-       last social link already closes with its own dotted border, so a
-       second rule directly beneath it just doubles up. */
+    /* No rule and no 52px gap here */
     .legal {
       margin-block-start: var(--space-6);
       padding-block-start: 0;

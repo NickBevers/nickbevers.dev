@@ -1,13 +1,4 @@
-/**
- * Tests the git write path against a mock GitHub.
- *
- * A mock rather than the real API because the interesting cases are the ones
- * you cannot conjure on demand: a stale sha, a branch that moved mid-publish,
- * a 422 that means the same thing as a 409. Driving the real API would test
- * the happy path and nothing else, and would write to a real repository.
- *
- * Run: pnpm editor
- */
+// Tests the git write path against a mock GitHub
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { setTimeout as sleep } from "node:timers/promises";

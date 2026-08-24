@@ -153,10 +153,7 @@ const work = await getWork();
   .heroInner {
     position: relative;
     display: grid;
-    /* minmax(0, …) not plain fr. A grid item's default min-width is auto,
-       which means it refuses to shrink below its widest unbreakable content , 
-       a tracked-caps eyebrow in a wide face, and pushes the whole column
-       past the viewport instead of wrapping. */
+    /* minmax(0, …) not plain fr */
     grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
     gap: 52px;
     align-items: center;
@@ -178,8 +175,7 @@ const work = await getWork();
     line-height: 1;
     font-weight: var(--weight-black);
     letter-spacing: var(--tracking-display);
-    /* The line breaks are authored with <br>. `text-wrap: balance` would
-       re-break them and produce four ragged lines instead of three. */
+    /* The line breaks are authored with <br> */
     text-wrap: nowrap;
   }
   @media (max-width: 620px) {
@@ -228,18 +224,10 @@ const work = await getWork();
   .lall:hover { background: var(--accent-bg); color: var(--accent); }
   .lall:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -2px; }
 
-  /* Scoped from .col, not the element itself. <Reveal> renders these
-     sections, so Astro's scope hash lands on Reveal.astro rather than this
-     file and a bare `.sec` rule silently matches nothing.
-
-     The first section clears the hero at 52px; the rest sit at 56px. The
-     design uses both: do not normalise them. */
+  /* Scoped from .col, not the element itself */
   .col :global(.sec) { padding-block-start: 56px; }
   .col :global(.sec:first-of-type) { padding-block-start: 52px; }
   .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 36px; align-items: start; }
-  /* auto-fit with a max keeps a single card at card-width instead of
-     stretching it across three columns, and reflows to 2 then 1 without
-     a breakpoint for each step. */
   .photos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 257px));
@@ -248,9 +236,6 @@ const work = await getWork();
     align-items: start;
   }
 
-  /* Below the collapse the three-up grid becomes a horizontal snap row of
-     232px cards. Stacking them vertically would put the last one three
-     screens down; swiping keeps the set legible as a set. */
   @media (max-width: 760px) {
     .photos {
       display: flex;
@@ -273,9 +258,6 @@ const work = await getWork();
     }
   }
 
-  /* The whole strip is the target, not just the label at the end: a 13px
-     link in a full-width bar is a small hit area for what is really one
-     invitation. One <a>, so it is also a single tab stop. */
   .lifeNote {
     display: flex; justify-content: space-between; align-items: center;
     gap: var(--space-4); flex-wrap: wrap;
@@ -287,8 +269,6 @@ const work = await getWork();
     text-decoration: none;
     transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
   }
-  /* --accent-bg-strong, not --accent-bg: this strip already sits on
-     --warm-bg, and the two differ by 1.04. An invisible change. */
   .lifeNote:hover {
     background: var(--accent-bg-strong);
     border-color: var(--line-strong);
@@ -326,8 +306,7 @@ const work = await getWork();
   .blink { inline-size: 8px; block-size: 8px; background: var(--warm); flex: none; animation: nbBlink 1.4s step-end infinite; }
   @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
 
-  /* This section has no header row and no right-hand label. The 2px rule
-     wraps the whole block rather than sitting under a heading. */
+  /* This section has no header row and no right-hand label */
   .col :global(.note) { padding-block: 56px 64px; }
   .col :global(.noteInner) { padding-block-start: 28px; border-top: var(--rule-heavy); }
   .col :global(.note h2) {
@@ -341,10 +320,6 @@ const work = await getWork();
     .heroInner { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); padding-block: var(--space-9); }
   }
   @media (max-width: 760px) {
-    /* Per the mobile kit: hero at 38px, one column, buttons stacked and
-       full-width. The diagonal cannot run beside the text at this width, so
-       it is dropped here and reappears as a horizontal band above the
-       contact block. */
     .heroInner { padding-block: 34px 30px; }
     h1 { font-size: 38px; line-height: 1.02; text-wrap: balance; }
     .lede { margin-block-start: 18px; font-size: 16px; line-height: 1.62; max-inline-size: none; }
@@ -355,8 +330,6 @@ const work = await getWork();
     .col :global(.sec) { padding-block-start: 40px; }
     .col :global(.note) { padding-block: 40px 0; }
 
-    /* Excerpts go on the home page: the titles carry it, and three short
-       rows beat two long ones on a phone. */
     .grid :global(.ex) { display: none; }
   }
 

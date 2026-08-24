@@ -1,12 +1,4 @@
-/**
- * GitHub App user-to-server OAuth.
- *
- * A GitHub App, not an OAuth App: the classic `repo` scope grants write to
- * every repository the user can reach, which is an indefensible blast radius
- * for a panel on the public internet. A GitHub App's installation is scoped
- * to one repository with `contents: write`, and its user tokens expire in 8
- * hours rather than living forever.
- */
+// GitHub App user-to-server OAuth
 import {
   ALLOWED_LOGIN,
   ALLOWED_USER_ID,
@@ -83,14 +75,7 @@ export async function fetchUser(token: string): Promise<GitHubUser> {
   return (await res.json()) as GitHubUser;
 }
 
-/**
- * The gate. Checks the numeric id AND the login.
- *
- * The id is the real check: logins can be renamed and re-registered, so a
- * login-only allowlist can be defeated by someone claiming an abandoned
- * username. The login is checked too so a mismatch is caught rather than
- * silently trusted.
- */
+// The gate
 export function isAllowed(user: GitHubUser): boolean {
   return user.id === ALLOWED_USER_ID && user.login.toLowerCase() === ALLOWED_LOGIN.toLowerCase();
 }

@@ -1,17 +1,6 @@
-/**
- * Shared GitHub REST plumbing.
- *
- * Every call goes through here so the auth header, the API version pin and
- * the error shape are declared once. A 409 is surfaced as a typed error
- * rather than a generic failure, because that is the one status the editor
- * must handle differently from every other.
- */
+// Shared GitHub REST plumbing
 import { CONTENT_REPO } from "astro:env/server";
 
-/* Overridable so the write path can be tested against a mock that can
-   produce a stale sha and a moved branch on demand. Those are the cases that
-   matter here and they cannot be conjured against the real API: nor should
-   a test suite be writing to a real repository. */
 const API = process.env.GITHUB_API_BASE || "https://api.github.com";
 
 export class GitHubError extends Error {
@@ -62,8 +51,6 @@ export async function gh<T>(token: string, path: string, init: RequestInit = {})
       body = await res.text().catch(() => undefined);
     }
     const msg = (body as { message?: string })?.message ?? res.statusText;
-    // 422 on a contents PUT is also a stale-sha conflict, just reported
-    // differently from 409. Treat it the same so the editor has one path.
     if (res.status === 422 && /sha/i.test(msg)) throw new ConflictError();
     throw new GitHubError(`GitHub ${res.status}: ${msg}`, res.status, body);
   }
@@ -72,8 +59,7 @@ export async function gh<T>(token: string, path: string, init: RequestInit = {})
   return (await res.json()) as T;
 }
 
-/* base64 that survives non-ASCII. GitHub wants base64 of the UTF-8 bytes,
-   and btoa() on a string with an em dash or an accent throws. */
+// base64 that survives non-ASCII
 export const encode = (text: string) =>
   btoa(String.fromCharCode(...new TextEncoder().encode(text)));
 

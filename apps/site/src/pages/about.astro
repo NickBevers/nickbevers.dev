@@ -85,8 +85,6 @@ import Reveal from "../components/Reveal.astro";
     letter-spacing: var(--tracking-display);
   }
 
-  /* prose left, portrait right: 1.35fr / 1fr, so the portrait is the
-     narrower column and does not stretch to the prose's height */
   .body {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
@@ -101,9 +99,6 @@ import Reveal from "../components/Reveal.astro";
     }
   }
 
-  /* Scoped from .body rather than .prose: <Reveal> owns the .prose element
-     and slots these children in, so a rule scoped to .prose itself does not
-     always reach them. Anchoring on the section is stable. */
   .body :global(.prose) {
     font-size: var(--text-body);
     line-height: 1.7;
