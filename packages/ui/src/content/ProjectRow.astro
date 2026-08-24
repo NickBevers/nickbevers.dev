@@ -26,7 +26,8 @@ const attrs = href ? { href } : {};
     <span class="name">{name}</span>
     <span class="leader" aria-hidden="true"></span>
     <span class="year">{year}</span>
-    <span class="arrow" aria-hidden="true">→</span>
+    {/* only on a real link: an arrow on a plain div promises a click that does not exist */}
+    {href && <span class="arrow" aria-hidden="true">→</span>}
   </div>
   <div class="bottom">
     <span class="blurb">{blurb}</span>

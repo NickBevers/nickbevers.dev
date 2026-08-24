@@ -52,11 +52,9 @@
     transform-origin: 100% 0;
   }
 
-  /* Offsets run leftward from the anchor. The tint is the wash the two
-     rules sit on, and its right edge has to clear a viewport edge that is
-     an unknown distance away, so it is pushed out past it and widened to
-     still reach back past the rules. .hero's overflow:hidden trims it. */
-  .tint  { background: var(--bg-alt); inset-inline-end: -100vw; inline-size: calc(300px + 100vw); }
+  /* offsets run leftward from the anchor; the tint is a band beside the
+     rules, not a fill, so paper shows on both sides of it */
+  .tint  { background: var(--bg-alt); inset-inline-end: -40px; inline-size: 320px; }
   .ink   { background: var(--text);   inset-inline-end: 120px; inline-size: 16px; }
   .green { background: var(--logo);   inset-inline-end: 152px; inline-size: 32px; }
 

@@ -1,0 +1,58 @@
+---
+import { render } from "astro:content";
+import ProseLayout from "../../layouts/ProseLayout.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import PullQuote from "../../components/PullQuote.astro";
+import { getWork } from "../../lib/collections";
+
+export async function getStaticPaths() {
+  const list = await getWork();
+  return list.map((item) => ({ params: { id: item.entry.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { entry, index } = item;
+const { Content } = await render(entry);
+const links = [
+  entry.data.href && { label: "Visit", href: entry.data.href },
+  entry.data.repo && { label: "Source", href: entry.data.repo },
+].filter(Boolean) as { label: string; href: string }[];
+---
+
+<ProseLayout
+  title={entry.data.name}
+  description={entry.data.blurb}
+  eyebrow={`No. ${index} · ${entry.data.year}`}
+  lede={entry.data.blurb}
+>
+  <p class="meta">
+    <span class="pill">{entry.data.status}</span>
+    {links.map((l) => (
+      <a class="ext" href={l.href} rel="noopener noreferrer">{l.label} →</a>
+    ))}
+  </p>
+
+  <Content components={{ pre: CodeBlock, blockquote: PullQuote }} />
+
+  <p class="back"><a href="/#work">← Everything I've built</a></p>
+</ProseLayout>
+
+<style>
+  .meta {
+    display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
+    margin-block: var(--space-5) var(--space-7);
+  }
+  .pill {
+    flex: none;
+    padding: 4px 8px;
+    font-size: 10px; font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    color: var(--pill-on); background: var(--accent-2);
+  }
+  .ext {
+    font-size: var(--text-body-sm); font-weight: var(--weight-semibold);
+    color: var(--accent); text-decoration: none;
+  }
+  .ext:hover { text-decoration: underline; }
+  .back { margin-block-start: var(--space-9); font-size: var(--text-body-sm); }
+</style>

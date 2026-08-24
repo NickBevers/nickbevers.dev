@@ -2,6 +2,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 
 export type Entry = CollectionEntry<"entries">;
 export type Life = CollectionEntry<"life">;
+export type Work = CollectionEntry<"work">;
 
 /** Drafts render in dev so you can preview them; production never sees them. */
 const visible = <T extends { data: { draft: boolean } }>(e: T) =>
@@ -32,6 +33,25 @@ export type NumberedEntry = Awaited<ReturnType<typeof getEntries>>[number];
 export async function getLife() {
   return (await getCollection("life")).filter(visible).toSorted(byNewest);
 }
+
+/**
+ * Projects in display order, each carrying its two-digit index.
+ *
+ * The index comes from position after sorting, not from frontmatter, so
+ * reordering or deleting a project renumbers the rest automatically.
+ */
+export async function getWork() {
+  const all = (await getCollection("work"))
+    .filter(visible)
+    .toSorted((a, b) => a.data.order - b.data.order);
+  return all.map((entry, i) => ({
+    entry,
+    index: String(i + 1).padStart(2, "0"),
+    href: `/work/${entry.id}/`,
+  }));
+}
+
+export type NumberedWork = Awaited<ReturnType<typeof getWork>>[number];
 
 /** Previous and next in reading order, for the entry footer. */
 export function neighbours(list: NumberedEntry[], id: string) {

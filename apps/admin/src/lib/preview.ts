@@ -141,3 +141,82 @@ export const previewReset = () => {
 };
 
 export const previewHead = () => "preview-head";
+
+/**
+ * Generic collection fixtures, keyed by collection.
+ *
+ * The store above is entry-shaped and entry-only. Rather than widen it and
+ * risk changing how the posts editor behaves in preview, the other content
+ * types get their own store with the same semantics.
+ */
+interface GenericFixture {
+  slug: string;
+  path: string;
+  sha: string;
+  data: Record<string, unknown>;
+  body: string;
+}
+
+const GENERIC: Record<string, GenericFixture[]> = {
+  work: [
+    {
+      slug: "oklch-picker",
+      path: "apps/site/src/content/work/oklch-picker.md",
+      sha: "work-1",
+      data: {
+        name: "oklch-picker",
+        year: "2026",
+        status: "MIT · open source",
+        blurb: "A colour picker built around OKLCH.",
+        order: 1,
+        href: "https://github.com/NickBevers",
+      },
+      body: "Most colour pickers still think in hex.\n",
+    },
+  ],
+  life: [
+    {
+      slug: "placeholder",
+      path: "apps/site/src/content/life/placeholder.md",
+      sha: "life-1",
+      data: {
+        title: "A placeholder, waiting on a photo",
+        kicker: "Off the clock",
+        blurb: "The empty frame is the point.",
+        pubDate: "2026-08-23",
+        placeholder: true,
+      },
+      body: "",
+    },
+  ],
+};
+
+let genericStore: Record<string, GenericFixture[]> = structuredClone(GENERIC);
+
+export const previewListItems = (key: string) =>
+  (genericStore[key] ?? []).map((f) => ({ slug: f.slug, path: f.path, sha: f.sha }));
+
+export const previewLoadItem = (key: string, slug: string) =>
+  (genericStore[key] ?? []).find((f) => f.slug === slug) ?? null;
+
+export function previewSaveItem(
+  key: string,
+  opts: { slug: string; data: Record<string, unknown>; body: string; sha?: string; dir: string; ext: string },
+) {
+  const list = (genericStore[key] ??= []);
+  const existing = list.find((f) => f.slug === opts.slug);
+  if (existing && opts.sha && opts.sha !== existing.sha) {
+    return { conflict: true as const, current: existing };
+  }
+  const sha = `${key}-${++shaCounter}`;
+  if (existing) Object.assign(existing, { data: opts.data, body: opts.body, sha });
+  else
+    list.push({
+      slug: opts.slug,
+      path: `${opts.dir}/${opts.slug}${opts.ext}`,
+      sha,
+      data: opts.data,
+      body: opts.body,
+    });
+  return { conflict: false as const, sha, commit: `preview-${shaCounter}` };
+}

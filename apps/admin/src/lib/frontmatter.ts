@@ -132,6 +132,36 @@ export function serialise(data: Partial<Frontmatter>, body: string): string {
   return lines.join("\n") + "\n" + body;
 }
 
+/**
+ * Serialise arbitrary flat frontmatter in a caller-supplied field order.
+ *
+ * `serialise` above walks a fixed list of entry fields and drops anything
+ * outside it, which is right for entries and wrong for every other
+ * collection. This takes the order from the collection definition instead,
+ * so a new field appears in the file as soon as it is declared.
+ *
+ * Numbers are written bare so they round-trip as numbers; `quote()` would
+ * otherwise wrap them and the schema would reject a string.
+ */
+export function serialiseFields(
+  data: Record<string, unknown>,
+  order: string[],
+  body: string,
+): string {
+  const lines: string[] = ["---"];
+
+  for (const key of order) {
+    const v = data[key];
+    if (v === undefined || v === null || v === "") continue;
+    if (typeof v === "boolean") lines.push(`${key}: ${v}`);
+    else if (typeof v === "number") lines.push(`${key}: ${v}`);
+    else lines.push(`${key}: ${quote(String(v))}`);
+  }
+
+  lines.push("---");
+  return lines.join("\n") + "\n" + body;
+}
+
 /** A filename from a title: lowercase, hyphenated, ASCII only. */
 export function slugify(title: string): string {
   return title

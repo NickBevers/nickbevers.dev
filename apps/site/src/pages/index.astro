@@ -10,13 +10,13 @@ import NewBadge from "@nb/ui/core/NewBadge.astro";
 import EntryCard from "@nb/ui/content/EntryCard.astro";
 import ProjectRow from "@nb/ui/content/ProjectRow.astro";
 import PhotoCard from "@nb/ui/content/PhotoCard.astro";
-import { getEntries, getLife, formatDate, readingTime } from "../lib/collections";
-import { PROJECTS } from "../lib/projects";
+import { getEntries, getLife, getWork, formatDate, readingTime } from "../lib/collections";
 
 const entries = await getEntries();
 const [latest, ...rest] = entries;
 const recent = rest.slice(0, 4);
 const life = (await getLife()).slice(0, 3);
+const work = await getWork();
 ---
 
 <BaseLayout reveal>
@@ -92,9 +92,18 @@ const life = (await getLife()).slice(0, 3);
 
       <Reveal as="section" class="sec" id="work">
         <SectionHead title="Things I've built" right="Small, useful, mine" />
-        {PROJECTS.map((p) => <ProjectRow {...p} />)}
+        {work.map(({ entry, index, href }) => (
+          <ProjectRow
+            index={index}
+            name={entry.data.name}
+            year={entry.data.year}
+            status={entry.data.status}
+            blurb={entry.data.blurb}
+            href={href}
+          />
+        ))}
         <div class="wip">
-          <span class="idx">{String(PROJECTS.length + 1).padStart(2, "0")}</span>
+          <span class="idx">{String(work.length + 1).padStart(2, "0")}</span>
           <span>Under construction: more soon</span>
           <span class="leader" aria-hidden="true"></span>
           <span class="blink" aria-hidden="true"></span>

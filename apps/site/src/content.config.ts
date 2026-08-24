@@ -63,4 +63,30 @@ const life = defineCollection({
       }),
 });
 
-export const collections = { entries, life };
+/**
+ * Things I've built. A collection rather than a hand-written array because
+ * every project now has a detail page, so it needs a body.
+ *
+ * `order` drives both the displayed number and the sort, so the numbering
+ * on the home page cannot drift from the order things actually appear in.
+ * `href` is the project's home on the web, if it has one: it is a field on
+ * the detail page, not the row's link target, so every row goes to the
+ * detail page and nothing looks clickable without being clickable.
+ */
+const work = defineCollection({
+  loader: glob({ base: "./src/content/work", pattern: "**/*.{md,mdx}" }),
+  schema: () =>
+    z.object({
+      name: z.string().max(90),
+      year: z.string(),
+      status: z.string(),
+      blurb: z.string().max(200),
+      order: z.number().int().positive(),
+      href: z.string().url().optional(),
+      repo: z.string().url().optional(),
+      draft: z.boolean().default(false),
+      placeholder: z.boolean().default(false),
+    }),
+});
+
+export const collections = { entries, life, work };
