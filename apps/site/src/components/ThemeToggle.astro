@@ -4,13 +4,22 @@
  * single class-free attribute flip, and an island would cost 4KB of runtime
  * plus hydration latency on every page.
  *
- * aria-pressed reflects "dark is on". The label is the CURRENT state, not the
- * next one, because a toggle button announces what it does, and the pressed
- * state carries the rest.
+ * aria-pressed reflects "dark is on". The label names the CURRENT state, not
+ * the next one, because a toggle button announces what it does and the
+ * pressed state carries the rest. It is visually hidden (the sun/moon icon
+ * says it instead) but stays in the DOM as the accessible name.
  */
 ---
 <button type="button" class="tt" data-theme-toggle aria-pressed="false">
-  <span class="dot" aria-hidden="true"></span>
+  <span class="icon" aria-hidden="true">
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4.5" />
+      <path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+    </svg>
+    <svg class="moon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.4 14.7A8.5 8.5 0 1 1 9.3 3.6a7 7 0 0 0 11.1 11.1z" />
+    </svg>
+  </span>
   <!-- Server-rendered as "Light" because the document starts light; the
        inline script corrects it before paint if the stored theme is dark. -->
   <span class="label" data-theme-label>Light</span>
@@ -39,33 +48,63 @@
 </script>
 
 <style>
+  /* Icon only, no chrome. A bordered box here competed with the one control
+     that should own that treatment in the header, the Get in touch button.
+     The label stays in the DOM (.label is visually hidden) so the button
+     keeps an accessible name and aria-pressed still has something to
+     qualify. */
   .tt {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    min-height: var(--tap-min);
-    padding: 8px 11px;
+    justify-content: center;
+    /* Comfortably past the 24px WCAG 2.5.8 floor. With the border gone
+       there is no box to give the target its size, so it is set here. */
+    min-inline-size: 34px;
+    min-block-size: 34px;
+    padding: 0;
     font-family: var(--font-sans);
-    font-size: var(--text-meta);
-    font-weight: var(--weight-bold);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
     color: var(--text-3);
     background: transparent;
-    border: 1px solid var(--line);
+    border: 0;
     cursor: pointer;
-    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+    transition: color var(--dur) var(--ease);
   }
-  .tt:hover { color: var(--accent); border-color: var(--accent-2); }
+  .tt:hover { color: var(--accent); }
   .tt:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: var(--focus-offset);
   }
-  .dot {
-    inline-size: 9px; block-size: 9px;
-    border: 2px solid currentColor; border-radius: 50%;
-    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  .label {
+    position: absolute;
+    inline-size: 1px; block-size: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
-  .tt[aria-pressed="true"] .dot { background: linear-gradient(90deg, transparent 50%, currentColor 50%); }
-  @media (prefers-reduced-motion: reduce) { .tt { transition: none; } }
+  /* Sun and moon share one stack; the toggle rotates and cross-fades
+     between them entirely in CSS, driven by aria-pressed. No extra JS. */
+  .icon {
+    position: relative;
+    display: inline-block;
+    inline-size: 18px;
+    block-size: 18px;
+    flex: none;
+  }
+  .icon svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .sun { opacity: 1; transform: rotate(0deg) scale(1); }
+  .moon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+  .tt[aria-pressed="true"] .sun { opacity: 0; transform: rotate(90deg) scale(0.6); }
+  .tt[aria-pressed="true"] .moon { opacity: 1; transform: rotate(0deg) scale(1); }
+  @media (prefers-reduced-motion: reduce) {
+    .tt { transition: none; }
+    .icon svg { transition: none; }
+  }
 </style>
