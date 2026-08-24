@@ -119,20 +119,35 @@ const path = Astro.url.pathname;
   .brand { display: flex; align-items: center; gap: 14px; color: var(--text); text-decoration: none; }
   .name { font-size: 16px; font-weight: var(--weight-bold); letter-spacing: -0.01em; }
 
-  .list { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+  .list { display: flex; align-items: center; gap: var(--space-5); list-style: none; margin: 0; padding: 0; }
   .lnk {
+    position: relative;
     display: inline-flex; align-items: center;
     min-block-size: var(--tap-min);
-    padding: 7px 11px;
+    padding: 7px 0;
     font-size: var(--text-body-sm); font-weight: var(--weight-semibold);
     color: var(--text-2); text-decoration: none;
-    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+    transition: color var(--dur) var(--ease);
   }
-  .lnk:hover { background: var(--accent-bg); color: var(--accent); }
-  .lnk[aria-current="page"] { background: var(--accent-bg); color: var(--accent); font-weight: var(--weight-bold); }
+  .lnk:hover { color: var(--accent); }
+
+  /* The current page is marked with a rule under the word, not a filled
+     chip. Elsewhere on the site --accent-bg is strictly a hover wash; left
+     switched on permanently it read as a stray button parked in the middle
+     of the header. A rule is the same vocabulary as the eyebrow rule and
+     the ledger borders. */
+  .lnk[aria-current="page"] { color: var(--accent); font-weight: var(--weight-bold); }
+  .lnk[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 7px;
+    block-size: 2px;
+    background: var(--accent);
+  }
   .lnk:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
 
-  .actions { display: flex; align-items: center; gap: var(--space-2); }
+  .actions { display: flex; align-items: center; gap: var(--space-4); }
 
   /* ---------- mobile ---------- */
 
@@ -171,27 +186,19 @@ const path = Astro.url.pathname;
 
     .actions { gap: 8px; }
 
-    /* Both controls are 40px squares. The theme toggle keeps its label on
-       desktop; here it is the dot alone, matching the menu button so the
-       pair reads as one unit and the header lands on exactly 63px. */
+    /* Both controls are 40px squares. The toggle is borderless on desktop,
+       but here it takes the burger's box so the pair reads as one unit and
+       the header lands on exactly 63px. The label is already visually
+       hidden by the component itself. */
     .actions :global(.tt) {
       inline-size: 40px;
       block-size: 40px;
+      min-inline-size: 0;
+      min-block-size: 0;
       padding: 0;
       justify-content: center;
       border: var(--border-strong);
       background: var(--surface);
-    }
-    .actions :global(.tt .label) {
-      position: absolute;
-      inline-size: 1px;
-      block-size: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-      border: 0;
     }
 
     .burger {
