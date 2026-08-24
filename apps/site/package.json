@@ -18,5 +18,9 @@
     "@nb/ui": "workspace:*",
     "astro": "^7.2.4",
     "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.3"
   }
 }

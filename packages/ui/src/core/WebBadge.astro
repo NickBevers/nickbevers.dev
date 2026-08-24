@@ -56,8 +56,9 @@ const attrs = href ? { href } : {};
     box-shadow: 2px 2px 0 rgba(26, 26, 26, 0.25);
     transition: transform var(--dur) var(--ease);
   }
-  /* tilt alternates ±2deg down the strip, so they read as stuck-on stickers */
-  a.wb:hover,
+  /* tilt alternates ±2deg down the strip, so they read as stuck-on stickers.
+     Hover is on .wb, not a.wb: the unlinked badges are stickers too. */
+  .wb:hover,
   a.wb:focus-visible { transform: rotate(var(--tilt)) translateY(-2px); }
   a.wb:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
@@ -65,6 +66,6 @@ const attrs = href ? { href } : {};
   }
   @media (prefers-reduced-motion: reduce) {
     .wb { transition: none; }
-    a.wb:hover, a.wb:focus-visible { transform: none; }
+    .wb:hover, a.wb:focus-visible { transform: none; }
   }
 </style>

@@ -54,7 +54,7 @@ const Title = `h${headingLevel}` as "h2" | "h3";
         </>
       )}
     </div>
-    <Title class="ttl">{title}{isNew && <NewBadge inline />}</Title>
+    <Title class="ttl">{title}{isNew && <> <NewBadge inline /></>}</Title>
     {excerpt && <p class="ex">{excerpt}</p>}
     {minutes && <span class="min">{minutes} read</span>}
   </a>
