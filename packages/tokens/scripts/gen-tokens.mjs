@@ -9,9 +9,13 @@ const decls = (s) =>
 
 const colors = read("colors.css");
 const scopes = {};
-for (const m of colors.matchAll(/(:root(?:\[data-theme="(\w+)"\])?)\s*\{([^}]*)\}/g)) {
-  const t = m[2] || "light";
-  scopes[t] = { ...scopes[t], ...decls(m[3]) };
+// Selectors may be grouped (":root, [data-theme=\"light\"]") or bare
+// ("[data-theme=\"dark\"]"), so match the whole prelude and read the theme from it.
+for (const m of colors.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+  const prelude = m[1];
+  if (!/:root|\[data-theme=/.test(prelude)) continue;
+  const theme = prelude.match(/\[data-theme="(\w+)"\]/)?.[1] ?? "light";
+  scopes[theme] = { ...scopes[theme], ...decls(m[2]) };
 }
 const ramps = {},
   light = {},
