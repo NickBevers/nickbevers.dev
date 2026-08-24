@@ -118,6 +118,22 @@ for (const url of PAGES) {
     await ctx.close();
   }
 
+  // ---- one h1, and no skipped heading levels (1.3.1) ----
+  const ph = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  await ph.goto(`${BASE}` + url, { waitUntil: "networkidle" });
+  const heads = await ph.evaluate(() =>
+    [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].map((h) => +h.tagName[1]),
+  );
+  await ph.close();
+
+  const h1s = heads.filter((l) => l === 1).length;
+  if (h1s !== 1) fail(`expected exactly one h1, found ${h1s}`);
+  else ok("exactly one h1");
+
+  const skip = heads.slice(1).findIndex((l, i) => l - heads[i] > 1);
+  if (skip !== -1) fail(`heading level skipped: h${heads[skip]} to h${heads[skip + 1]}`);
+  else ok("no skipped heading levels");
+
   // ---- focus not obscured (2.4.11) + target size (2.5.8) ----
   const p2 = await browser.newPage({ viewport: { width: 1280, height: 800 } });
   await p2.goto(`${BASE}` + url, { waitUntil: "networkidle" });
