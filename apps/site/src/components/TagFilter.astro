@@ -24,18 +24,18 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
   <div class="row">
     <legend class="label">{label}</legend>
     <div class="tags">
+      {/* No aria-label. It read "Frontend, 2 entries" while the button
+          showed "Frontend 2", so the visible text was not contained in the
+          accessible name: voice control users saying "click Frontend" would
+          not match it (WCAG 2.5.3 Label in Name). The count is exposed as
+          visually-hidden text instead, which keeps the name and the label
+          in agreement. */}
       {tags.map((t, i) => (
         <button
           type="button"
           class="tag"
           data-tag={t.name}
           aria-pressed={i === 0 ? "true" : "false"}
-          {/* No aria-label. It read "Frontend, 2 entries" while the button
-              showed "Frontend 2", so the visible text was not contained in
-              the accessible name: voice control users saying "click
-              Frontend" would not match it (WCAG 2.5.3 Label in Name).
-              The count is exposed as visually-hidden text instead, which
-              keeps the name and the label in agreement. */}
         >
           {t.name}<span class="count" aria-hidden="true">{t.count}</span><span
             class="sr-only"
