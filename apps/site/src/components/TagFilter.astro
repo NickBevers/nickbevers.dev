@@ -1,7 +1,14 @@
 ---
 // Tag filter, no framework
-export interface TagCount { name: string; count: number }
-interface Props { tags: TagCount[]; label?: string; target?: string }
+export interface TagCount {
+  name: string;
+  count: number;
+}
+interface Props {
+  tags: TagCount[];
+  label?: string;
+  target?: string;
+}
 const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
 ---
 
@@ -10,18 +17,24 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
     <legend class="label">{label}</legend>
     <div class="tags">
       {/* No aria-label */}
-      {tags.map((t, i) => (
-        <button
-          type="button"
-          class="tag"
-          data-tag={t.name}
-          aria-pressed={i === 0 ? "true" : "false"}
-        >
-          {t.name}<span class="count" aria-hidden="true">{t.count}</span><span
-            class="sr-only"
-          >, {t.count} {t.count === 1 ? "entry" : "entries"}</span>
-        </button>
-      ))}
+      {
+        tags.map((t, i) => (
+          <button
+            type="button"
+            class="tag"
+            data-tag={t.name}
+            aria-pressed={i === 0 ? "true" : "false"}
+          >
+            {t.name}
+            <span class="count" aria-hidden="true">
+              {t.count}
+            </span>
+            <span class="sr-only">
+              , {t.count} {t.count === 1 ? "entry" : "entries"}
+            </span>
+          </button>
+        ))
+      }
     </div>
   </div>
   <output class="sr-only" aria-live="polite"></output>
@@ -46,9 +59,14 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
         if (match) shown++;
       }
       for (var j = 0; j < buttons.length; j++) {
-        buttons[j].setAttribute("aria-pressed", String(buttons[j].dataset.tag === tag));
+        buttons[j].setAttribute(
+          "aria-pressed",
+          String(buttons[j].dataset.tag === tag),
+        );
       }
-      out.textContent = first ? "" : shown + (shown === 1 ? " entry" : " entries") + " shown";
+      out.textContent = first
+        ? ""
+        : shown + (shown === 1 ? " entry" : " entries") + " shown";
       first = false;
 
       if (push) {
@@ -67,7 +85,8 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
     function fromUrl() {
       var t = new URLSearchParams(location.search).get("tag");
       var known = false;
-      for (var i = 0; i < buttons.length; i++) if (buttons[i].dataset.tag === t) known = true;
+      for (var i = 0; i < buttons.length; i++)
+        if (buttons[i].dataset.tag === t) known = true;
       apply(known ? t : "All", false);
     }
     addEventListener("popstate", fromUrl);
@@ -80,34 +99,74 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
 </script>
 
 <style>
-  .wrap { display: block; margin: 0; padding: 0; border: 0; min-inline-size: 0; }
-  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .wrap {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-inline-size: 0;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
   .label {
-    display: inline; float: none; padding: 0;
+    display: inline;
+    float: none;
+    padding: 0;
     margin-inline-end: var(--space-1);
-    font-size: var(--text-meta); font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
     color: var(--text-3);
   }
-  .tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
   .tag {
-    display: inline-flex; align-items: center; gap: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     min-block-size: var(--tap-min);
     padding: 4px 10px;
-    font-family: var(--font-sans); font-size: var(--text-meta);
-    font-weight: var(--weight-bold); letter-spacing: var(--tracking-meta);
+    font-family: var(--font-sans);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
     text-transform: uppercase;
-    color: var(--text-3); background: transparent;
-    border: 1px solid var(--line-strong); border-radius: var(--radius);
+    color: var(--text-3);
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
     cursor: pointer;
-    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+    transition:
+      background var(--dur) var(--ease),
+      color var(--dur) var(--ease);
   }
-  .tag:hover { background: var(--accent-bg); color: var(--accent); }
-  .tag[aria-pressed="true"] { color: var(--accent-on); background: var(--accent); }
+  .tag:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  .tag[aria-pressed="true"] {
+    color: var(--accent-on);
+    background: var(--accent);
+  }
   .tag:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: var(--focus-offset);
   }
-  .count { font-variant-numeric: tabular-nums; opacity: .65; }
-  @media (prefers-reduced-motion: reduce) { .tag { transition: none; } }
+  .count {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.65;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tag {
+      transition: none;
+    }
+  }
 </style>

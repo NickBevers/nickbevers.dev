@@ -22,7 +22,11 @@ const Tag = href ? "a" : "button";
 const attrs = href ? { href } : { type };
 ---
 
-<Tag class:list={["btn", `v-${variant}`, `s-${size}`, className]} {...attrs} {...rest}>
+<Tag
+  class:list={["btn", `v-${variant}`, `s-${size}`, className]}
+  {...attrs}
+  {...rest}
+>
   <slot />
 </Tag>
 
@@ -42,27 +46,54 @@ const attrs = href ? { href } : { type };
       box-shadow var(--dur-fast) var(--ease);
   }
 
-  .s-sm { padding: 9px 16px;  font-size: var(--text-caption); --off: 3px; }
-  .s-md { padding: 13px 22px; font-size: var(--text-body-sm); --off: 4px; }
+  .s-sm {
+    padding: 9px 16px;
+    font-size: var(--text-caption);
+    --off: 3px;
+  }
+  .s-md {
+    padding: 13px 22px;
+    font-size: var(--text-body-sm);
+    --off: 4px;
+  }
 
-  .v-primary   { color: var(--accent-on); background: var(--accent);  --sh: var(--shadow); }
-  .v-secondary { color: var(--text);      background: var(--bg);      --sh: var(--warm-2); }
-  .v-ink       { color: var(--accent-on); background: var(--text);    --sh: var(--accent-2); }
+  .v-primary {
+    color: var(--accent-on);
+    background: var(--accent);
+    --sh: var(--shadow);
+  }
+  .v-secondary {
+    color: var(--text);
+    background: var(--bg);
+    --sh: var(--warm-2);
+  }
+  .v-ink {
+    color: var(--accent-on);
+    background: var(--text);
+    --sh: var(--accent-2);
+  }
 
   :global(:root[data-theme="dark"]) .v-ink {
     color: var(--accent-on);
     background: var(--accent);
     --sh: var(--line-strong);
   }
-  .v-sand      { color: var(--warm-on);   background: var(--warm);    --sh: var(--line-strong); }
+  .v-sand {
+    color: var(--warm-on);
+    background: var(--warm);
+    --sh: var(--line-strong);
+  }
 
-  .btn { box-shadow: var(--off) var(--off) 0 var(--sh); }
+  .btn {
+    box-shadow: var(--off) var(--off) 0 var(--sh);
+  }
 
   /* Colour never changes on hover, only position. Brand rule. */
   .btn:hover,
   .btn:focus-visible {
     transform: translate(var(--press-shift), var(--press-shift));
-    box-shadow: calc(var(--off) - var(--press-shift)) calc(var(--off) - var(--press-shift)) 0 var(--sh);
+    box-shadow: calc(var(--off) - var(--press-shift))
+      calc(var(--off) - var(--press-shift)) 0 var(--sh);
   }
 
   .btn:active {
@@ -76,7 +107,13 @@ const attrs = href ? { href } : { type };
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .btn { transition: none; }
-    .btn:hover, .btn:focus-visible, .btn:active { transform: none; }
+    .btn {
+      transition: none;
+    }
+    .btn:hover,
+    .btn:focus-visible,
+    .btn:active {
+      transform: none;
+    }
   }
 </style>

@@ -1,6 +1,7 @@
 ---
 // Applies stored display preferences before first paint
 ---
+
 <script is:inline>
   (function () {
     try {
@@ -10,7 +11,8 @@
       if (s.scanlines) r.setAttribute("data-a11y-scanlines", "off");
       if (s.motion) r.setAttribute("data-a11y-motion", "off");
       if (s.links) r.setAttribute("data-a11y-links", "underline");
-      if (s.size && s.size !== "default") r.setAttribute("data-a11y-size", s.size);
+      if (s.size && s.size !== "default")
+        r.setAttribute("data-a11y-size", s.size);
     } catch (e) {
       /* private mode or malformed JSON: defaults are fine */
     }

@@ -16,21 +16,27 @@ const path = Astro.url.pathname;
 
     <nav id="site-nav" aria-label="Main">
       <ul class="list" role="list">
-        {NAV.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class="lnk"
-              aria-current={isActive(item.href, path) ? "page" : undefined}
-            >{item.label}</a>
-          </li>
-        ))}
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="lnk"
+                aria-current={isActive(item.href, path) ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
 
     <div class="actions">
       <ThemeToggle />
-      <Button variant="ink" size="sm" href="#contact" class="cta">Get in touch</Button>
+      <Button variant="ink" size="sm" href="#contact" class="cta"
+        >Get in touch</Button
+      >
       <button
         type="button"
         class="burger"
@@ -39,24 +45,37 @@ const path = Astro.url.pathname;
         aria-controls="mobile-nav"
         aria-label="Menu"
       >
-        <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="bars" aria-hidden="true"
+          ><span></span><span></span><span></span></span
+        >
       </button>
     </div>
   </div>
 
   {}
-  <nav id="mobile-nav" class="sheet" aria-label="Main, expanded" data-nav-sheet hidden>
+  <nav
+    id="mobile-nav"
+    class="sheet"
+    aria-label="Main, expanded"
+    data-nav-sheet
+    hidden
+  >
     <ul role="list">
-      {NAV.map((item) => (
-        <li>
-          <a href={item.href} aria-current={isActive(item.href, path) ? "page" : undefined}>
-            {item.label}
-            <span class="state" aria-hidden="true">
-              {isActive(item.href, path) ? "you are here" : "→"}
-            </span>
-          </a>
-        </li>
-      ))}
+      {
+        NAV.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.href, path) ? "page" : undefined}
+            >
+              {item.label}
+              <span class="state" aria-hidden="true">
+                {isActive(item.href, path) ? "you are here" : "→"}
+              </span>
+            </a>
+          </li>
+        ))
+      }
     </ul>
     <Button variant="ink" href="#contact" class="sheetCta">Get in touch</Button>
   </nav>
@@ -108,26 +127,55 @@ const path = Astro.url.pathname;
     border-bottom: var(--border-hair);
   }
   .inner {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: var(--space-6); padding-block: 15px; flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-block: 15px;
+    flex-wrap: wrap;
     min-block-size: var(--header-h);
   }
-  .brand { display: flex; align-items: center; gap: 14px; color: var(--text); text-decoration: none; }
-  .name { font-size: 16px; font-weight: var(--weight-bold); letter-spacing: -0.01em; }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .name {
+    font-size: 16px;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.01em;
+  }
 
-  .list { display: flex; align-items: center; gap: var(--space-5); list-style: none; margin: 0; padding: 0; }
+  .list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
   .lnk {
     position: relative;
-    display: inline-flex; align-items: center;
+    display: inline-flex;
+    align-items: center;
     min-block-size: var(--tap-min);
     padding: 7px 0;
-    font-size: var(--text-body-sm); font-weight: var(--weight-semibold);
-    color: var(--text-2); text-decoration: none;
+    font-size: var(--text-body-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--text-2);
+    text-decoration: none;
     transition: color var(--dur) var(--ease);
   }
-  .lnk:hover { color: var(--accent); }
+  .lnk:hover {
+    color: var(--accent);
+  }
 
-  .lnk[aria-current="page"] { color: var(--accent); font-weight: var(--weight-bold); }
+  .lnk[aria-current="page"] {
+    color: var(--accent);
+    font-weight: var(--weight-bold);
+  }
   .lnk[aria-current="page"]::after {
     content: "";
     position: absolute;
@@ -136,14 +184,25 @@ const path = Astro.url.pathname;
     block-size: 2px;
     background: var(--accent);
   }
-  .lnk:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+  .lnk:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
 
-  .actions { display: flex; align-items: center; gap: var(--space-4); }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
 
   /* ---------- mobile ---------- */
 
-  .burger { display: none; }
-  .sheet { display: none; }
+  .burger {
+    display: none;
+  }
+  .sheet {
+    display: none;
+  }
 
   @media (max-width: 760px) {
     /* Pinned rather than left to content */
@@ -156,14 +215,25 @@ const path = Astro.url.pathname;
     }
 
     /* 24px mark per the mobile kit. */
-    .brand { --logo-h: 24px; }
-    .name { font-size: 15px; line-height: 1; }
+    .brand {
+      --logo-h: 24px;
+    }
+    .name {
+      font-size: 15px;
+      line-height: 1;
+    }
 
     /* The inline nav and the header CTA give way to the sheet. */
-    #site-nav { display: none; }
-    .actions :global(.cta) { display: none; }
+    #site-nav {
+      display: none;
+    }
+    .actions :global(.cta) {
+      display: none;
+    }
 
-    .actions { gap: 8px; }
+    .actions {
+      gap: 8px;
+    }
 
     .actions :global(.tt) {
       inline-size: 40px;
@@ -192,16 +262,29 @@ const path = Astro.url.pathname;
       outline: var(--focus-width) solid var(--focus-ring);
       outline-offset: var(--focus-offset);
     }
-    .bars { display: flex; flex-direction: column; gap: 4px; inline-size: 17px; }
+    .bars {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      inline-size: 17px;
+    }
     .bars > span {
       block-size: 2px;
       background: var(--text);
-      transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+      transition:
+        transform var(--dur) var(--ease),
+        opacity var(--dur) var(--ease);
     }
     /* the three bars fold into a cross */
-    [aria-expanded="true"] .bars > span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-    [aria-expanded="true"] .bars > span:nth-child(2) { opacity: 0; }
-    [aria-expanded="true"] .bars > span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+    [aria-expanded="true"] .bars > span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    [aria-expanded="true"] .bars > span:nth-child(2) {
+      opacity: 0;
+    }
+    [aria-expanded="true"] .bars > span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
 
     .sheet {
       display: block;
@@ -209,8 +292,14 @@ const path = Astro.url.pathname;
       background: var(--surface);
       border-top: var(--rule-dashed);
     }
-    .sheet[hidden] { display: none; }
-    .sheet ul { list-style: none; margin: 0; padding: 0; }
+    .sheet[hidden] {
+      display: none;
+    }
+    .sheet ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
     .sheet ul a {
       display: flex;
       align-items: center;
@@ -225,12 +314,18 @@ const path = Astro.url.pathname;
       color: var(--text);
       text-decoration: none;
     }
-    .sheet ul a[aria-current="page"] { color: var(--accent); }
+    .sheet ul a[aria-current="page"] {
+      color: var(--accent);
+    }
     .sheet ul a:focus-visible {
       outline: var(--focus-width) solid var(--focus-ring);
       outline-offset: -2px;
     }
-    .state { font-size: 12px; font-weight: var(--weight-regular); color: var(--text-3); }
+    .state {
+      font-size: 12px;
+      font-weight: var(--weight-regular);
+      color: var(--text-3);
+    }
     .sheet :global(.sheetCta) {
       display: flex;
       align-items: center;
@@ -239,12 +334,22 @@ const path = Astro.url.pathname;
       margin-block-start: 16px;
     }
 
-    :global(html.nav-open) { overflow: hidden; }
-    .hd:has([aria-expanded="true"]) { border-bottom: var(--border-strong); }
+    :global(html.nav-open) {
+      overflow: hidden;
+    }
+    .hd:has([aria-expanded="true"]) {
+      border-bottom: var(--border-strong);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bars > span { transition: none; }
+    .bars > span {
+      transition: none;
+    }
   }
-  @media (prefers-reduced-motion: reduce) { .lnk { transition: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .lnk {
+      transition: none;
+    }
+  }
 </style>

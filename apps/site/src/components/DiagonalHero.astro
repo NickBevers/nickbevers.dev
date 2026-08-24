@@ -13,7 +13,10 @@
   .stripes {
     position: absolute;
     inset-block: 0;
-    inset-inline-end: max(0px, calc((100% - var(--measure)) / 2 + min(var(--gutter), 6vw)));
+    inset-inline-end: max(
+      0px,
+      calc((100% - var(--measure)) / 2 + min(var(--gutter), 6vw))
+    );
     inline-size: 0;
     overflow: visible;
   }
@@ -25,11 +28,25 @@
     transform-origin: 100% 0;
   }
 
-  .tint  { background: var(--bg-alt); inset-inline-end: -40px; inline-size: 320px; }
-  .ink   { background: var(--text);   inset-inline-end: 120px; inline-size: 16px; }
-  .green { background: var(--logo);   inset-inline-end: 152px; inline-size: 32px; }
+  .tint {
+    background: var(--bg-alt);
+    inset-inline-end: -40px;
+    inline-size: 320px;
+  }
+  .ink {
+    background: var(--text);
+    inset-inline-end: 120px;
+    inline-size: 16px;
+  }
+  .green {
+    background: var(--logo);
+    inset-inline-end: 152px;
+    inline-size: 32px;
+  }
 
   @media (max-width: 900px) {
-    .stripes { display: none; }
+    .stripes {
+      display: none;
+    }
   }
 </style>

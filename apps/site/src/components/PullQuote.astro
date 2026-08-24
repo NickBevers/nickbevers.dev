@@ -1,14 +1,19 @@
 ---
-interface Props { cite?: string; }
+interface Props {
+  cite?: string;
+}
 const { cite } = Astro.props;
 ---
+
 <figure class="pq">
   <blockquote><slot /></blockquote>
   {cite && <figcaption>{cite}</figcaption>}
 </figure>
 
 <style>
-  .pq { margin: var(--space-8) 0; }
+  .pq {
+    margin: var(--space-8) 0;
+  }
   blockquote {
     margin: 0;
     padding: var(--space-1) 0 var(--space-1) 22px;

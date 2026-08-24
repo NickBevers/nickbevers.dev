@@ -8,7 +8,14 @@ interface Props {
   photoPrompt?: string;
   href?: string;
 }
-const { kicker, title, blurb, number, photoPrompt = "Photo to come", href } = Astro.props;
+const {
+  kicker,
+  title,
+  blurb,
+  number,
+  photoPrompt = "Photo to come",
+  href,
+} = Astro.props;
 const Tag = href ? "a" : "div";
 const attrs = href ? { href } : {};
 ---
@@ -23,7 +30,16 @@ const attrs = href ? { href } : {};
   </div>
   <div class="body">
     <div class="kick">
-      {number && <><span class="no">{number}</span><span class="dot" aria-hidden="true"></span></>}
+      {
+        number && (
+          <>
+            <>
+              <span class="no">{number}</span>
+              <span class="dot" aria-hidden="true" />
+            </>
+          </>
+        )
+      }
       <span>{kicker}</span>
     </div>
     <h3 class="ttl">{title}</h3>
@@ -33,15 +49,19 @@ const attrs = href ? { href } : {};
 
 <style>
   .card {
-    display: block; color: var(--text); text-decoration: none;
+    display: block;
+    color: var(--text);
+    text-decoration: none;
     font-family: var(--font-sans);
   }
   .frame {
     border: var(--border-strong);
     background: var(--surface);
-    padding: 8px;                 /* the slide mount inset */
+    padding: 8px; /* the slide mount inset */
     box-shadow: 5px 5px 0 var(--soft-shadow);
-    transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+    transition:
+      box-shadow var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
   }
   /* lifts up-left and the shadow both grows AND warms */
   a.card:hover .frame,
@@ -55,37 +75,70 @@ const attrs = href ? { href } : {};
   }
   .slot {
     block-size: 160px;
-    display: grid; place-items: center;
+    display: grid;
+    place-items: center;
     background: var(--bg-alt);
     border: 1px dashed var(--line-strong);
     overflow: hidden;
   }
-  .slot :global(img) { inline-size: 100%; block-size: 100%; object-fit: cover; }
+  .slot :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
   .prompt {
     padding: var(--space-4);
-    font-size: var(--text-meta); font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
-    color: var(--text-3); text-align: center;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+    text-align: center;
   }
 
-  .body { padding: 14px 16px 16px; }
+  .body {
+    padding: 14px 16px 16px;
+  }
   .kick {
-    display: flex; align-items: center; gap: 9px;
-    font-size: 10px; font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
     color: var(--text-3);
   }
-  .no { color: var(--warm-text); font-variant-numeric: tabular-nums; }
-  .dot { inline-size: 4px; block-size: 4px; background: var(--warm); }
+  .no {
+    color: var(--warm-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .dot {
+    inline-size: 4px;
+    block-size: 4px;
+    background: var(--warm);
+  }
   .ttl {
     margin: var(--space-2) 0 0;
-    font-size: 17px; font-weight: var(--weight-bold);
-    letter-spacing: -0.015em; line-height: 1.25;
+    font-size: 17px;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.015em;
+    line-height: 1.25;
   }
-  .blurb { margin: 7px 0 0; font-size: 14px; line-height: 1.5; color: var(--text-2); }
+  .blurb {
+    margin: 7px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-2);
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .frame { transition: none; }
-    a.card:hover .frame { transform: none; box-shadow: 5px 5px 0 var(--soft-shadow); }
+    .frame {
+      transition: none;
+    }
+    a.card:hover .frame {
+      transform: none;
+      box-shadow: 5px 5px 0 var(--soft-shadow);
+    }
   }
 </style>

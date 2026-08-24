@@ -20,6 +20,11 @@ html[data-a11y-font="dyslexic"] {
   --font-sans: "NB Reading", "Hanken Grotesk Variable", system-ui, sans-serif;
 
   /* The dyslexic face sets much wider than Hanken Grotesk at the same size */
+  --text-display: clamp(30px, 4.4vw, 52px);
+  --text-hero: clamp(32px, 4.2vw, 53px);
+  --text-h1: clamp(28px, 3.9vw, 44px);
+  --text-h1-sm: clamp(28px, 4.3vw, 40px);
+  --text-h1-entry: clamp(26px, 3.4vw, 37px);
   --text-h2: clamp(19px, 2.1vw, 23px);
 
   --tracking-display: -0.005em;
@@ -65,6 +70,11 @@ html[data-a11y-scanlines="off"] .scan {
 
 /* Text size */
 html[data-a11y-size="large"] {
+  --text-display: clamp(42px, 6.6vw, 84px);
+  --text-hero: clamp(44px, 5.7vw, 73px);
+  --text-h1: clamp(37px, 5.3vw, 59px);
+  --text-h1-sm: clamp(37px, 5.9vw, 55px);
+  --text-h1-entry: clamp(35px, 4.6vw, 51px);
   --text-h2: clamp(24px, 2.9vw, 30px);
   --text-h3: 22px;
   --text-lead: 21px;
@@ -76,6 +86,11 @@ html[data-a11y-size="large"] {
 }
 
 html[data-a11y-size="larger"] {
+  --text-display: clamp(47px, 7.4vw, 94px);
+  --text-hero: clamp(49px, 6.4vw, 81px);
+  --text-h1: clamp(41px, 5.9vw, 66px);
+  --text-h1-sm: clamp(41px, 6.6vw, 61px);
+  --text-h1-entry: clamp(39px, 5.1vw, 56px);
   --text-h2: clamp(27px, 3.2vw, 33px);
   --text-h3: 24px;
   --text-lead: 23px;

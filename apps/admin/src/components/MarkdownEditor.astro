@@ -21,14 +21,18 @@ const TOOLS = [
 
 <div class="editor" data-md>
   <div class="bar" role="toolbar" aria-label="Formatting" aria-controls={name}>
-    {TOOLS.map((t) => (
-      <button
-        type="button"
-        data-md-tool={t.id}
-        title={t.key ? `${t.label} (Cmd/Ctrl+${t.key})` : t.label}
-        aria-label={t.label}
-      >{t.glyph}</button>
-    ))}
+    {
+      TOOLS.map((t) => (
+        <button
+          type="button"
+          data-md-tool={t.id}
+          title={t.key ? `${t.label} (Cmd/Ctrl+${t.key})` : t.label}
+          aria-label={t.label}
+        >
+          {t.glyph}
+        </button>
+      ))
+    }
     <span class="spacer"></span>
     <button type="button" data-md-preview aria-pressed="false">Preview</button>
   </div>
@@ -54,43 +58,82 @@ const TOOLS = [
 </div>
 
 <style>
-  .editor { border: var(--border-strong); background: var(--surface); }
+  .editor {
+    border: var(--border-strong);
+    background: var(--surface);
+  }
 
   .bar {
-    display: flex; align-items: center; gap: 2px; flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
     padding: 6px;
     background: var(--bg-alt);
     border-bottom: var(--border-strong);
   }
   .bar button {
-    min-inline-size: 32px; min-block-size: 32px;
+    min-inline-size: 32px;
+    min-block-size: 32px;
     padding: 0 8px;
-    font-family: var(--font-sans); font-size: var(--text-caption);
-    font-weight: var(--weight-bold); color: var(--text-2);
-    background: transparent; border: 1px solid transparent;
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-bold);
+    color: var(--text-2);
+    background: transparent;
+    border: 1px solid transparent;
     cursor: pointer;
   }
-  .bar button:hover { background: var(--surface); border-color: var(--line); color: var(--accent); }
+  .bar button:hover {
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--accent);
+  }
   .bar button:focus-visible {
-    outline: var(--focus-width) solid var(--focus-ring); outline-offset: -1px;
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -1px;
   }
   .bar button[aria-pressed="true"] {
-    background: var(--accent); color: var(--accent-on); border-color: var(--line-strong);
+    background: var(--accent);
+    color: var(--accent-on);
+    border-color: var(--line-strong);
   }
-  .bar [data-md-tool="bold"] { font-weight: var(--weight-black); }
-  .bar [data-md-tool="italic"] { font-style: italic; }
-  .bar [data-md-tool="code"] { font-family: var(--font-mono); font-size: 11px; }
-  .spacer { flex: 1; }
+  .bar [data-md-tool="bold"] {
+    font-weight: var(--weight-black);
+  }
+  .bar [data-md-tool="italic"] {
+    font-style: italic;
+  }
+  .bar [data-md-tool="code"] {
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .spacer {
+    flex: 1;
+  }
 
-  .panes { display: grid; grid-template-columns: 1fr; }
-  .editor[data-preview] .panes { grid-template-columns: 1fr 1fr; }
+  .panes {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .editor[data-preview] .panes {
+    grid-template-columns: 1fr 1fr;
+  }
   @media (max-width: 800px) {
-    .editor[data-preview] .panes { grid-template-columns: 1fr; }
-    .editor[data-preview] .write { border-bottom: var(--border-hair); }
+    .editor[data-preview] .panes {
+      grid-template-columns: 1fr;
+    }
+    .editor[data-preview] .write {
+      border-bottom: var(--border-hair);
+    }
   }
 
-  .write { position: relative; }
-  .editor[data-preview] .write { border-right: var(--border-hair); }
+  .write {
+    position: relative;
+  }
+  .editor[data-preview] .write {
+    border-right: var(--border-hair);
+  }
 
   /* The two layers */
   .hl,
@@ -125,54 +168,124 @@ const TOOLS = [
     caret-color: var(--text);
     background: transparent;
   }
-  .write textarea::selection { background: var(--accent-bg); color: transparent; }
+  .write textarea::selection {
+    background: var(--accent-bg);
+    color: transparent;
+  }
   .write textarea:focus-visible {
-    outline: var(--focus-width) solid var(--focus-ring); outline-offset: -2px;
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -2px;
   }
 
   /* Token colours. Chosen against --surface in both themes; all clear 4.5. */
-  .hl :global(.t-head) { color: var(--accent); font-weight: var(--weight-bold); }
-  .hl :global(.t-bold) { color: var(--text); font-weight: var(--weight-black); }
-  .hl :global(.t-em) { color: var(--text); font-style: italic; }
-  .hl :global(.t-link) { color: var(--accent); }
-  .hl :global(.t-url) { color: var(--text-3); }
-  .hl :global(.t-code) { color: var(--warm-text); }
-  .hl :global(.t-fence) { color: var(--warm-text); }
-  .hl :global(.t-quote) { color: var(--text-2); font-style: italic; }
-  .hl :global(.t-list) { color: var(--accent-2); font-weight: var(--weight-bold); }
-  .hl :global(.t-mdx) { color: var(--logo-on-surface); font-weight: var(--weight-bold); }
-  .hl :global(.t-punct) { color: var(--text-3); }
+  .hl :global(.t-head) {
+    color: var(--accent);
+    font-weight: var(--weight-bold);
+  }
+  .hl :global(.t-bold) {
+    color: var(--text);
+    font-weight: var(--weight-black);
+  }
+  .hl :global(.t-em) {
+    color: var(--text);
+    font-style: italic;
+  }
+  .hl :global(.t-link) {
+    color: var(--accent);
+  }
+  .hl :global(.t-url) {
+    color: var(--text-3);
+  }
+  .hl :global(.t-code) {
+    color: var(--warm-text);
+  }
+  .hl :global(.t-fence) {
+    color: var(--warm-text);
+  }
+  .hl :global(.t-quote) {
+    color: var(--text-2);
+    font-style: italic;
+  }
+  .hl :global(.t-list) {
+    color: var(--accent-2);
+    font-weight: var(--weight-bold);
+  }
+  .hl :global(.t-mdx) {
+    color: var(--logo-on-surface);
+    font-weight: var(--weight-bold);
+  }
+  .hl :global(.t-punct) {
+    color: var(--text-3);
+  }
 
-  .read { overflow: auto; max-block-size: 640px; }
+  .read {
+    overflow: auto;
+    max-block-size: 640px;
+  }
   .prose {
     padding: var(--space-4);
     font-size: var(--text-body-sm);
     line-height: 1.65;
   }
-  .prose :global(h1), .prose :global(h2), .prose :global(h3) {
+  .prose :global(h1),
+  .prose :global(h2),
+  .prose :global(h3) {
     margin: var(--space-5) 0 var(--space-2);
-    font-weight: var(--weight-black); letter-spacing: var(--tracking-title);
+    font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-title);
   }
-  .prose :global(h1) { font-size: 24px; }
-  .prose :global(h2) { font-size: 20px; }
-  .prose :global(h3) { font-size: 17px; }
-  .prose :global(p) { margin: var(--space-3) 0; }
-  .prose :global(ul), .prose :global(ol) { margin: var(--space-3) 0; padding-inline-start: var(--space-6); }
+  .prose :global(h1) {
+    font-size: 24px;
+  }
+  .prose :global(h2) {
+    font-size: 20px;
+  }
+  .prose :global(h3) {
+    font-size: 17px;
+  }
+  .prose :global(p) {
+    margin: var(--space-3) 0;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: var(--space-3) 0;
+    padding-inline-start: var(--space-6);
+  }
   .prose :global(blockquote) {
-    margin: var(--space-4) 0; padding-inline-start: var(--space-4);
-    border-inline-start: 3px solid var(--warm); font-style: italic; color: var(--text-2);
+    margin: var(--space-4) 0;
+    padding-inline-start: var(--space-4);
+    border-inline-start: 3px solid var(--warm);
+    font-style: italic;
+    color: var(--text-2);
   }
   .prose :global(pre) {
-    margin: var(--space-4) 0; padding: var(--space-3); overflow-x: auto;
-    font-family: var(--font-mono); font-size: 13px;
-    background: var(--bg-alt); border: var(--border-hair);
+    margin: var(--space-4) 0;
+    padding: var(--space-3);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-alt);
+    border: var(--border-hair);
   }
-  .prose :global(code) { font-family: var(--font-mono); font-size: 0.92em; color: var(--warm-text); }
-  .prose :global(pre code) { color: var(--text-2); }
-  .prose :global(a) { color: var(--accent); }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--warm-text);
+  }
+  .prose :global(pre code) {
+    color: var(--text-2);
+  }
+  .prose :global(a) {
+    color: var(--accent);
+  }
   .prose :global(.mdx) {
-    display: block; padding: var(--space-3); margin: var(--space-4) 0;
-    border: 1px dashed var(--line-strong); background: var(--bg-alt);
-    font-family: var(--font-mono); font-size: 12px; color: var(--text-3);
+    display: block;
+    padding: var(--space-3);
+    margin: var(--space-4) 0;
+    border: 1px dashed var(--line-strong);
+    background: var(--bg-alt);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-3);
   }
 </style>

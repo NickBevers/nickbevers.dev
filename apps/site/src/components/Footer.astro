@@ -12,13 +12,18 @@ const year = new Date().getFullYear();
         <a class="cta" href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </div>
       <ul class="links" role="list">
-        {SOCIAL.map((s) => (
-          <li>
-            <a href={s.href} rel={"rel" in s ? s.rel : undefined}>
-              {s.label}<span class="handle" aria-hidden="true">{s.handle} →</span>
-            </a>
-          </li>
-        ))}
+        {
+          SOCIAL.map((s) => (
+            <li>
+              <a href={s.href} rel={"rel" in s ? s.rel : undefined}>
+                {s.label}
+                <span class="handle" aria-hidden="true">
+                  {s.handle} →
+                </span>
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </div>
     <div class="legal">
@@ -37,37 +42,62 @@ const year = new Date().getFullYear();
     padding-block: 70px var(--space-7);
   }
   .top {
-    display: grid; grid-template-columns: 1.2fr 1fr;
-    gap: 56px; align-items: end;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 56px;
+    align-items: end;
   }
   .eyebrow {
     margin: 0 0 18px;
-    font-size: var(--text-meta); font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
     color: var(--nb-green-500);
   }
   .h {
-    margin: 0; font-size: clamp(30px, 4.4vw, 44px); line-height: 1.03;
-    font-weight: var(--weight-black); letter-spacing: -0.03em;
+    margin: 0;
+    font-size: clamp(30px, 4.4vw, 44px);
+    line-height: 1.03;
+    font-weight: var(--weight-black);
+    letter-spacing: -0.03em;
     color: var(--nb-green-050);
   }
   .cta {
-    display: inline-block; margin-block-start: 28px;
+    display: inline-block;
+    margin-block-start: 28px;
     padding: 15px 26px;
-    font-size: 16px; font-weight: var(--weight-black);
-    color: var(--nb-green-900); background: var(--nb-sand-500);
+    font-size: 16px;
+    font-weight: var(--weight-black);
+    color: var(--nb-green-900);
+    background: var(--nb-sand-500);
     border: 1px solid var(--nb-green-050);
-    box-shadow: 5px 5px 0 color-mix(in srgb, var(--nb-green-050) 35%, transparent);
+    box-shadow: 5px 5px 0
+      color-mix(in srgb, var(--nb-green-050) 35%, transparent);
     text-decoration: none;
-    transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+    transition:
+      transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
   }
   .cta:hover {
     transform: translate(var(--press-shift), var(--press-shift));
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--nb-green-050) 35%, transparent);
+    box-shadow: 2px 2px 0
+      color-mix(in srgb, var(--nb-green-050) 35%, transparent);
   }
-  .cta:focus-visible { outline: var(--focus-width) solid var(--nb-green-050); outline-offset: var(--focus-offset); }
+  .cta:focus-visible {
+    outline: var(--focus-width) solid var(--nb-green-050);
+    outline-offset: var(--focus-offset);
+  }
 
-  .links { display: flex; flex-direction: column; gap: 10px; list-style: none; margin: 0; padding: 0; font-size: var(--text-body-sm); }
+  .links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--text-body-sm);
+  }
   .links a {
     display: flex;
     justify-content: space-between;
@@ -76,7 +106,8 @@ const year = new Date().getFullYear();
     min-block-size: var(--tap-min);
     padding: var(--space-3) var(--space-4);
     margin-inline: calc(var(--space-4) * -1);
-    border-bottom: 1px dotted color-mix(in srgb, var(--nb-green-500) 50%, transparent);
+    border-bottom: 1px dotted
+      color-mix(in srgb, var(--nb-green-500) 50%, transparent);
     color: var(--nb-green-100);
     font-weight: var(--weight-semibold);
     text-decoration: none;
@@ -90,30 +121,56 @@ const year = new Date().getFullYear();
     color: var(--footer-hover-on);
     padding-inline-start: 10px;
   }
-  .links a:hover .handle { color: var(--footer-hover-2); }
-  @media (prefers-reduced-motion: reduce) {
-    .links a { transition: none; }
-    .links a:hover { padding-inline-start: var(--space-4); }
+  .links a:hover .handle {
+    color: var(--footer-hover-2);
   }
-  .links a:focus-visible { outline: var(--focus-width) solid var(--nb-green-050); outline-offset: var(--focus-offset); }
-  .handle { color: var(--nb-green-500); }
+  @media (prefers-reduced-motion: reduce) {
+    .links a {
+      transition: none;
+    }
+    .links a:hover {
+      padding-inline-start: var(--space-4);
+    }
+  }
+  .links a:focus-visible {
+    outline: var(--focus-width) solid var(--nb-green-050);
+    outline-offset: var(--focus-offset);
+  }
+  .handle {
+    color: var(--nb-green-500);
+  }
 
   .legal {
-    display: flex; justify-content: space-between; gap: var(--space-5); flex-wrap: wrap;
-    margin-block-start: 52px; padding-block-start: var(--space-5);
-    border-top: 1px solid color-mix(in srgb, var(--nb-green-500) 28%, transparent);
-    font-size: var(--text-meta); font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    margin-block-start: 52px;
+    padding-block-start: var(--space-5);
+    border-top: 1px solid
+      color-mix(in srgb, var(--nb-green-500) 28%, transparent);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
     color: var(--nb-green-500);
   }
 
   @media (max-width: 900px) {
-    .ft { padding-block-end: 84px; }
+    .ft {
+      padding-block-end: 84px;
+    }
   }
 
   @media (max-width: 760px) {
-    .ft { padding-block: var(--space-10) 84px; }
-    .top { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); align-items: start; }
+    .ft {
+      padding-block: var(--space-10) 84px;
+    }
+    .top {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-8);
+      align-items: start;
+    }
 
     /* No rule and no 52px gap here */
     .legal {
@@ -125,7 +182,11 @@ const year = new Date().getFullYear();
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .cta { transition: none; }
-    .cta:hover { transform: none; }
+    .cta {
+      transition: none;
+    }
+    .cta:hover {
+      transform: none;
+    }
   }
 </style>

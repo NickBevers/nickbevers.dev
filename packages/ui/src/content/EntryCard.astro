@@ -19,7 +19,16 @@ interface Props {
 const {
   headingLevel = 3,
   variant = "index",
-  number, date, datetime, tag, title, excerpt, minutes, isNew, href, placeholder,
+  number,
+  date,
+  datetime,
+  tag,
+  title,
+  excerpt,
+  minutes,
+  isNew,
+  href,
+  placeholder,
 } = Astro.props;
 
 const Title = `h${headingLevel}` as "h2" | "h3";
@@ -31,31 +40,52 @@ const Title = `h${headingLevel}` as "h2" | "h3";
       <span class="no">{number}</span>
       <span class="dot" aria-hidden="true"></span>
       <time datetime={datetime}>{date}</time>
-      {tag && (
-        <>
-          <span class="dot" aria-hidden="true"></span>
-          <span class="tag">{tag}</span>
-        </>
-      )}
-      {placeholder && (
-        <>
-          <span class="dot" aria-hidden="true"></span>
-          <span class="ph">Placeholder</span>
-        </>
-      )}
+      {
+        tag && (
+          <>
+            <span class="dot" aria-hidden="true" />
+            <span class="tag">{tag}</span>
+          </>
+        )
+      }
+      {
+        placeholder && (
+          <>
+            <span class="dot" aria-hidden="true" />
+            <span class="ph">Placeholder</span>
+          </>
+        )
+      }
     </div>
-    <Title class="ttl">{title}{isNew && <> <NewBadge inline /></>}</Title>
+    <Title class="ttl"
+      >{title}{
+        isNew && (
+          <>
+            {" "}
+            <NewBadge inline />
+          </>
+        )
+      }</Title
+    >
     {excerpt && <p class="ex">{excerpt}</p>}
     {minutes && <span class="min">{minutes} read</span>}
   </a>
 </article>
 
 <style>
-  .compact { border-top: var(--border-hair); }
-  .index { border-bottom: var(--border-hair); }
+  .compact {
+    border-top: var(--border-hair);
+  }
+  .index {
+    border-bottom: var(--border-hair);
+  }
 
-  .compact .hit { padding: 18px 10px 20px; }
-  .compact .ttl { font-size: 19px; }
+  .compact .hit {
+    padding: 18px 10px 20px;
+  }
+  .compact .ttl {
+    font-size: 19px;
+  }
 
   .hit {
     display: block;
@@ -66,22 +96,44 @@ const Title = `h${headingLevel}` as "h2" | "h3";
     font-family: var(--font-sans);
     transition: background var(--dur) var(--ease);
   }
-  .hit:hover { background: var(--warm-bg); }
+  .hit:hover {
+    background: var(--warm-bg);
+  }
   .hit:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: -1px;
   }
 
   .meta {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-    font-size: 10.5px; font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
-    color: var(--text-3); margin-block-end: var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-block-end: var(--space-2);
   }
-  .no { color: var(--warm-text); font-variant-numeric: tabular-nums; }
-  .tag { color: var(--accent); }
-  .ph { color: var(--text-3); font-style: italic; letter-spacing: 0.08em; }
-  .dot { inline-size: 4px; block-size: 4px; background: var(--warm); flex: none; }
+  .no {
+    color: var(--warm-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .tag {
+    color: var(--accent);
+  }
+  .ph {
+    color: var(--text-3);
+    font-style: italic;
+    letter-spacing: 0.08em;
+  }
+  .dot {
+    inline-size: 4px;
+    block-size: 4px;
+    background: var(--warm);
+    flex: none;
+  }
 
   .ttl {
     margin: 0;
@@ -92,13 +144,23 @@ const Title = `h${headingLevel}` as "h2" | "h3";
   }
   .ex {
     margin: var(--space-2) 0 0;
-    font-size: 14.5px; line-height: 1.55; color: var(--text-2);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--text-2);
   }
   .min {
-    display: inline-block; margin-block-start: 10px;
-    font-size: 10.5px; font-weight: var(--weight-bold);
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3);
+    display: inline-block;
+    margin-block-start: 10px;
+    font-size: 10.5px;
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
   }
 
-  @media (prefers-reduced-motion: reduce) { .hit { transition: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .hit {
+      transition: none;
+    }
+  }
 </style>

@@ -1,0 +1,3 @@
+# prettier-plugin-astro cannot parse an is:inline <script> nested inside a
+# JSX expression. The file is valid Astro and builds correctly.
+apps/site/src/layouts/BaseLayout.astro

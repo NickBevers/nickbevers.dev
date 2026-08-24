@@ -1,6 +1,8 @@
 ---
 // A label, a dotted leader, and a value
-interface Props { class?: string; }
+interface Props {
+  class?: string;
+}
 const { class: className } = Astro.props;
 ---
 
@@ -17,13 +19,15 @@ const { class: className } = Astro.props;
     gap: var(--space-3);
     font-family: var(--font-sans);
   }
-  .label { flex: none; }
+  .label {
+    flex: none;
+  }
   .leader {
     flex: 1 1 auto;
     min-inline-size: var(--space-5);
     border-bottom: var(--leader);
-    opacity: .5;
-    transform: translateY(-.25em);
+    opacity: 0.5;
+    transform: translateY(-0.25em);
   }
   .value {
     flex: none;

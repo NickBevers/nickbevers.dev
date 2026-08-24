@@ -45,72 +45,208 @@ const kb = (n: number) => (n ? `${(n / 1024).toFixed(0)}KB` : "");
       <p class="status" role="status" aria-live="polite" data-status></p>
     </form>
 
-    {error && <p class="err" role="alert">Could not read the directory: {error}</p>}
+    {
+      error && (
+        <p class="err" role="alert">
+          Could not read the directory: {error}
+        </p>
+      )
+    }
 
-    {files.length === 0 && !error ? (
-      <p class="empty">No images yet.</p>
-    ) : (
-      <ul class="tiles" role="list" data-tiles>
-        {files.map((f) => (
-          <li>
-            <div class="tile">
-              <div class="frame"><span class="ext">{f.name.split(".").pop()}</span></div>
-              <div class="meta">
-                <span class="n" title={f.name}>{f.name}</span>
-                <span class="s">{kb(f.size)}</span>
+    {
+      files.length === 0 && !error ? (
+        <p class="empty">No images yet.</p>
+      ) : (
+        <ul class="tiles" role="list" data-tiles>
+          {files.map((f) => (
+            <li>
+              <div class="tile">
+                <div class="frame">
+                  <span class="ext">{f.name.split(".").pop()}</span>
+                </div>
+                <div class="meta">
+                  <span class="n" title={f.name}>
+                    {f.name}
+                  </span>
+                  <span class="s">{kb(f.size)}</span>
+                </div>
+                <button type="button" class="copy" data-copy={f.path}>
+                  Copy path
+                </button>
               </div>
-              <button type="button" class="copy" data-copy={f.path}>Copy path</button>
-            </div>
-          </li>
-        ))}
-      </ul>
-    )}
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </div>
 </AdminLayout>
 
 <script src="../scripts/media.ts"></script>
 
 <style>
-  .page { padding-block: var(--space-9) var(--space-11); }
-  .head { display: flex; align-items: end; justify-content: space-between; gap: var(--space-6); padding-block-end: var(--space-6); border-bottom: var(--rule-heavy); }
-  .eyebrow { margin: 0 0 var(--space-2); font-family: var(--font-mono); font-size: var(--text-meta); color: var(--warm-text); }
-  h1 { margin: 0; font-size: clamp(28px, 3.6vw, 38px); font-weight: var(--weight-black); letter-spacing: var(--tracking-display); }
-  .lede { margin: var(--space-5) 0 0; max-inline-size: 64ch; color: var(--text-2); }
-  code { font-family: var(--font-mono); font-size: 0.92em; }
+  .page {
+    padding-block: var(--space-9) var(--space-11);
+  }
+  .head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding-block-end: var(--space-6);
+    border-bottom: var(--rule-heavy);
+  }
+  .eyebrow {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    color: var(--warm-text);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(28px, 3.6vw, 38px);
+    font-weight: var(--weight-black);
+    letter-spacing: var(--tracking-display);
+  }
+  .lede {
+    margin: var(--space-5) 0 0;
+    max-inline-size: 64ch;
+    color: var(--text-2);
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+  }
 
-  .drop { margin-block: var(--space-6) var(--space-7); }
+  .drop {
+    margin-block: var(--space-6) var(--space-7);
+  }
   .dz {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
     padding: var(--space-8) var(--space-5);
-    text-align: center; cursor: pointer;
-    border: 1px dashed var(--line-strong); background: var(--bg-alt);
-    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+    text-align: center;
+    cursor: pointer;
+    border: 1px dashed var(--line-strong);
+    background: var(--bg-alt);
+    transition:
+      background var(--dur) var(--ease),
+      border-color var(--dur) var(--ease);
   }
-  .dz:hover, .dz[data-over] { background: var(--accent-bg); border-color: var(--accent-2); }
-  .dz:focus-within { outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset); }
+  .dz:hover,
+  .dz[data-over] {
+    background: var(--accent-bg);
+    border-color: var(--accent-2);
+  }
+  .dz:focus-within {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
   /* The input stays in the DOM and focusable; the label is the visible target. */
-  .dz input { position: absolute; inline-size: 1px; block-size: 1px; opacity: 0; }
-  .dzt { font-size: var(--text-body-sm); font-weight: var(--weight-bold); }
-  .dzh { font-size: var(--text-caption); color: var(--text-3); max-inline-size: 48ch; }
-  .status { margin: var(--space-3) 0 0; min-block-size: 1.4em; font-size: var(--text-caption); }
-  .status[data-tone="bad"] { color: var(--text); }
-  .status[data-tone="ok"] { color: var(--accent); }
-
-  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-4); list-style: none; margin: 0; padding: 0; }
-  .tile { border: var(--border-strong); background: var(--surface); box-shadow: var(--bevel-soft); }
-  .frame { display: grid; place-items: center; block-size: 110px; background: var(--bg-alt); border-bottom: var(--border-strong); }
-  .ext { font-family: var(--font-mono); font-size: var(--text-meta); font-weight: var(--weight-bold); letter-spacing: var(--tracking-meta); text-transform: uppercase; color: var(--text-3); }
-  .meta { display: flex; justify-content: space-between; gap: var(--space-2); padding: 8px 10px; font-size: var(--text-meta); }
-  .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); }
-  .s { color: var(--text-3); flex: none; font-variant-numeric: tabular-nums; }
-  .copy {
-    inline-size: 100%; min-block-size: var(--tap-min); padding: 6px;
-    font-family: var(--font-sans); font-size: var(--text-micro); font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
-    color: var(--text-3); background: transparent; border: 0; border-top: var(--rule-dashed); cursor: pointer;
+  .dz input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
   }
-  .copy:hover { color: var(--accent); background: var(--accent-bg); }
-  .copy:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -2px; }
+  .dzt {
+    font-size: var(--text-body-sm);
+    font-weight: var(--weight-bold);
+  }
+  .dzh {
+    font-size: var(--text-caption);
+    color: var(--text-3);
+    max-inline-size: 48ch;
+  }
+  .status {
+    margin: var(--space-3) 0 0;
+    min-block-size: 1.4em;
+    font-size: var(--text-caption);
+  }
+  .status[data-tone="bad"] {
+    color: var(--text);
+  }
+  .status[data-tone="ok"] {
+    color: var(--accent);
+  }
 
-  .err, .empty { padding: var(--space-4); border: 1px dashed var(--line-strong); background: var(--bg-alt); font-size: var(--text-caption); }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tile {
+    border: var(--border-strong);
+    background: var(--surface);
+    box-shadow: var(--bevel-soft);
+  }
+  .frame {
+    display: grid;
+    place-items: center;
+    block-size: 110px;
+    background: var(--bg-alt);
+    border-bottom: var(--border-strong);
+  }
+  .ext {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: 8px 10px;
+    font-size: var(--text-meta);
+  }
+  .n {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+  }
+  .s {
+    color: var(--text-3);
+    flex: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .copy {
+    inline-size: 100%;
+    min-block-size: var(--tap-min);
+    padding: 6px;
+    font-family: var(--font-sans);
+    font-size: var(--text-micro);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-3);
+    background: transparent;
+    border: 0;
+    border-top: var(--rule-dashed);
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: var(--accent);
+    background: var(--accent-bg);
+  }
+  .copy:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -2px;
+  }
+
+  .err,
+  .empty {
+    padding: var(--space-4);
+    border: 1px dashed var(--line-strong);
+    background: var(--bg-alt);
+    font-size: var(--text-caption);
+  }
 </style>

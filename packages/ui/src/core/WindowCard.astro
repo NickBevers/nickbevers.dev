@@ -11,7 +11,8 @@ const { filename, shadow = "soft", class: className } = Astro.props;
 <div class:list={["win", `sh-${shadow}`, className]}>
   <div class="chrome">
     <span class="dots" aria-hidden="true">
-      <span class="d d1"></span><span class="d d2"></span><span class="d d3"></span>
+      <span class="d d1"></span><span class="d d2"></span><span class="d d3"
+      ></span>
     </span>
     <span class="name">{filename}</span>
     <span class="right"><slot name="right" /></span>
@@ -25,9 +26,15 @@ const { filename, shadow = "soft", class: className } = Astro.props;
     border: var(--border-strong);
     border-radius: var(--radius);
   }
-  .sh-soft { box-shadow: var(--bevel-soft); }
-  .sh-hard { box-shadow: var(--bevel-lg); }
-  .sh-none { box-shadow: none; }
+  .sh-soft {
+    box-shadow: var(--bevel-soft);
+  }
+  .sh-hard {
+    box-shadow: var(--bevel-lg);
+  }
+  .sh-none {
+    box-shadow: none;
+  }
 
   .chrome {
     display: flex;
@@ -37,11 +44,25 @@ const { filename, shadow = "soft", class: className } = Astro.props;
     background: var(--band);
     border-bottom: var(--border-strong);
   }
-  .dots { display: flex; gap: 7px; flex: none; }
-  .d { inline-size: 9px; block-size: 9px; border-radius: 50%; }
-  .d1 { background: var(--nb-green-500); }
-  .d2 { background: var(--nb-clay-500); }
-  .d3 { background: var(--nb-sand-500); }
+  .dots {
+    display: flex;
+    gap: 7px;
+    flex: none;
+  }
+  .d {
+    inline-size: 9px;
+    block-size: 9px;
+    border-radius: 50%;
+  }
+  .d1 {
+    background: var(--nb-green-500);
+  }
+  .d2 {
+    background: var(--nb-clay-500);
+  }
+  .d3 {
+    background: var(--nb-sand-500);
+  }
 
   .name {
     margin-inline-start: 6px;
@@ -55,5 +76,8 @@ const { filename, shadow = "soft", class: className } = Astro.props;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .right { margin-inline-start: auto; flex: none; }
+  .right {
+    margin-inline-start: auto;
+    flex: none;
+  }
 </style>

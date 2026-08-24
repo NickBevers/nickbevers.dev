@@ -8,7 +8,9 @@ interface Props {
   cta?: string;
 }
 const {
-  name, blurb, href,
+  name,
+  blurb,
+  href,
   label = "Mentioned in this entry",
   cta = "View on GitHub →",
 } = Astro.props;
@@ -34,7 +36,10 @@ const {
     border: 1px dashed var(--line-strong);
     background: var(--bg-alt);
   }
-  .text { flex: 1 1 auto; min-inline-size: 220px; }
+  .text {
+    flex: 1 1 auto;
+    min-inline-size: 220px;
+  }
   .lbl {
     margin: 0 0 6px;
     font-size: var(--text-meta);
@@ -43,6 +48,14 @@ const {
     text-transform: uppercase;
     color: var(--text-3);
   }
-  .name { margin: 0; font-size: 18px; font-weight: var(--weight-bold); }
-  .blurb { margin: 3px 0 0; font-size: 14.5px; color: var(--text-2); }
+  .name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: var(--weight-bold);
+  }
+  .blurb {
+    margin: 3px 0 0;
+    font-size: 14.5px;
+    color: var(--text-2);
+  }
 </style>

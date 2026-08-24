@@ -1,7 +1,10 @@
 ---
 // A 4px reading-progress bar pinned above everything
 ---
-<div class="track" aria-hidden="true"><div class="fill" data-progress></div></div>
+
+<div class="track" aria-hidden="true">
+  <div class="fill" data-progress></div>
+</div>
 
 <script is:inline>
   (function () {
@@ -14,9 +17,16 @@
       fill.style.width = pct + "%";
       ticking = false;
     }
-    addEventListener("scroll", function () {
-      if (!ticking) { ticking = true; requestAnimationFrame(update); }
-    }, { passive: true });
+    addEventListener(
+      "scroll",
+      function () {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
     addEventListener("resize", update, { passive: true });
     update();
   })();

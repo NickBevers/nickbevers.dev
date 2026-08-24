@@ -15,11 +15,13 @@ let error: string | null = null;
 
 try {
   const files = await listItems(session.token, col);
-  items = (await Promise.all(files.map((f) => loadItem(session.token, col, f.slug)))).filter(
-    Boolean,
-  );
+  items = (
+    await Promise.all(files.map((f) => loadItem(session.token, col, f.slug)))
+  ).filter(Boolean);
   items.sort((a, b) =>
-    String(a!.data[col.titleField] ?? "").localeCompare(String(b!.data[col.titleField] ?? "")),
+    String(a!.data[col.titleField] ?? "").localeCompare(
+      String(b!.data[col.titleField] ?? ""),
+    ),
   );
 } catch (err) {
   error = (err as Error).message;
@@ -31,28 +33,45 @@ try {
     <header class="head">
       <div>
         <p class="eyebrow">
-          {items.length} {items.length === 1 ? col.one.toLowerCase() : "items"}
+          {items.length}
+          {items.length === 1 ? col.one.toLowerCase() : "items"}
         </p>
         <h1>{col.many}</h1>
       </div>
-      <Button variant="primary" href={`/content/${col.key}/new/`}>New {col.one.toLowerCase()} →</Button>
+      <Button variant="primary" href={`/content/${col.key}/new/`}
+        >New {col.one.toLowerCase()} →</Button
+      >
     </header>
 
-    {error && <p class="err" role="alert">Could not read the repository: {error}</p>}
+    {
+      error && (
+        <p class="err" role="alert">
+          Could not read the repository: {error}
+        </p>
+      )
+    }
 
     <ul class="list" role="list">
-      {items.map((it) => (
-        <li>
-          <a href={`/content/${col.key}/${it!.slug}/`}>
-            <span class="meta">
-              {it!.data.draft === true && <span class="flag draft">Draft</span>}
-              {it!.data.placeholder === true && <span class="flag ph">Placeholder</span>}
-            </span>
-            <span class="t">{String(it!.data[col.titleField] ?? it!.slug)}</span>
-            <span class="path">{it!.path}</span>
-          </a>
-        </li>
-      ))}
+      {
+        items.map((it) => (
+          <li>
+            <a href={`/content/${col.key}/${it!.slug}/`}>
+              <span class="meta">
+                {it!.data.draft === true && (
+                  <span class="flag draft">Draft</span>
+                )}
+                {it!.data.placeholder === true && (
+                  <span class="flag ph">Placeholder</span>
+                )}
+              </span>
+              <span class="t">
+                {String(it!.data[col.titleField] ?? it!.slug)}
+              </span>
+              <span class="path">{it!.path}</span>
+            </a>
+          </li>
+        ))
+      }
     </ul>
 
     {!error && items.length === 0 && <p class="empty">Nothing here yet.</p>}
@@ -61,20 +80,34 @@ try {
 
 <style>
   .head {
-    display: flex; align-items: end; justify-content: space-between;
-    gap: var(--space-5); flex-wrap: wrap;
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-5);
+    flex-wrap: wrap;
     padding-block-end: var(--space-5);
     border-bottom: var(--rule-heavy);
   }
   .eyebrow {
     margin: 0 0 8px;
-    font-size: var(--text-meta); font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
     color: var(--warm-text);
   }
-  h1 { margin: 0; font-size: 34px; font-weight: var(--weight-black); letter-spacing: -0.02em; }
+  h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: var(--weight-black);
+    letter-spacing: -0.02em;
+  }
 
-  .list { list-style: none; margin: 0; padding: 0; }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
   .list a {
     display: block;
     padding: var(--space-4) 10px;
@@ -84,20 +117,54 @@ try {
     text-decoration: none;
     transition: background var(--dur) var(--ease);
   }
-  .list a:hover { background: var(--accent-bg); }
-  .list a:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -1px; }
+  .list a:hover {
+    background: var(--accent-bg);
+  }
+  .list a:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -1px;
+  }
 
-  .meta { display: flex; align-items: center; gap: var(--space-3); }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
   .flag {
     padding: 3px 7px;
-    font-size: 10px; font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-meta); text-transform: uppercase;
+    font-size: 10px;
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
   }
-  .draft { color: var(--warm-on); background: var(--warm); }
-  .ph { color: var(--text-3); font-style: italic; }
+  .draft {
+    color: var(--warm-on);
+    background: var(--warm);
+  }
+  .ph {
+    color: var(--text-3);
+    font-style: italic;
+  }
 
-  .t { display: block; margin-block-start: 6px; font-size: 19px; font-weight: var(--weight-bold); }
-  .path { display: block; margin-block-start: 4px; font-size: 12px; color: var(--text-3); }
-  .empty { padding-block: var(--space-8); color: var(--text-3); }
-  .err { padding: var(--space-4); border: var(--border-strong); color: var(--text); }
+  .t {
+    display: block;
+    margin-block-start: 6px;
+    font-size: 19px;
+    font-weight: var(--weight-bold);
+  }
+  .path {
+    display: block;
+    margin-block-start: 4px;
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  .empty {
+    padding-block: var(--space-8);
+    color: var(--text-3);
+  }
+  .err {
+    padding: var(--space-4);
+    border: var(--border-strong);
+    color: var(--text);
+  }
 </style>

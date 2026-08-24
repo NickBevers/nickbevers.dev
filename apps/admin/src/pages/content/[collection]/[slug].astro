@@ -17,7 +17,9 @@ const item = isNew ? null : await loadItem(session.token, col, slug);
 if (!isNew && !item) return Astro.redirect(`/content/${col.key}/`);
 
 const data = item?.data ?? {};
-const title = isNew ? `New ${col.one.toLowerCase()}` : String(data[col.titleField] ?? slug);
+const title = isNew
+  ? `New ${col.one.toLowerCase()}`
+  : String(data[col.titleField] ?? slug);
 ---
 
 <AdminLayout title={title} session={session}>
@@ -37,53 +39,75 @@ const title = isNew ? `New ${col.one.toLowerCase()}` : String(data[col.titleFiel
       data-path={item?.path ?? ""}
       data-sha={item?.sha ?? ""}
     >
-      {col.fields.map((f) => (
-        <div class:list={["field", { inline: f.type === "boolean" }]}>
-          <label for={f.name}>
-            {f.label}{f.required && <span class="req" aria-hidden="true">*</span>}
-          </label>
+      {
+        col.fields.map((f) => (
+          <div class:list={["field", { inline: f.type === "boolean" }]}>
+            <label for={f.name}>
+              {f.label}
+              {f.required && (
+                <span class="req" aria-hidden="true">
+                  *
+                </span>
+              )}
+            </label>
 
-          {f.type === "textarea" ? (
-            <textarea
-              id={f.name}
-              name={f.name}
-              rows="3"
-              maxlength={f.max}
-              required={f.required}
-            >{String(data[f.name] ?? "")}</textarea>
-          ) : f.type === "boolean" ? (
-            <input
-              id={f.name}
-              name={f.name}
-              type="checkbox"
-              checked={data[f.name] === true}
-            />
-          ) : (
-            <input
-              id={f.name}
-              name={f.name}
-              type={f.type === "number" ? "number" : f.type === "url" ? "url" : f.type === "date" ? "date" : "text"}
-              value={String(data[f.name] ?? "")}
-              maxlength={f.max}
-              required={f.required}
-            />
-          )}
+            {f.type === "textarea" ? (
+              <textarea
+                id={f.name}
+                name={f.name}
+                rows="3"
+                maxlength={f.max}
+                required={f.required}
+              >
+                {String(data[f.name] ?? "")}
+              </textarea>
+            ) : f.type === "boolean" ? (
+              <input
+                id={f.name}
+                name={f.name}
+                type="checkbox"
+                checked={data[f.name] === true}
+              />
+            ) : (
+              <input
+                id={f.name}
+                name={f.name}
+                type={
+                  f.type === "number"
+                    ? "number"
+                    : f.type === "url"
+                      ? "url"
+                      : f.type === "date"
+                        ? "date"
+                        : "text"
+                }
+                value={String(data[f.name] ?? "")}
+                maxlength={f.max}
+                required={f.required}
+              />
+            )}
 
-          {f.help && <p class="help">{f.help}</p>}
-        </div>
-      ))}
+            {f.help && <p class="help">{f.help}</p>}
+          </div>
+        ))
+      }
 
-      {col.hasBody && (
-        <div class="field">
-          <label for="body">Body</label>
-          <textarea id="body" name="body" rows="18">{item?.body ?? ""}</textarea>
-          <p class="help">Markdown. Becomes the detail page.</p>
-        </div>
-      )}
+      {
+        col.hasBody && (
+          <div class="field">
+            <label for="body">Body</label>
+            <textarea id="body" name="body" rows="18">
+              {item?.body ?? ""}
+            </textarea>
+            <p class="help">Markdown. Becomes the detail page.</p>
+          </div>
+        )
+      }
 
       <div class="actions">
         <Button variant="primary" type="submit">Save</Button>
-        <span class="status" data-status role="status" aria-live="polite"></span>
+        <span class="status" data-status role="status" aria-live="polite"
+        ></span>
       </div>
     </form>
   </div>
@@ -105,7 +129,9 @@ const title = isNew ? `New ${col.one.toLowerCase()}` : String(data[col.titleFiel
       data[k] = v;
     }
     // Unchecked boxes are absent from FormData, so they need an explicit false.
-    for (const cb of form.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')) {
+    for (const cb of form.querySelectorAll<HTMLInputElement>(
+      'input[type="checkbox"]',
+    )) {
       data[cb.name] = cb.checked;
     }
 
@@ -138,37 +164,99 @@ const title = isNew ? `New ${col.one.toLowerCase()}` : String(data[col.titleFiel
 </script>
 
 <style>
-  .head { padding-block-end: var(--space-5); border-bottom: var(--rule-heavy); }
+  .head {
+    padding-block-end: var(--space-5);
+    border-bottom: var(--rule-heavy);
+  }
   .eyebrow {
     margin: 0 0 8px;
-    font-size: var(--text-meta); font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
   }
-  .eyebrow a { color: var(--warm-text); text-decoration: none; }
-  .eyebrow a:hover { text-decoration: underline; }
-  h1 { margin: 0; font-size: 34px; font-weight: var(--weight-black); letter-spacing: -0.02em; }
+  .eyebrow a {
+    color: var(--warm-text);
+    text-decoration: none;
+  }
+  .eyebrow a:hover {
+    text-decoration: underline;
+  }
+  h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: var(--weight-black);
+    letter-spacing: -0.02em;
+  }
 
-  .form { display: flex; flex-direction: column; gap: var(--space-5); padding-block: var(--space-6); }
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  .field.inline { flex-direction: row; align-items: center; gap: var(--space-3); }
-  .field.inline label { order: 2; }
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field.inline {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .field.inline label {
+    order: 2;
+  }
 
-  label { font-size: var(--text-meta); font-weight: var(--weight-bold);
-          letter-spacing: var(--tracking-meta); text-transform: uppercase; color: var(--text-2); }
-  .req { color: var(--warm-text); margin-inline-start: 3px; }
+  label {
+    font-size: var(--text-meta);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-meta);
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .req {
+    color: var(--warm-text);
+    margin-inline-start: 3px;
+  }
 
-  input[type="text"], input[type="url"], input[type="date"], input[type="number"], textarea {
+  input[type="text"],
+  input[type="url"],
+  input[type="date"],
+  input[type="number"],
+  textarea {
     padding: 10px 12px;
-    font-family: var(--font-sans); font-size: var(--text-body-sm);
-    color: var(--text); background: var(--surface);
+    font-family: var(--font-sans);
+    font-size: var(--text-body-sm);
+    color: var(--text);
+    background: var(--surface);
     border: var(--border-strong);
   }
-  textarea { resize: vertical; font-family: var(--font-mono, monospace); line-height: 1.6; }
-  input:focus-visible, textarea:focus-visible {
-    outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset);
+  textarea {
+    resize: vertical;
+    font-family: var(--font-mono, monospace);
+    line-height: 1.6;
   }
-  .help { margin: 0; font-size: 12px; color: var(--text-3); }
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+  .help {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-3);
+  }
 
-  .actions { display: flex; align-items: center; gap: var(--space-4); margin-block-start: var(--space-3); }
-  .status { font-size: var(--text-body-sm); color: var(--text-2); }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-block-start: var(--space-3);
+  }
+  .status {
+    font-size: var(--text-body-sm);
+    color: var(--text-2);
+  }
 </style>

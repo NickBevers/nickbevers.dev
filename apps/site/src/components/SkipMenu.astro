@@ -14,7 +14,12 @@
     </li>
     <li class="sections" hidden data-skip-sections>
       <span class="lbl" id="skip-sections-label">Sections on this page</span>
-      <ul role="list" aria-labelledby="skip-sections-label" data-skip-section-list></ul>
+      <ul
+        role="list"
+        aria-labelledby="skip-sections-label"
+        data-skip-section-list
+      >
+      </ul>
     </li>
     <li><a href="#contact">Skip to contact details</a></li>
   </ul>
@@ -82,7 +87,8 @@
       if (!a) return;
       var target = document.getElementById(a.getAttribute("href").slice(1));
       if (!target) return;
-      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      if (!target.hasAttribute("tabindex"))
+        target.setAttribute("tabindex", "-1");
       requestAnimationFrame(function () {
         target.focus({ preventScroll: true });
       });
@@ -115,7 +121,8 @@
       if (e.key === "Escape") {
         menu.classList.remove("is-open");
         if (main) {
-          if (!main.hasAttribute("tabindex")) main.setAttribute("tabindex", "-1");
+          if (!main.hasAttribute("tabindex"))
+            main.setAttribute("tabindex", "-1");
           main.focus({ preventScroll: true });
         }
       }
@@ -149,12 +156,20 @@
     transform: translateY(0);
   }
   @media (prefers-reduced-motion: reduce) {
-    .skipmenu { transition: none; }
+    .skipmenu {
+      transition: none;
+    }
   }
 
-  ul { list-style: none; margin: 0; padding: 0; }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-  li + li { margin-block-start: 2px; }
+  li + li {
+    margin-block-start: 2px;
+  }
 
   a,
   button {
@@ -203,7 +218,10 @@
     text-transform: uppercase;
     color: var(--text-3);
   }
-  .sections a { font-size: var(--text-body-sm); font-weight: var(--weight-regular); }
+  .sections a {
+    font-size: var(--text-body-sm);
+    font-weight: var(--weight-regular);
+  }
 
   .key {
     flex: none;

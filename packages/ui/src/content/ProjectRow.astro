@@ -18,8 +18,16 @@ const attrs = href ? { href } : {};
     <span class="name">{name}</span>
     <span class="leader" aria-hidden="true"></span>
     <span class="year">{year}</span>
-    {/* only on a real link: an arrow on a plain div promises a click that does not exist */}
-    {href && <span class="arrow" aria-hidden="true">→</span>}
+    {
+      /* only on a real link: an arrow on a plain div promises a click that does not exist */
+    }
+    {
+      href && (
+        <span class="arrow" aria-hidden="true">
+          →
+        </span>
+      )
+    }
   </div>
   <div class="bottom">
     <span class="blurb">{blurb}</span>
@@ -39,13 +47,20 @@ const attrs = href ? { href } : {};
     font-family: var(--font-sans);
     transition: background var(--dur) var(--ease);
   }
-  a.row:hover { background: var(--accent-bg); }
+  a.row:hover {
+    background: var(--accent-bg);
+  }
   a.row:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: -1px;
   }
 
-  .top { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+  .top {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
   .idx {
     flex: none;
     inline-size: 30px;
@@ -86,7 +101,9 @@ const attrs = href ? { href } : {};
     transition: transform 0.3s var(--ease);
   }
   a.row:hover .arrow,
-  a.row:focus-visible .arrow { transform: translateX(6px); }
+  a.row:focus-visible .arrow {
+    transform: translateX(6px);
+  }
 
   .bottom {
     display: flex;
@@ -115,18 +132,36 @@ const attrs = href ? { href } : {};
   }
 
   @media (max-width: 560px) {
-    .bottom { padding-inline-start: 0; }
-    .name { flex-basis: 100%; font-size: 20px; }
+    .bottom {
+      padding-inline-start: 0;
+    }
+    .name {
+      flex-basis: 100%;
+      font-size: 20px;
+    }
     /* the leader is pure decoration; below the wrap it only adds clutter */
-    .leader { display: none; }
-    .idx { inline-size: auto; }
+    .leader {
+      display: none;
+    }
+    .idx {
+      inline-size: auto;
+    }
   }
 
   /* The row is a flex line of number, name, leader, year and arrow */
-  .top { min-inline-size: 0; }
-  .name { overflow-wrap: anywhere; }
+  .top {
+    min-inline-size: 0;
+  }
+  .name {
+    overflow-wrap: anywhere;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .row, .arrow { transition: none; }
-    a.row:hover .arrow { transform: none; }
+    .row,
+    .arrow {
+      transition: none;
+    }
+    a.row:hover .arrow {
+      transform: none;
+    }
   }
 </style>

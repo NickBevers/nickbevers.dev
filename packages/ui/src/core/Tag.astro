@@ -8,13 +8,26 @@ interface Props {
   class?: string;
   [key: string]: unknown;
 }
-const { tone = "outline", as = "span", href, pressed, class: className, ...rest } = Astro.props;
+const {
+  tone = "outline",
+  as = "span",
+  href,
+  pressed,
+  class: className,
+  ...rest
+} = Astro.props;
 const Tag = href ? "a" : as;
-const attrs: Record<string, unknown> = href ? { href } : as === "button" ? { type: "button" } : {};
+const attrs: Record<string, unknown> = href
+  ? { href }
+  : as === "button"
+    ? { type: "button" }
+    : {};
 if (pressed !== undefined) attrs["aria-pressed"] = String(pressed);
 ---
 
-<Tag class:list={["tag", `t-${tone}`, className]} {...attrs} {...rest}><slot /></Tag>
+<Tag class:list={["tag", `t-${tone}`, className]} {...attrs} {...rest}
+  ><slot /></Tag
+>
 
 <style>
   .tag {
@@ -30,19 +43,49 @@ if (pressed !== undefined) attrs["aria-pressed"] = String(pressed);
     text-transform: uppercase;
     text-decoration: none;
     border-radius: var(--radius);
-    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+    transition:
+      background var(--dur) var(--ease),
+      color var(--dur) var(--ease);
   }
-  .t-outline { color: var(--text-3); background: transparent; border: 1px solid var(--line-strong); }
-  .t-active  { color: var(--accent-on); background: var(--accent); border: 1px solid var(--line-strong); }
-  .t-solid   { color: var(--warm-on); background: var(--warm); border: 1px solid var(--line-strong); }
+  .t-outline {
+    color: var(--text-3);
+    background: transparent;
+    border: 1px solid var(--line-strong);
+  }
+  .t-active {
+    color: var(--accent-on);
+    background: var(--accent);
+    border: 1px solid var(--line-strong);
+  }
+  .t-solid {
+    color: var(--warm-on);
+    background: var(--warm);
+    border: 1px solid var(--line-strong);
+  }
 
-  a.tag:hover, button.tag:hover { background: var(--accent-bg); color: var(--accent); }
-  .t-active:hover { background: var(--accent); color: var(--accent-on); }
+  a.tag:hover,
+  button.tag:hover {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  .t-active:hover {
+    background: var(--accent);
+    color: var(--accent-on);
+  }
 
-  a.tag:focus-visible, button.tag:focus-visible {
+  a.tag:focus-visible,
+  button.tag:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: var(--focus-offset);
   }
-  button.tag { cursor: pointer; font: inherit; font-size: var(--text-meta); }
-  @media (prefers-reduced-motion: reduce) { .tag { transition: none; } }
+  button.tag {
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--text-meta);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tag {
+      transition: none;
+    }
+  }
 </style>

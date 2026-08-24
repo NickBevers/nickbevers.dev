@@ -1,14 +1,24 @@
 ---
 // Theme toggle
 ---
+
 <button type="button" class="tt" data-theme-toggle aria-pressed="false">
   <span class="icon" aria-hidden="true">
-    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <circle cx="12" cy="12" r="4.5" />
-      <path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+    <svg
+      class="sun"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    >
+      <circle cx="12" cy="12" r="4.5"></circle>
+      <path
+        d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"
+      ></path>
     </svg>
     <svg class="moon" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M20.4 14.7A8.5 8.5 0 1 1 9.3 3.6a7 7 0 0 0 11.1 11.1z" />
+      <path d="M20.4 14.7A8.5 8.5 0 1 1 9.3 3.6a7 7 0 0 0 11.1 11.1z"></path>
     </svg>
   </span>
   <!-- Server-rendered as "Light" because the document starts light; the
@@ -26,13 +36,19 @@
       // The label names the theme currently ON.
       if (label) label.textContent = dark ? "Dark" : "Light";
       btn.setAttribute("aria-pressed", String(dark));
-      btn.setAttribute("title", dark ? "Switch to the light theme" : "Switch to the dark theme");
+      btn.setAttribute(
+        "title",
+        dark ? "Switch to the light theme" : "Switch to the dark theme",
+      );
     };
     sync();
     btn.addEventListener("click", function () {
-      var next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      var next =
+        document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       document.documentElement.dataset.theme = next;
-      try { localStorage.setItem("nb-theme", next); } catch (e) {}
+      try {
+        localStorage.setItem("nb-theme", next);
+      } catch (e) {}
       sync();
     });
   })();
@@ -54,15 +70,19 @@
     cursor: pointer;
     transition: color var(--dur) var(--ease);
   }
-  .tt:hover { color: var(--accent); }
+  .tt:hover {
+    color: var(--accent);
+  }
   .tt:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: var(--focus-offset);
   }
   .label {
     position: absolute;
-    inline-size: 1px; block-size: 1px;
-    padding: 0; margin: -1px;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
@@ -81,14 +101,32 @@
     inset: 0;
     inline-size: 100%;
     block-size: 100%;
-    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+    transition:
+      opacity var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
   }
-  .sun { opacity: 1; transform: rotate(0deg) scale(1); }
-  .moon { opacity: 0; transform: rotate(-90deg) scale(0.6); }
-  .tt[aria-pressed="true"] .sun { opacity: 0; transform: rotate(90deg) scale(0.6); }
-  .tt[aria-pressed="true"] .moon { opacity: 1; transform: rotate(0deg) scale(1); }
+  .sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+  .moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.6);
+  }
+  .tt[aria-pressed="true"] .sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.6);
+  }
+  .tt[aria-pressed="true"] .moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
   @media (prefers-reduced-motion: reduce) {
-    .tt { transition: none; }
-    .icon svg { transition: none; }
+    .tt {
+      transition: none;
+    }
+    .icon svg {
+      transition: none;
+    }
   }
 </style>

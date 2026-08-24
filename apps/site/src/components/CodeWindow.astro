@@ -1,9 +1,12 @@
 ---
 import WindowCard from "@nb/ui/core/WindowCard.astro";
 // Terminal chrome around a fenced code block
-interface Props { filename: string; }
+interface Props {
+  filename: string;
+}
 const { filename } = Astro.props;
 ---
+
 <div class="wrap">
   <WindowCard filename={filename}>
     <div class="body"><slot /></div>
@@ -11,8 +14,12 @@ const { filename } = Astro.props;
 </div>
 
 <style>
-  .wrap { margin-block: var(--space-7); }
-  .body { background: var(--surface); }
+  .wrap {
+    margin-block: var(--space-7);
+  }
+  .body {
+    background: var(--surface);
+  }
 </style>
 
 <script is:inline>

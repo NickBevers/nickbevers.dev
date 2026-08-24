@@ -1,6 +1,11 @@
 ---
 // Marks a block for scroll reveal
-interface Props { as?: string; class?: string; id?: string }
+interface Props {
+  as?: string;
+  class?: string;
+  id?: string;
+}
 const { as: Tag = "div", class: className, id } = Astro.props;
 ---
+
 <Tag class:list={["reveal", className]} id={id}><slot /></Tag>

@@ -1,11 +1,14 @@
 ---
 // Blocking, inlined, runs before first paint
 ---
+
 <script is:inline>
   (function () {
     try {
       var stored = localStorage.getItem("nb-theme");
-      var theme = stored || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      var theme =
+        stored ||
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
       document.documentElement.dataset.theme = theme;
     } catch (e) {
       document.documentElement.dataset.theme = "light";

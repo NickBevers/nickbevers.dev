@@ -1,6 +1,7 @@
 ---
 // The `pre` override for MDX
 ---
+
 <pre class="cb"><slot /></pre>
 
 <style>
@@ -16,8 +17,19 @@
     /* Shiki writes inline colours tuned for its own theme */
     color: var(--text-2);
   }
-  .cb :global(code) { font-family: inherit; background: none; padding: 0; }
+  .cb :global(code) {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+  }
   /* A bare fence in prose keeps its border; one inside window chrome does not. */
-  :global(.body) > .cb { margin: 0; border: 0; background: transparent; }
-  .cb:focus-visible { outline: var(--focus-width) solid var(--focus-ring); outline-offset: -3px; }
+  :global(.body) > .cb {
+    margin: 0;
+    border: 0;
+    background: transparent;
+  }
+  .cb:focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -3px;
+  }
 </style>
