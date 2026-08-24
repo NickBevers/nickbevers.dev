@@ -5,11 +5,17 @@
  * Used once per page, home only.
  *
  * Notes:
- *  - The clip-paths are static. A clip-path rasterises once; animating one
- *    forces a re-raster every frame, so this never animates.
- *  - The clipped layers hold no text, which keeps subpixel antialiasing out
- *    of the diagonal edges.
- *  - They are decorative, so the whole stack is aria-hidden.
+ *  - 38deg matches the logo mark's slash (Logo.astro's .slash drifts ~293px
+ *    over a ~372px height), so the full-bleed version and the monogram read
+ *    as the same device.
+ *  - The two rules are px-thick and skewed, never sized in a percentage of
+ *    the container. A percentage tracks viewport WIDTH while the hero's
+ *    height barely moves, which flattens the diagonal on wide screens.
+ *  - The tint wash is viewport-relative on purpose: it is a background that
+ *    has to reach the screen edge, not a shape whose proportions matter.
+ *  - Nothing here animates, and the bands hold no text, which keeps
+ *    subpixel antialiasing off the diagonal edges.
+ *  - Decorative, so the whole stack is aria-hidden.
  *  - Below the two-column breakpoint the diagonals would cut through the
  *    headline, so they are dropped rather than redrawn.
  */
@@ -22,12 +28,37 @@
 </div>
 
 <style>
-  .stripes { position: absolute; inset: 0; overflow: hidden; }
-  .stripes > * { position: absolute; inset: 0; }
+  /* A zero-width anchor marking the content edge, not the viewport edge.
+     .hero is full-bleed but the code window beside these stripes sits in
+     .measure, which stops growing and centres itself; anchoring to the
+     viewport let the stripes slide away from that window on anything wider.
+     The inset mirrors .measure's own padding-inline calc. The bands hang
+     off this box, so it never has to be as wide as the graphic. */
+  .stripes {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: max(0px, calc((100% - var(--measure)) / 2 + min(var(--gutter), 6vw)));
+    inline-size: 0;
+    overflow: visible;
+  }
 
-  .tint  { background: var(--bg-alt); clip-path: polygon(70% 0, 100% 0, 100% 100%, 100% 100%); }
-  .ink   { background: var(--text);   clip-path: polygon(59.6% 0, 61.4% 0, 91.4% 100%, 89.6% 100%); }
-  .green { background: var(--logo);   clip-path: polygon(63.4% 0, 67% 0, 97% 100%, 93.4% 100%); }
+  /* Full height of the hero, skewed around the top-right corner, so the
+     drift (tan(angle) * height) follows the hero's real height rather than
+     a guessed overscan. */
+  .stripes > * {
+    position: absolute;
+    inset-block: 0;
+    transform: skewX(38deg);
+    transform-origin: 100% 0;
+  }
+
+  /* Offsets run leftward from the anchor. The tint is the wash the two
+     rules sit on, and its right edge has to clear a viewport edge that is
+     an unknown distance away, so it is pushed out past it and widened to
+     still reach back past the rules. .hero's overflow:hidden trims it. */
+  .tint  { background: var(--bg-alt); inset-inline-end: -100vw; inline-size: calc(300px + 100vw); }
+  .ink   { background: var(--text);   inset-inline-end: 120px; inline-size: 16px; }
+  .green { background: var(--logo);   inset-inline-end: 152px; inline-size: 32px; }
 
   @media (max-width: 900px) {
     .stripes { display: none; }
