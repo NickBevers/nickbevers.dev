@@ -60,24 +60,54 @@ const path = Astro.url.pathname;
     data-nav-sheet
     hidden
   >
-    <ul role="list">
-      {
-        NAV.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              aria-current={isActive(item.href, path) ? "page" : undefined}
-            >
-              {item.label}
-              <span class="state" aria-hidden="true">
-                {isActive(item.href, path) ? "you are here" : "→"}
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <Button variant="ink" href="#contact" class="sheetCta">Get in touch</Button>
+    {/* Its own bar so the menu covers the header. Same brand and toggle. */}
+    <div class="measure sheetBar">
+      <a href="/" class="brand">
+        <Logo height={24} interactive />
+        <span class="name">Nick Bevers</span>
+      </a>
+      <div class="sheetActions">
+        <ThemeToggle />
+        <button
+          type="button"
+          class="close"
+          data-nav-close
+          aria-label="Close menu"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="measure sheetInner">
+      <ul role="list">
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href, path) ? "page" : undefined}
+              >
+                {item.label}
+                <span class="state" aria-hidden="true">
+                  {isActive(item.href, path) ? "you are here" : "→"}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <Button variant="ink" href="#contact" class="sheetCta"
+        >Get in touch</Button
+      >
+    </div>
   </nav>
 </header>
 
@@ -87,15 +117,46 @@ const path = Astro.url.pathname;
     var sheet = document.querySelector("[data-nav-sheet]");
     if (!btn || !sheet) return;
 
+    var strip = document.querySelector(".strip");
+    var closeTimer;
     function setOpen(open) {
       btn.setAttribute("aria-expanded", String(open));
-      sheet.hidden = !open;
       document.documentElement.classList.toggle("nav-open", open);
+      clearTimeout(closeTimer);
+      if (open) {
+        // Leave the status strip visible on top of the full-screen menu. Pin
+        // it and start the sheet just below its measured height.
+        if (strip)
+          sheet.style.setProperty("--sheet-top", strip.offsetHeight + "px");
+        // Unhide first, then flip to the open state on the next frame so the
+        // transform/opacity transition actually runs.
+        sheet.hidden = false;
+        requestAnimationFrame(function () {
+          sheet.classList.add("is-open");
+        });
+      } else {
+        sheet.classList.remove("is-open");
+        // Keep it out of the tree once the exit transition has finished.
+        var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) sheet.hidden = true;
+        else
+          closeTimer = setTimeout(function () {
+            sheet.hidden = true;
+          }, 160);
+      }
     }
 
     btn.addEventListener("click", function () {
       setOpen(btn.getAttribute("aria-expanded") !== "true");
     });
+
+    // The close control lives inside the sheet, which covers the burger.
+    var closeBtn = sheet.querySelector("[data-nav-close]");
+    if (closeBtn)
+      closeBtn.addEventListener("click", function () {
+        setOpen(false);
+        btn.focus();
+      });
 
     // Escape closes and returns focus to the control that opened it.
     document.addEventListener("keydown", function (e) {
@@ -286,14 +347,78 @@ const path = Astro.url.pathname;
       transform: translateY(-6px) rotate(-45deg);
     }
 
+    /* Covers everything below the status strip, header included (header z 15).
+       Solid surface so nothing shows through. Carries its own top bar. The
+       strip stays pinned above it (see :global(html.nav-open) .strip). */
     .sheet {
       display: block;
-      padding: 6px var(--gutter) 18px;
+      position: fixed;
+      inset: calc(var(--progress-h) + var(--sheet-top, 0px)) 0 0 0;
+      z-index: 30;
       background: var(--surface);
-      border-top: var(--rule-dashed);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      opacity: 0;
+      transition: opacity var(--dur-fast) var(--ease);
+    }
+    :global(html.nav-open) .strip {
+      position: fixed;
+      inset-block-start: var(--progress-h);
+      inset-inline: 0;
+      z-index: 35;
+    }
+    .sheet.is-open {
+      opacity: 1;
     }
     .sheet[hidden] {
       display: none;
+    }
+
+    /* Mirrors the header row so the swap reads as one bar, not two. */
+    .sheetBar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      block-size: calc(var(--header-h-mobile) - 1px);
+      box-sizing: border-box;
+      border-block-end: var(--rule-dashed);
+    }
+    .sheetActions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sheetActions :global(.tt) {
+      inline-size: 40px;
+      block-size: 40px;
+      min-inline-size: 0;
+      min-block-size: 0;
+      padding: 0;
+      justify-content: center;
+      border: var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+    }
+    .close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 40px;
+      block-size: 40px;
+      padding: 0;
+      color: var(--text);
+      background: var(--surface);
+      border: var(--border-strong);
+      cursor: pointer;
+    }
+    .close:focus-visible {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+
+    .sheetInner {
+      padding-block: 6px 18px;
     }
     .sheet ul {
       list-style: none;
@@ -344,6 +469,9 @@ const path = Astro.url.pathname;
 
   @media (prefers-reduced-motion: reduce) {
     .bars > span {
+      transition: none;
+    }
+    .sheet {
       transition: none;
     }
   }

@@ -33,8 +33,8 @@ const work = await getWork();
         <div class="measure heroInner">
           <div class="copy">
             <p class="eyebrow">
-              <span class="rule" aria-hidden="true" />
-              Signal found, please adjust your set
+              <span class="dot" aria-hidden="true" />
+              Welcome, you're in the right place
             </p>
             <h1>
               Frontend developer,
@@ -219,11 +219,18 @@ const work = await getWork();
     text-transform: uppercase;
     color: var(--warm-text);
   }
-  .rule {
-    inline-size: 26px;
-    block-size: 1px;
+  .eyebrow .dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
     background: var(--warm);
     flex: none;
+    animation: nbBlink 1.4s step-end infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow .dot {
+      animation: none;
+    }
   }
 
   h1 {
@@ -485,9 +492,9 @@ const work = await getWork();
   }
   .wip .leader {
     flex: 1 1 auto;
+    block-size: 0;
     border-bottom: var(--leader);
     opacity: 0.4;
-    transform: translateY(-0.2em);
   }
   .blink {
     inline-size: 8px;

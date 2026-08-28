@@ -10,35 +10,95 @@ interface Props {
   target?: string;
 }
 const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
+
+const buttons = tags.map((t, i) => ({
+  ...t,
+  pressed: i === 0 ? "true" : "false",
+}));
 ---
 
-<fieldset class="wrap" data-tag-filter data-target={target}>
-  <div class="row">
-    <legend class="label">{label}</legend>
-    <div class="tags">
-      {/* No aria-label */}
-      {
-        tags.map((t, i) => (
-          <button
-            type="button"
-            class="tag"
-            data-tag={t.name}
-            aria-pressed={i === 0 ? "true" : "false"}
-          >
-            {t.name}
-            <span class="count" aria-hidden="true">
-              {t.count}
-            </span>
-            <span class="sr-only">
-              , {t.count} {t.count === 1 ? "entry" : "entries"}
-            </span>
-          </button>
-        ))
-      }
+<div class="wrap" data-tag-filter data-target={target}>
+  {/* Desktop: the tag row sits inline. */}
+  <fieldset class="desk">
+    <div class="row">
+      <legend class="label">{label}</legend>
+      <div class="tags">
+        {
+          buttons.map((t) => (
+            <button
+              type="button"
+              class="tag"
+              data-tag={t.name}
+              aria-pressed={t.pressed}
+            >
+              {t.name}
+              <span class="count" aria-hidden="true">
+                {t.count}
+              </span>
+              <span class="sr-only">
+                , {t.count} {t.count === 1 ? "entry" : "entries"}
+              </span>
+            </button>
+          ))
+        }
+      </div>
     </div>
-  </div>
+  </fieldset>
+
+  {/* Mobile: a trigger opens the tags in a fullscreen dialog. */}
+  <button type="button" class="trigger" data-filter-open aria-haspopup="dialog">
+    <span class="trigger-label">{label}</span>
+    <span class="trigger-active" data-active-label>{buttons[0].name}</span>
+    <svg
+      class="trigger-icon"
+      viewBox="0 0 16 16"
+      width="16"
+      height="16"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 6l4 4 4-4"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.6"></path>
+    </svg>
+  </button>
+
+  <dialog class="sheet" data-filter-dialog aria-label={`${label} by tag`}>
+    <div class="sheet-head">
+      <p class="sheet-title">{label}</p>
+      <button type="button" class="sheet-close" data-filter-close>
+        Close
+        <span class="sr-only">the filter</span>
+      </button>
+    </div>
+    <fieldset class="sheet-body">
+      <legend class="sr-only">{label} by tag</legend>
+      <div class="sheet-tags">
+        {
+          buttons.map((t) => (
+            <button
+              type="button"
+              class="tag tag-block"
+              data-tag={t.name}
+              aria-pressed={t.pressed}
+            >
+              {t.name}
+              <span class="count" aria-hidden="true">
+                {t.count}
+              </span>
+              <span class="sr-only">
+                , {t.count} {t.count === 1 ? "entry" : "entries"}
+              </span>
+            </button>
+          ))
+        }
+      </div>
+    </fieldset>
+  </dialog>
+
   <output class="sr-only" aria-live="polite"></output>
-</fieldset>
+</div>
 
 <script is:inline>
   (function () {
@@ -47,6 +107,10 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
     var out = root.querySelector("output");
     var buttons = root.querySelectorAll("button[data-tag]");
     var selector = root.dataset.target || "[data-entry]";
+    var dialog = root.querySelector("[data-filter-dialog]");
+    var openBtn = root.querySelector("[data-filter-open]");
+    var closeBtn = root.querySelector("[data-filter-close]");
+    var activeLabel = root.querySelector("[data-active-label]");
     var first = true;
 
     function apply(tag, push) {
@@ -64,6 +128,7 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
           String(buttons[j].dataset.tag === tag),
         );
       }
+      if (activeLabel) activeLabel.textContent = tag;
       out.textContent = first
         ? ""
         : shown + (shown === 1 ? " entry" : " entries") + " shown";
@@ -77,10 +142,29 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
       }
     }
 
+    function openSheet() {
+      if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+    }
+    function closeSheet() {
+      if (dialog && dialog.open) dialog.close();
+    }
+
     root.addEventListener("click", function (e) {
       var btn = e.target.closest("button[data-tag]");
-      if (btn) apply(btn.dataset.tag, true);
+      if (btn) {
+        apply(btn.dataset.tag, true);
+        // Picking a tag inside the sheet closes it.
+        if (dialog && dialog.contains(btn)) closeSheet();
+      }
     });
+
+    if (openBtn) openBtn.addEventListener("click", openSheet);
+    if (closeBtn) closeBtn.addEventListener("click", closeSheet);
+    // A click on the backdrop lands on the dialog element itself.
+    if (dialog)
+      dialog.addEventListener("click", function (e) {
+        if (e.target === dialog) closeSheet();
+      });
 
     function fromUrl() {
       var t = new URLSearchParams(location.search).get("tag");
@@ -100,6 +184,12 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
 
 <style>
   .wrap {
+    display: block;
+    min-inline-size: 0;
+  }
+
+  /* Desktop row */
+  .desk {
     display: block;
     margin: 0;
     padding: 0;
@@ -128,6 +218,7 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
     flex-wrap: wrap;
     gap: var(--space-2);
   }
+
   .tag {
     display: inline-flex;
     align-items: center;
@@ -164,9 +255,134 @@ const { tags, label = "Filter", target = "[data-entry]" } = Astro.props;
     font-variant-numeric: tabular-nums;
     opacity: 0.65;
   }
+
+  /* The trigger and the dialog only exist on mobile. */
+  .trigger,
+  .sheet {
+    display: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .tag {
       transition: none;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .desk {
+      display: none;
+    }
+
+    .trigger {
+      display: flex;
+      inline-size: 100%;
+      align-items: center;
+      gap: 10px;
+      min-block-size: var(--tap-min);
+      padding: 10px 12px;
+      font-family: var(--font-sans);
+      font-size: var(--text-meta);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-meta);
+      text-transform: uppercase;
+      color: var(--text-2);
+      background: transparent;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    .trigger:focus-visible {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+    .trigger-label {
+      color: var(--text-3);
+    }
+    .trigger-active {
+      color: var(--accent);
+    }
+    .trigger-icon {
+      margin-inline-start: auto;
+      color: var(--text-3);
+    }
+
+    /* Native <dialog> as a fullscreen sheet. */
+    .sheet {
+      inline-size: 100%;
+      max-inline-size: 100%;
+      block-size: 100%;
+      max-block-size: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .sheet[open] {
+      display: flex;
+      flex-direction: column;
+    }
+    .sheet::backdrop {
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-block-size: var(--header-h-mobile);
+      padding-inline: var(--gutter);
+      border-bottom: var(--rule-heavy);
+    }
+    .sheet-title {
+      margin: 0;
+      font-size: var(--text-meta);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-eyebrow);
+      text-transform: uppercase;
+      color: var(--warm-text);
+    }
+    .sheet-close {
+      min-block-size: var(--tap-min);
+      padding: 6px 4px;
+      font-family: var(--font-sans);
+      font-size: var(--text-meta);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-meta);
+      text-transform: uppercase;
+      color: var(--text-2);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+    .sheet-close:focus-visible {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+
+    .sheet-body {
+      flex: 1 1 auto;
+      margin: 0;
+      padding: var(--gutter);
+      border: 0;
+      min-inline-size: 0;
+      overflow-y: auto;
+    }
+    .sheet-tags {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .tag-block {
+      justify-content: flex-start;
+      inline-size: 100%;
+      min-block-size: 48px;
+      padding: 12px 14px;
+      font-size: var(--text-body-sm);
+    }
+    .tag-block .count {
+      margin-inline-start: auto;
     }
   }
 </style>

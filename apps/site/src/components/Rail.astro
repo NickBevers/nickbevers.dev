@@ -57,18 +57,20 @@ const stamp = (updated ?? new Date()).toLocaleDateString("en-GB", {
     </div>
   </RailPanel>
 
-  <div class="badges">
-    <WebBadge preset="handmade" tilt={-2} />
-    <WebBadge preset="rss" tilt={2} href="/rss.xml" />
-    <WebBadge preset="notrackers" tilt={-2} />
-    <WebBadge
-      preset="viewsource"
-      tilt={2}
-      href="https://github.com/NickBevers"
-    />
-  </div>
+  <div class="foot">
+    <div class="badges">
+      <WebBadge preset="handmade" tilt={-2} />
+      <WebBadge preset="rss" tilt={2} href="/rss.xml" />
+      <WebBadge preset="notrackers" tilt={-2} />
+      <WebBadge
+        preset="viewsource"
+        tilt={2}
+        href="https://github.com/NickBevers"
+      />
+    </div>
 
-  <p class="stamp">Last updated<br /><span>{stamp}</span></p>
+    <p class="stamp">Last updated<br /><span>{stamp}</span></p>
+  </div>
 </aside>
 
 <style>
@@ -84,7 +86,9 @@ const stamp = (updated ?? new Date()).toLocaleDateString("en-GB", {
   @media (max-width: 900px) {
     .rail {
       position: static;
-      padding-block-start: var(--space-8);
+      /* With the grid row-gap zeroed, this is the single separator between the
+         stacked content and the rail. One clean step, not the old ~124px. */
+      padding-block-start: var(--space-7);
     }
   }
 
@@ -205,11 +209,13 @@ const stamp = (updated ?? new Date()).toLocaleDateString("en-GB", {
     color: var(--text-3);
   }
 
+  .foot {
+    margin-block-start: 18px;
+  }
   .badges {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
-    margin-block-start: 18px;
   }
 
   .stamp {
@@ -223,5 +229,24 @@ const stamp = (updated ?? new Date()).toLocaleDateString("en-GB", {
   }
   .stamp span {
     color: var(--accent);
+  }
+
+  /* Below the rail goes full width. The four 88px badges wrap to a 2x2 block
+     and the stamp moves into the free space beside it. */
+  @media (max-width: 900px) {
+    .foot {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-5);
+    }
+    .badges {
+      max-inline-size: 192px;
+    }
+    .stamp {
+      margin-block-start: 0;
+      text-align: end;
+    }
   }
 </style>

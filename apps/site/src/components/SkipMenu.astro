@@ -25,6 +25,7 @@
   </ul>
   <p class="hint">
     <span class="key" aria-hidden="true">Alt + /</span>
+    <span class="key" aria-hidden="true">Alt + .</span>
     reopens this menu from anywhere.
   </p>
 </nav>
@@ -72,6 +73,7 @@
         }
         var li = document.createElement("li");
         var a = document.createElement("a");
+        a.className = "section-link";
         a.href = "#" + h.id;
         a.textContent = text;
         li.appendChild(a);
@@ -102,15 +104,21 @@
     }
     if (settings) settings.addEventListener("click", openSettings);
 
+    function openMenu() {
+      menu.classList.add("is-open");
+      var first = menu.querySelector("[data-skip-first]");
+      if (first) first.focus();
+    }
+
     document.addEventListener("keydown", function (e) {
       if (!e.altKey || e.ctrlKey || e.metaKey) return;
 
-      if (e.key === "/" || e.code === "Slash") {
+      // Match the physical key. On a Mac, Option turns e.key into a
+      // composed character, so e.code is the only reliable check.
+      if (e.code === "Slash" || e.code === "Period") {
         e.preventDefault();
-        menu.classList.add("is-open");
-        var first = menu.querySelector("[data-skip-first]");
-        if (first) first.focus();
-      } else if (e.key === "d" || e.key === "D") {
+        openMenu();
+      } else if (e.code === "KeyD") {
         e.preventDefault();
         openSettings();
       }
@@ -218,9 +226,32 @@
     text-transform: uppercase;
     color: var(--text-3);
   }
-  .sections a {
+  /* The section links are injected by script, so they miss the scoped
+     `a` rule above and inherit the page's serif link style. Restyle them
+     to match the rest of the menu. */
+  .sections :global(.section-link) {
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+    min-block-size: var(--tap-min);
+    padding: 7px 9px;
+
+    font-family: var(--font-sans);
     font-size: var(--text-body-sm);
     font-weight: var(--weight-regular);
+    text-align: start;
+    color: var(--text);
+    text-decoration: none;
+
+    border: 1px solid transparent;
+  }
+  .sections :global(.section-link:hover) {
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  .sections :global(.section-link:focus-visible) {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: -1px;
   }
 
   .key {

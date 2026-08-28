@@ -80,6 +80,10 @@ main a:not([class]):hover,
 @media (max-width: 900px) {
   .with-rail {
     grid-template-columns: minmax(0, 1fr);
+    /* Stacked, the 44px column gap becomes a vertical gap that stacks on top
+       of the content's own bottom padding and the rail's top padding. Zero it
+       and let those paddings carry the separation. */
+    row-gap: 0;
   }
 }
 

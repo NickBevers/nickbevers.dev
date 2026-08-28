@@ -28,29 +28,36 @@
 
 <script is:inline>
   (function () {
-    var btn = document.querySelector("[data-theme-toggle]");
-    if (!btn) return;
-    var label = btn.querySelector("[data-theme-label]");
+    // There can be more than one toggle on the page (the header and the open
+    // mobile menu render the same component). Wire them all and keep in sync.
+    var btns = document.querySelectorAll("[data-theme-toggle]");
+    if (!btns.length) return;
     var sync = function () {
       var dark = document.documentElement.dataset.theme === "dark";
-      // The label names the theme currently ON.
-      if (label) label.textContent = dark ? "Dark" : "Light";
-      btn.setAttribute("aria-pressed", String(dark));
-      btn.setAttribute(
-        "title",
-        dark ? "Switch to the light theme" : "Switch to the dark theme",
-      );
+      for (var i = 0; i < btns.length; i++) {
+        var btn = btns[i];
+        var label = btn.querySelector("[data-theme-label]");
+        // The label names the theme currently ON.
+        if (label) label.textContent = dark ? "Dark" : "Light";
+        btn.setAttribute("aria-pressed", String(dark));
+        btn.setAttribute(
+          "title",
+          dark ? "Switch to the light theme" : "Switch to the dark theme",
+        );
+      }
     };
     sync();
-    btn.addEventListener("click", function () {
-      var next =
-        document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-      document.documentElement.dataset.theme = next;
-      try {
-        localStorage.setItem("nb-theme", next);
-      } catch (e) {}
-      sync();
-    });
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].addEventListener("click", function () {
+        var next =
+          document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem("nb-theme", next);
+        } catch (e) {}
+        sync();
+      });
+    }
   })();
 </script>
 

@@ -132,7 +132,9 @@
   --warm: var(--nb-sand-500); /*  7.69 on --bg: fine as text here */
   --warm-text: var(--nb-sand-500);
   --warm-2: var(--nb-sand-800);
-  --warm-bg: var(--nb-clay-900);
+  /* A clay surface reads as mud on the dark green. This warm olive keeps the
+     warmth but sits in the green family. text-2 7.84, depth 1.36 on --bg. */
+  --warm-bg: #33372c;
   --warm-on: var(--nb-green-900); /*  7.69 on --warm */
   --warm-dim: var(--nb-sand-300); /* 10.68 on --warm-on */
   --pill-on: var(--nb-green-900); /*  4.74 on --accent-2 */

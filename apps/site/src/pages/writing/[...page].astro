@@ -76,15 +76,19 @@ const urlFor = (n: number) => (n === 1 ? "/writing/" : `/writing/${n}/`);
 
         {page.data.length === 0 && <p class="empty">Nothing here yet.</p>}
 
-        <div class="pag">
-          <Pagination
-            page={page.currentPage}
-            lastPage={page.lastPage}
-            urlFor={urlFor}
-            prevUrl={page.url.prev}
-            nextUrl={page.url.next}
-          />
-        </div>
+        {
+          page.lastPage > 1 && (
+            <div class="pag">
+              <Pagination
+                page={page.currentPage}
+                lastPage={page.lastPage}
+                urlFor={urlFor}
+                prevUrl={page.url.prev}
+                nextUrl={page.url.next}
+              />
+            </div>
+          )
+        }
       </section>
     </div>
     <Rail />
