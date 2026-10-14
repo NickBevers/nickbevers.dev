@@ -30,6 +30,12 @@ const SETTINGS = [
     hint: "Marks links in text by more than colour alone.",
   },
 ] as const;
+
+const SIZES = [
+  { value: "default", label: "Default" },
+  { value: "large", label: "Large" },
+  { value: "larger", label: "Larger" },
+] as const;
 ---
 
 <button
@@ -84,18 +90,50 @@ const SETTINGS = [
       }
 
       <li>
-        <div class="row">
+        <div class="row row-pick">
           <span class="text">
-            <label class="lbl" for="a11y-size">Text size</label>
+            <span class="lbl" id="a11y-size-lbl">Text size</span>
             <span class="hint"
               >Your browser's zoom also works, and scales images too.</span
             >
           </span>
-          <select id="a11y-size" data-a11y-size>
-            <option value="default">Default</option>
-            <option value="large">Large</option>
-            <option value="larger">Larger</option>
-          </select>
+          {/* Select-only combobox, per the APG pattern */}
+          <div class="pick" data-a11y-pick>
+            <button
+              type="button"
+              class="pick-btn"
+              role="combobox"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="a11y-size-list"
+              aria-labelledby="a11y-size-lbl"
+              data-a11y-size
+            >
+              <span data-a11y-size-value>Default</span>
+              <span class="caret" aria-hidden="true"></span>
+            </button>
+            <ul
+              class="pick-list"
+              id="a11y-size-list"
+              role="listbox"
+              aria-labelledby="a11y-size-lbl"
+              tabindex="-1"
+              hidden
+            >
+              {
+                SIZES.map((o) => (
+                  <li
+                    role="option"
+                    id={`a11y-size-${o.value}`}
+                    data-value={o.value}
+                    aria-selected="false"
+                  >
+                    {o.label}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
         </div>
       </li>
     </ul>
@@ -140,12 +178,65 @@ const SETTINGS = [
         else root.removeAttribute(attr);
         t.checked = !!state[id];
       }
-      var size = dialog.querySelector("[data-a11y-size]");
       if (state.size && state.size !== "default")
         root.setAttribute("data-a11y-size", state.size);
       else root.removeAttribute("data-a11y-size");
-      if (size) size.value = state.size || "default";
+      showSize(state.size || "default");
       write(state);
+    }
+
+    var btn = dialog.querySelector("[data-a11y-size]");
+    var list = dialog.querySelector("#a11y-size-list");
+    var opts = list.querySelectorAll("[role=option]");
+    var active = 0;
+
+    function showSize(value) {
+      for (var i = 0; i < opts.length; i++) {
+        var on = opts[i].getAttribute("data-value") === value;
+        opts[i].setAttribute("aria-selected", String(on));
+        if (on) {
+          active = i;
+          btn.querySelector("[data-a11y-size-value]").textContent =
+            opts[i].textContent.trim();
+        }
+      }
+    }
+
+    function highlight(i) {
+      active = Math.max(0, Math.min(opts.length - 1, i));
+      for (var j = 0; j < opts.length; j++)
+        opts[j].toggleAttribute("data-active", j === active);
+      btn.setAttribute("aria-activedescendant", opts[active].id);
+    }
+
+    function isOpen() {
+      return btn.getAttribute("aria-expanded") === "true";
+    }
+
+    function openList() {
+      if (isOpen()) return;
+      list.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      // Flip upward when the panel has no room below
+      list.removeAttribute("data-up");
+      var box = dialog.getBoundingClientRect();
+      if (list.getBoundingClientRect().bottom > box.bottom)
+        list.setAttribute("data-up", "");
+      for (var i = 0; i < opts.length; i++)
+        if (opts[i].getAttribute("aria-selected") === "true") highlight(i);
+    }
+
+    function closeList() {
+      list.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+      btn.removeAttribute("aria-activedescendant");
+    }
+
+    function choose(i) {
+      var state = read();
+      state.size = opts[i].getAttribute("data-value");
+      apply(state);
+      closeList();
     }
 
     // Listeners are attached on first open, not on load
@@ -157,11 +248,8 @@ const SETTINGS = [
       dialog.addEventListener("change", function (e) {
         var t = e.target;
         var state = read();
-        if (t.hasAttribute("data-a11y-toggle")) {
-          state[t.getAttribute("data-a11y-toggle")] = t.checked;
-        } else if (t.hasAttribute("data-a11y-size")) {
-          state.size = t.value;
-        } else return;
+        if (!t.hasAttribute("data-a11y-toggle")) return;
+        state[t.getAttribute("data-a11y-toggle")] = t.checked;
         apply(state);
       });
 
@@ -169,6 +257,70 @@ const SETTINGS = [
         if (e.target === dialog) dialog.close();
         else if (e.target.closest("[data-a11y-reset]")) apply({});
       });
+
+      btn.addEventListener("click", function () {
+        if (isOpen()) closeList();
+        else openList();
+      });
+
+      btn.addEventListener("keydown", function (e) {
+        var k = e.key;
+        if (!isOpen()) {
+          if (
+            k === "ArrowDown" ||
+            k === "ArrowUp" ||
+            k === "Enter" ||
+            k === " "
+          ) {
+            e.preventDefault();
+            openList();
+          } else if (k === "Home" || k === "End") {
+            e.preventDefault();
+            openList();
+            highlight(k === "Home" ? 0 : opts.length - 1);
+          }
+          return;
+        }
+        if (k === "ArrowDown" || k === "ArrowUp") {
+          e.preventDefault();
+          if (e.altKey && k === "ArrowUp") choose(active);
+          else highlight(active + (k === "ArrowDown" ? 1 : -1));
+        } else if (k === "Home" || k === "End") {
+          e.preventDefault();
+          highlight(k === "Home" ? 0 : opts.length - 1);
+        } else if (k === "Enter" || k === " ") {
+          e.preventDefault();
+          choose(active);
+        } else if (k === "Tab") {
+          choose(active);
+        } else if (k === "Escape") {
+          // Close the list, not the whole dialog
+          e.preventDefault();
+          e.stopPropagation();
+          closeList();
+        }
+      });
+
+      btn.addEventListener("blur", closeList);
+      // Safari never focuses a clicked button, so blur alone is not enough
+      dialog.addEventListener("pointerdown", function (e) {
+        if (isOpen() && !e.target.closest("[data-a11y-pick]")) closeList();
+      });
+
+      // Keep focus on the button while picking with a pointer
+      list.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+      });
+      list.addEventListener("click", function (e) {
+        var o = e.target.closest("[role=option]");
+        if (o) choose(Array.prototype.indexOf.call(opts, o));
+      });
+      list.addEventListener("mousemove", function (e) {
+        var o = e.target.closest("[role=option]");
+        if (o) highlight(Array.prototype.indexOf.call(opts, o));
+      });
+
+      dialog.addEventListener("close", closeList);
     }
 
     open.addEventListener("click", function () {
@@ -304,7 +456,7 @@ const SETTINGS = [
     margin: 0;
     padding: var(--space-4) var(--space-5);
   }
-  .list li + li {
+  .list > li + li {
     margin-block-start: var(--space-2);
     border-top: var(--rule-dashed);
   }
@@ -315,7 +467,7 @@ const SETTINGS = [
     padding-block: var(--space-3);
     cursor: pointer;
   }
-  .row:has(select) {
+  .row-pick {
     align-items: center;
     justify-content: space-between;
     cursor: default;
@@ -343,19 +495,90 @@ const SETTINGS = [
     flex: none;
     cursor: pointer;
   }
-  select {
-    min-block-size: var(--tap-min);
-    padding: 5px 8px;
+  .pick {
+    position: relative;
+    flex: none;
+  }
+  .pick-btn,
+  .pick-list {
     font-family: var(--font-sans);
     font-size: var(--text-meta);
     font-weight: var(--weight-bold);
     letter-spacing: var(--tracking-meta);
     text-transform: uppercase;
+  }
+  .pick-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-block-size: var(--tap-min);
+    padding: 5px 8px;
     color: var(--text);
     background: var(--bg);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius);
     cursor: pointer;
+  }
+  /* A chevron drawn from two borders, so it follows currentColor */
+  .caret {
+    inline-size: 6px;
+    block-size: 6px;
+    margin-block-start: -3px;
+    border-inline-end: 2px solid currentColor;
+    border-block-end: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+  .pick-btn[aria-expanded="true"] .caret {
+    margin-block-start: 3px;
+    transform: rotate(-135deg);
+  }
+  .pick-list {
+    position: absolute;
+    inset-block-start: calc(100% + 4px);
+    inset-inline-end: 0;
+    z-index: 1;
+    min-inline-size: 100%;
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    color: var(--text);
+    background: var(--surface);
+    border: var(--border-strong);
+    box-shadow: var(--bevel);
+  }
+  .pick-list[data-up] {
+    inset-block-start: auto;
+    inset-block-end: calc(100% + 4px);
+  }
+  .pick-list[hidden] {
+    display: none;
+  }
+  [role="option"] {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--tap-min);
+    padding: 6px 10px 6px 8px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  /* Reserve the tick's width on every row so labels line up */
+  [role="option"]::before {
+    content: "";
+    inline-size: 1ch;
+  }
+  [role="option"][aria-selected="true"]::before {
+    content: "\2713";
+  }
+  [role="option"][data-active] {
+    color: var(--accent-on);
+    background: var(--accent);
+  }
+  @media (forced-colors: active) {
+    [role="option"][data-active] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
   }
 
   .foot {
@@ -398,7 +621,7 @@ const SETTINGS = [
   }
   .reset:focus-visible,
   .done:focus-visible,
-  select:focus-visible,
+  .pick-btn:focus-visible,
   input[type="checkbox"]:focus-visible {
     outline: var(--focus-width) solid var(--focus-ring);
     outline-offset: var(--focus-offset);
