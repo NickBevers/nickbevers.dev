@@ -18,6 +18,7 @@ const { title = 'Nick Bevers', description } = Astro.props;
     {description && <meta name="description" content={description} />}
     <title>{title}</title>
     <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
   </head>
   <body>
     <slot />
