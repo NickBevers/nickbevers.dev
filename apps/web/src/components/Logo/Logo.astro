@@ -1,0 +1,47 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import LogoSvg from '@/assets/images/logo.svg';
+
+interface Props {
+  // Turns the logo into a link, usually `/` in the site header.
+  href?: string;
+  // What screen readers announce instead of the drawing.
+  label?: string;
+  // Hide the logo from screen readers when the name is already written next to it.
+  decorative?: boolean;
+  class?: string;
+}
+
+const { href, label = 'Nick Bevers', decorative = false, class: className } = Astro.props;
+
+const Tag = href ? 'a' : 'span';
+// A link carries the name itself, so the drawing inside it stays silent.
+const svgA11y: HTMLAttributes<'svg'> =
+  href || decorative ? { 'aria-hidden': true } : { role: 'img', 'aria-label': label };
+---
+
+<Tag href={href} aria-label={href ? label : undefined} class:list={['logo', className]}>
+  <LogoSvg {...svgA11y} focusable="false" />
+</Tag>
+
+<style>
+  /* Size it with --logo-size, for example style="--logo-size: 3rem". The width follows the logo's proportions. */
+  .logo {
+    display: inline-block;
+    line-height: 0;
+  }
+
+  .logo :global(svg) {
+    display: block;
+    block-size: var(--logo-size, 2rem);
+    inline-size: auto;
+    aspect-ratio: 650 / 372;
+  }
+
+  /* High contrast modes ignore SVG fills, so dark letters could vanish on a dark system background. */
+  @media (forced-colors: active) {
+    .logo :global(path) {
+      fill: currentColor !important;
+    }
+  }
+</style>

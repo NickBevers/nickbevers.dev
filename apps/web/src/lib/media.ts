@@ -10,13 +10,12 @@ export function mediaSrcSet(media: Media, format: 'avif' | 'webp'): string | und
   );
 }
 
-/** Never use an unprocessed original as the browser fallback. */
-export function mediaFallback(media: Media): string {
+
+// Never use an unprocessed original as the browser fallback. Returns undefined until the worker has made the variants, so the caller can render a placeholder instead of failing the build.
+export function mediaFallback(media: Media): string | undefined {
   const variants = media.variants
     ?.filter((variant) => variant.format === 'webp')
     .toSorted((a, b) => a.width - b.width);
   const fallback = variants?.find((variant) => variant.width >= 780) || variants?.at(-1);
-  if (!fallback)
-    throw new Error(`Media ${media.id} needs processing. Run pnpm media:process first.`);
-  return fallback.url;
+  return fallback?.url;
 }
