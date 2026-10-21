@@ -40,6 +40,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TABLE "media" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"alt" varchar NOT NULL,
+  	"focal_x" numeric DEFAULT 50,
+  	"focal_y" numeric DEFAULT 50,
   	"processing_status" "enum_media_processing_status" DEFAULT 'pending',
   	"blur_data_u_r_l" varchar,
   	"prefix" varchar DEFAULT 'media/originals',

@@ -341,6 +341,20 @@
           "primaryKey": false,
           "notNull": true
         },
+        "focal_x": {
+          "name": "focal_x",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 50
+        },
+        "focal_y": {
+          "name": "focal_y",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 50
+        },
         "processing_status": {
           "name": "processing_status",
           "type": "enum_media_processing_status",
@@ -1119,6 +1133,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "799e5e62-51dd-4bcd-9729-0d27ac72ba70",
+  "id": "44af6c4f-019d-4c02-ac13-2831c47df2b3",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }

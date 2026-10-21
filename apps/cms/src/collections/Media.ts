@@ -32,6 +32,9 @@ export const Media: CollectionConfig = {
           data.processingStatus = 'pending';
           data.blurDataURL = null;
           data.variants = [];
+          // A point set on the old picture means nothing on the new one.
+          data.focalX = 50;
+          data.focalY = 50;
         }
         return data;
       },
@@ -39,6 +42,21 @@ export const Media: CollectionConfig = {
   },
   fields: [
     { name: 'alt', type: 'text', required: true },
+    {
+      name: 'focalPoint',
+      type: 'ui',
+      admin: { components: { Field: '/components/FocalPoint/FocalPointField#FocalPointField' } },
+    },
+    // Payload's own focalPoint option re-uploads the original on every change. These keep the
+    // same names and 0 to 100 percentages, but only store the point; the site crops in CSS.
+    ...(['focalX', 'focalY'] as const).map((name) => ({
+      name,
+      type: 'number' as const,
+      min: 0,
+      max: 100,
+      defaultValue: 50,
+      admin: { hidden: true },
+    })),
     {
       name: 'processingStatus',
       type: 'select',

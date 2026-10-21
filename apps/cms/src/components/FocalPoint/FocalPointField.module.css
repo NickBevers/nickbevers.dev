@@ -1,0 +1,122 @@
+.field {
+  margin-block-end: calc(var(--base) * 2);
+}
+
+.description,
+.empty {
+  margin: 0 0 calc(var(--base) * 0.75);
+  color: var(--theme-elevation-500);
+}
+
+.frame {
+  position: relative;
+  inline-size: fit-content;
+  max-inline-size: min(100%, 40rem);
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+  border-radius: var(--style-radius-s);
+  overflow: hidden;
+}
+
+.frame[data-dragging] {
+  cursor: grabbing;
+}
+
+.image {
+  display: block;
+  max-inline-size: 100%;
+  max-block-size: 28rem;
+  pointer-events: none;
+}
+
+.marker {
+  position: absolute;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  translate: -50% -50%;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.6),
+    inset 0 0 0 1px rgb(0 0 0 / 0.6);
+  pointer-events: none;
+}
+
+.marker::after {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  inline-size: 4px;
+  block-size: 4px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.6);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--base);
+  margin-block: var(--base);
+}
+
+.number {
+  display: grid;
+  gap: calc(var(--base) * 0.25);
+  color: var(--theme-elevation-800);
+}
+
+.number input {
+  inline-size: 6rem;
+  padding: calc(var(--base) * 0.4) calc(var(--base) * 0.5);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: var(--style-radius-s);
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+  font: inherit;
+}
+
+.previews {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 12rem));
+  gap: var(--base);
+}
+
+.preview {
+  margin: 0;
+}
+
+.crop {
+  overflow: hidden;
+  border-radius: var(--style-radius-s);
+  background: var(--theme-elevation-100);
+}
+
+.crop img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.preview figcaption {
+  margin-block-start: calc(var(--base) * 0.25);
+  color: var(--theme-elevation-800);
+}
+
+.preview figcaption span {
+  color: var(--theme-elevation-500);
+}
+
+/* The editor already shows these as numbers, so keep the drawing simple in high contrast. */
+@media (forced-colors: active) {
+  .marker,
+  .marker::after {
+    border-color: CanvasText;
+    background: Canvas;
+    box-shadow: none;
+  }
+}

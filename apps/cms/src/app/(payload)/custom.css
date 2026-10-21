@@ -1,0 +1,9 @@
+/*
+ * The admin's styles, loaded after Payload's own: the site's tokens, the bridge from those tokens
+ * to Payload's variables, then a few overrides of Payload's pieces. Payload puts all of its CSS in
+ * the payload-default cascade layer, and these files are unlayered, so they win without needing
+ * stronger selectors.
+ */
+@import '../../../../web/src/styles/tokens.css';
+@import '../../styles/payload-bridge.css';
+@import '../../styles/payload-overrides.css';

@@ -150,6 +150,8 @@ export interface User {
 export interface Media {
   id: number;
   alt: string;
+  focalX?: number | null;
+  focalY?: number | null;
   /**
    * Run pnpm media:process to prepare this upload.
    */
@@ -280,6 +282,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  focalX?: T;
+  focalY?: T;
   processingStatus?: T;
   blurDataURL?: T;
   variants?:

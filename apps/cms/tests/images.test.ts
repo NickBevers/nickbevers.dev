@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import sharp from 'sharp';
 
-import { createImagePlaceholder } from '../src/lib/images';
+import { createImagePlaceholder, generateImageVariants } from '../src/lib/images';
 
 test('generates a small inline 16 × 16 WebP preview from a large source', async () => {
   const image = await sharp({
@@ -31,4 +31,24 @@ test('handles transparent images without flattening the alpha channel', async ()
   const metadata = await sharp(Buffer.from(dataURL.split(',')[1], 'base64')).metadata();
 
   assert.equal(metadata.hasAlpha, true);
+});
+
+test('only fully opaque images get a preview', async () => {
+  const opaque = await sharp({
+    create: { width: 100, height: 200, channels: 4, background: '#8f6070ff' },
+  })
+    .png()
+    .toBuffer();
+  const transparent = await sharp({
+    create: { width: 100, height: 200, channels: 4, background: '#8f607080' },
+  })
+    .png()
+    .toBuffer();
+
+  // An alpha channel alone is not enough: this PNG has one, but every pixel is opaque.
+  assert.match(
+    (await generateImageVariants(opaque)).blurDataURL || '',
+    /^data:image\/webp;base64,/,
+  );
+  assert.equal((await generateImageVariants(transparent)).blurDataURL, null);
 });

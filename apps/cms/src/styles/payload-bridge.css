@@ -1,0 +1,144 @@
+/*
+ * Points Payload's own variables at the site's tokens (apps/web/src/styles/tokens.css), so the
+ * admin uses the site's palette, fonts and square corners without rewriting Payload's components.
+ *
+ * Everything sits on :root once. The role tokens it reads (--bg, --text and the rest) already switch
+ * with data-theme on <html>, which Payload sets for its light and dark themes, so no dark block is
+ * needed here. Payload's own values live in the payload-default layer; these are unlayered and win.
+ *
+ * Elevation scale. Payload puts text on steps 0, 50 and 100 and uses 400 and up for text. Below 400
+ * a step is only used for borders, icons and disabled labels. Mixes are color-mix() in oklab; the
+ * hex values are what they resolve to. Ratios are WCAG contrast on steps 0 / 50 / 100.
+ *
+ * | Step     | Value                         | Light   | Light 0 / 50 / 100 | Dark    | Dark 0 / 50 / 100 |
+ * |----------|-------------------------------|---------|--------------------|---------|-------------------|
+ * | 0        | --bg                          | #f7f5f2 | page               | #10221b | page              |
+ * | 50       | --bg-alt                      | #ece7df | panel              | #2d3935 | panel             |
+ * | 100      | --line 35% into --bg-alt      | #e5ded4 | hover              | #35433e | hover             |
+ * | 150      | --line                        | #d9cebf | border only        | #435650 | border only       |
+ * | 200      | --text-3 25% into --line      | #bfb1a4 | 1.92 / 1.70 / 1.57 | #546962 | 2.82 / 2.04 / 1.77 |
+ * | 250      | --text-3 45% into --line      | #ab9b8e | 2.47 / 2.18 / 2.01 | #637972 | 3.56 / 2.58 / 2.23 |
+ * | 300      | --text-3 65% into --line      | #97867a | 3.21 / 2.84 / 2.62 | #718981 | 4.42 / 3.20 / 2.77 |
+ * | 350      | --text-3 85% into --line      | #837066 | 4.31 / 3.81 / 3.52 | #819991 | 5.45 / 3.95 / 3.41 |
+ * | 400-500  | --text-2 35% into --text-3    | #6b584f | 6.16 / 5.44 / 5.02 | #a0b5ae | 7.67 / 5.56 / 4.80 |
+ * | 550      | --text-2 55% into --text-3    | #65544b | 6.60 / 5.84 / 5.38 | #acbeb8 | 8.54 / 6.18 / 5.34 |
+ * | 600      | --text-2 75% into --text-3    | #5f4f46 | 7.16 / 6.33 / 5.84 | #b7c7c2 | 9.44 / 6.84 / 5.91 |
+ * | 650      | --text-2                      | #584941 | 7.90 / 6.98 / 6.44 | #c6d2ce | 10.67 / 7.73 / 6.68 |
+ * | 700      | --text 33% into --text-2      | #423934 | 10.34 / 9.14 / 8.43 | #d4ddda | 11.96 / 8.67 / 7.49 |
+ * | 750      | --text 66% into --text-2      | #2e2927 | 13.19 / 11.67 / 10.76 | #e2e8e6 | 13.36 / 9.68 / 8.36 |
+ * | 800-1000 | --text                        | #1a1a1a | 15.99 / 14.14 / 13.04 | #f1f4f3 | 14.98 / 10.85 / 9.38 |
+ *
+ * Every text step is at least 4.8:1 on each of those surfaces, in both themes. Payload's inverse
+ * pairs, such as tooltips (800 as the background, 0 as the text), keep the --text on --bg ratio.
+ *
+ * The site has no status colours, so the admin defines its own below, built from the palette where
+ * it can. Danger is the one new colour. Each scale runs from the tint at 50 to the strong colour at
+ * 450 to 650, then towards --text, so a low step is always a background and a high step always
+ * text. Checked: toast text (800 on 100) is at least 8.0:1, diff pills (750 on 200) at least 4.7:1,
+ * and the strong colour on the page at least 4.7:1, in both themes.
+ */
+
+:root {
+  --status-success: light-dark(var(--green-700), var(--green-400));
+  --status-success-bg: light-dark(
+    var(--green-100),
+    color-mix(in oklab, var(--green-600) 30%, var(--green-900))
+  );
+  --status-warning: light-dark(var(--sand-700), var(--sand-400));
+  --status-warning-bg: light-dark(var(--sand-100), var(--sand-900));
+  --status-danger: light-dark(#9e2b25, #f0a39a);
+  --status-danger-bg: light-dark(#f6e4e1, #3d1f1c);
+
+  --font-body: var(--font-sans);
+  --style-radius-s: 0;
+  --style-radius-m: 0;
+  --style-radius-l: 0;
+  --accessibility-outline: 2px solid var(--accent);
+
+  --theme-bg: var(--bg);
+  --theme-text: var(--text);
+  --theme-input-bg: var(--surface);
+  --theme-border-color: var(--line);
+
+  --theme-elevation-0: var(--bg);
+  --theme-elevation-50: var(--bg-alt);
+  --theme-elevation-100: color-mix(in oklab, var(--line) 35%, var(--bg-alt));
+  --theme-elevation-150: var(--line);
+  --theme-elevation-200: color-mix(in oklab, var(--text-3) 25%, var(--line));
+  --theme-elevation-250: color-mix(in oklab, var(--text-3) 45%, var(--line));
+  --theme-elevation-300: color-mix(in oklab, var(--text-3) 65%, var(--line));
+  --theme-elevation-350: color-mix(in oklab, var(--text-3) 85%, var(--line));
+  --theme-elevation-400: color-mix(in oklab, var(--text-2) 35%, var(--text-3));
+  --theme-elevation-450: var(--theme-elevation-400);
+  --theme-elevation-500: var(--theme-elevation-400);
+  --theme-elevation-550: color-mix(in oklab, var(--text-2) 55%, var(--text-3));
+  --theme-elevation-600: color-mix(in oklab, var(--text-2) 75%, var(--text-3));
+  --theme-elevation-650: var(--text-2);
+  --theme-elevation-700: color-mix(in oklab, var(--text) 33%, var(--text-2));
+  --theme-elevation-750: color-mix(in oklab, var(--text) 66%, var(--text-2));
+  --theme-elevation-800: var(--text);
+  --theme-elevation-850: var(--text);
+  --theme-elevation-900: var(--text);
+  --theme-elevation-950: var(--text);
+  --theme-elevation-1000: var(--text);
+
+  --theme-success-50: var(--status-success-bg);
+  --theme-success-100: var(--status-success-bg);
+  --theme-success-150: color-mix(in oklab, var(--status-success) 15%, var(--status-success-bg));
+  --theme-success-200: color-mix(in oklab, var(--status-success) 25%, var(--status-success-bg));
+  --theme-success-250: color-mix(in oklab, var(--status-success) 35%, var(--status-success-bg));
+  --theme-success-300: color-mix(in oklab, var(--status-success) 50%, var(--status-success-bg));
+  --theme-success-350: color-mix(in oklab, var(--status-success) 65%, var(--status-success-bg));
+  --theme-success-400: color-mix(in oklab, var(--status-success) 80%, var(--status-success-bg));
+  --theme-success-450: var(--status-success);
+  --theme-success-500: var(--status-success);
+  --theme-success-550: var(--status-success);
+  --theme-success-600: var(--status-success);
+  --theme-success-650: var(--status-success);
+  --theme-success-700: color-mix(in oklab, var(--text) 20%, var(--status-success));
+  --theme-success-750: color-mix(in oklab, var(--text) 45%, var(--status-success));
+  --theme-success-800: color-mix(in oklab, var(--text) 60%, var(--status-success));
+  --theme-success-850: color-mix(in oklab, var(--text) 70%, var(--status-success));
+  --theme-success-900: color-mix(in oklab, var(--text) 80%, var(--status-success));
+  --theme-success-950: color-mix(in oklab, var(--text) 90%, var(--status-success));
+
+  --theme-warning-50: var(--status-warning-bg);
+  --theme-warning-100: var(--status-warning-bg);
+  --theme-warning-150: color-mix(in oklab, var(--status-warning) 15%, var(--status-warning-bg));
+  --theme-warning-200: color-mix(in oklab, var(--status-warning) 25%, var(--status-warning-bg));
+  --theme-warning-250: color-mix(in oklab, var(--status-warning) 35%, var(--status-warning-bg));
+  --theme-warning-300: color-mix(in oklab, var(--status-warning) 50%, var(--status-warning-bg));
+  --theme-warning-350: color-mix(in oklab, var(--status-warning) 65%, var(--status-warning-bg));
+  --theme-warning-400: color-mix(in oklab, var(--status-warning) 80%, var(--status-warning-bg));
+  --theme-warning-450: var(--status-warning);
+  --theme-warning-500: var(--status-warning);
+  --theme-warning-550: var(--status-warning);
+  --theme-warning-600: var(--status-warning);
+  --theme-warning-650: var(--status-warning);
+  --theme-warning-700: color-mix(in oklab, var(--text) 20%, var(--status-warning));
+  --theme-warning-750: color-mix(in oklab, var(--text) 45%, var(--status-warning));
+  --theme-warning-800: color-mix(in oklab, var(--text) 60%, var(--status-warning));
+  --theme-warning-850: color-mix(in oklab, var(--text) 70%, var(--status-warning));
+  --theme-warning-900: color-mix(in oklab, var(--text) 80%, var(--status-warning));
+  --theme-warning-950: color-mix(in oklab, var(--text) 90%, var(--status-warning));
+
+  --theme-error-50: var(--status-danger-bg);
+  --theme-error-100: var(--status-danger-bg);
+  --theme-error-150: color-mix(in oklab, var(--status-danger) 15%, var(--status-danger-bg));
+  --theme-error-200: color-mix(in oklab, var(--status-danger) 25%, var(--status-danger-bg));
+  --theme-error-250: color-mix(in oklab, var(--status-danger) 35%, var(--status-danger-bg));
+  --theme-error-300: color-mix(in oklab, var(--status-danger) 50%, var(--status-danger-bg));
+  --theme-error-350: color-mix(in oklab, var(--status-danger) 65%, var(--status-danger-bg));
+  --theme-error-400: color-mix(in oklab, var(--status-danger) 80%, var(--status-danger-bg));
+  --theme-error-450: var(--status-danger);
+  --theme-error-500: var(--status-danger);
+  --theme-error-550: var(--status-danger);
+  --theme-error-600: var(--status-danger);
+  --theme-error-650: var(--status-danger);
+  --theme-error-700: color-mix(in oklab, var(--text) 20%, var(--status-danger));
+  --theme-error-750: color-mix(in oklab, var(--text) 45%, var(--status-danger));
+  --theme-error-800: color-mix(in oklab, var(--text) 60%, var(--status-danger));
+  --theme-error-850: color-mix(in oklab, var(--text) 70%, var(--status-danger));
+  --theme-error-900: color-mix(in oklab, var(--text) 80%, var(--status-danger));
+  --theme-error-950: color-mix(in oklab, var(--text) 90%, var(--status-danger));
+}

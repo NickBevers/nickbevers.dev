@@ -1,7 +1,8 @@
 import sharp from 'sharp';
 import { createHash } from 'node:crypto';
 
-export const imageWidths = [320, 390, 480, 640, 780, 960, 1280, 1600, 1920, 2400] as const;
+// Covers 1x and 2x screens for the 680px prose column and the 1240px measure.
+export const imageWidths = [480, 780, 1280, 1920, 2400] as const;
 
 export async function createImagePlaceholder(data: Buffer): Promise<string> {
   const preview = await sharp(data)
@@ -35,11 +36,15 @@ export async function generateImageVariants(data: Buffer) {
     }
   }
 
+  // The preview sits behind the image, so it would show through transparent areas. Only fully
+  // opaque images get one; they cover it completely once loaded, even without JavaScript.
+  const { isOpaque } = await sharp(data).stats();
+
   return {
     width,
     height,
     hash: createHash('sha256').update(data).digest('hex').slice(0, 16),
-    blurDataURL: await createImagePlaceholder(data),
+    blurDataURL: isOpaque ? await createImagePlaceholder(data) : null,
     variants,
   };
 }

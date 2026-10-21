@@ -1,0 +1,52 @@
+/*
+ * The few places where the site's style needs more than Payload's variables: the bevels on buttons
+ * and cards, and the green hover on primary buttons. Payload's CSS sits in the payload-default
+ * layer, so these plain class selectors win.
+ */
+
+/* Buttons rest on a bevel and press into it, like the site's. 1px of pressed bevel plus the 3px
+   shift lines up with the 4px bevel. */
+.btn--style-primary,
+.btn--style-secondary {
+  box-shadow: var(--bevel);
+  transition-property: background-color, color, border-color, box-shadow, translate;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease);
+}
+
+.btn--style-primary:active:not(:disabled),
+.btn--style-secondary:active:not(:disabled) {
+  translate: var(--press-shift) var(--press-shift);
+  box-shadow: var(--bevel-pressed);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn--style-primary,
+  .btn--style-secondary {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* A disabled button lies flat, so it no longer looks pressable. */
+.btn--disabled {
+  box-shadow: none;
+}
+
+.btn--style-primary {
+  --hover-bg: var(--accent);
+}
+
+/* Payload's home link is an 18px square. The NB mark is wider, so let the width follow it. */
+.step-nav__home {
+  width: auto;
+}
+
+/* The dashboard's collection cards. The soft bevel reads as brown on the dark green page, so dark
+   mode uses the regular one. */
+.card {
+  box-shadow: var(--bevel-soft);
+}
+
+:root[data-theme='dark'] .card {
+  box-shadow: var(--bevel);
+}

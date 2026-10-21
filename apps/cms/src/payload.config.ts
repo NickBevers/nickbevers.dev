@@ -40,7 +40,16 @@ export default buildConfig({
   telemetry: false,
   secret: process.env.PAYLOAD_SECRET,
   serverURL: process.env.CMS_PUBLIC_URL || 'http://localhost:3000',
-  admin: { user: Users.slug, importMap: { baseDir: dirname } },
+  admin: {
+    user: Users.slug,
+    importMap: { baseDir: dirname },
+    components: {
+      graphics: {
+        Icon: '/components/Graphics/Brand#Icon',
+        Logo: '/components/Graphics/Brand#Logo',
+      },
+    },
+  },
   collections: [Users, Media],
   db: postgresAdapter({
     pool: {

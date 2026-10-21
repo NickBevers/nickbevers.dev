@@ -74,11 +74,28 @@ test('uploads queue originals, the separate worker saves variants, and unauthent
       assert.ok(variant.width < 960, 'Do not send 2K variants for an 800px source');
     }
     assert.ok(
-      saved.variants?.some((variant) => variant.width === 390 && variant.format === 'webp'),
+      saved.variants?.some((variant) => variant.width === 480 && variant.format === 'webp'),
     );
     assert.ok(
       saved.variants?.some((variant) => variant.width === 780 && variant.format === 'avif'),
     );
+
+    assert.equal(media.focalX, 50, 'New uploads start with a centred focal point');
+    assert.equal(media.focalY, 50);
+    const focused = await payload.update({
+      collection: 'media',
+      id: media.id,
+      data: { focalX: 20, focalY: 75 },
+    });
+    assert.equal(focused.focalX, 20);
+    assert.equal(focused.focalY, 75);
+    assert.equal(focused.processingStatus, 'ready', 'Moving the focal point must not reprocess');
+    assert.equal(focused.variants?.length, saved.variants?.length);
+
+    const replaced = await payload.update({ collection: 'media', id: media.id, data: {}, file });
+    assert.equal(replaced.focalX, 50, 'A new file resets the focal point');
+    assert.equal(replaced.focalY, 50);
+    assert.equal(replaced.processingStatus, 'pending');
   } finally {
     (payload.db.client as unknown as { close: () => void }).close();
     await payload.destroy();
