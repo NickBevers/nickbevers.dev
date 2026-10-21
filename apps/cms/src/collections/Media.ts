@@ -1,6 +1,8 @@
 import path from 'node:path';
 import type { CollectionConfig } from 'payload';
 
+import { triggerMediaProcessing } from '../lib/trigger-media-processing';
+
 export const Media: CollectionConfig = {
   slug: 'media',
   admin: { defaultColumns: ['filename', 'alt', 'processingStatus', 'updatedAt'] },
@@ -23,7 +25,7 @@ export const Media: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      ({ data, req, operation, originalDoc }) => {
+      ({ data, req, operation, originalDoc, context }) => {
         if (
           operation === 'create' ||
           req.file ||
@@ -35,8 +37,17 @@ export const Media: CollectionConfig = {
           // A point set on the old picture means nothing on the new one.
           data.focalX = 50;
           data.focalY = 50;
+          context.queuedForProcessing = true;
         }
         return data;
+      },
+    ],
+    afterChange: [
+      // After the save. A workflow run needs about a minute to start, so the upload is committed
+      // long before the worker looks for pending images.
+      async ({ doc, req, context }) => {
+        if (context.queuedForProcessing) await triggerMediaProcessing(req.payload.logger);
+        return doc;
       },
     ],
   },

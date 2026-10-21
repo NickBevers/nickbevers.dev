@@ -30,7 +30,7 @@ export async function generateImageVariants(data: Buffer) {
     for (const format of ['webp', 'avif'] as const) {
       const image = sharp(data).rotate().resize({ width: size, withoutEnlargement: true });
       const { data: buffer, info } = await (
-        format === 'webp' ? image.webp({ quality: 78 }) : image.avif({ quality: 55, effort: 4 })
+        format === 'webp' ? image.webp({ quality: 78 }) : image.avif({ quality: 55, effort: 2 })
       ).toBuffer({ resolveWithObject: true });
       variants.push({ format, width: info.width, height: info.height, data: buffer });
     }

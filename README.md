@@ -68,9 +68,9 @@ VS Code recommendations and format-on-save settings are included.
 
 ## Images
 
-The CMS stores the unmodified original and marks it `pending`. The separate worker creates an inline **16 × 16 WebP preview**, plus WebP (quality 78) and AVIF (quality 55) variants at 320, 390, 480, 640, 780, 960, 1280, 1600, 1920, and 2400 pixels. Small sources are never upscaled. Original files are retained, and generated files use content hashes with immutable cache headers.
+The CMS stores the unmodified original and marks it `pending`. The separate worker creates an inline **16 × 16 WebP preview**, plus WebP (quality 78) and AVIF (quality 55, effort 2) variants at 480, 780, 1280, 1920, and 2400 pixels, and at the source's own width when it is smaller. Small sources are never upscaled. Only fully opaque images get the preview, because it would show through transparent areas. Original files are retained, and generated files use content hashes with immutable cache headers.
 
-`CmsImage` uses native `srcset` / `sizes` selection: a 390px slot can use the 390px variant at 1×, 780px at 2×, or 1280px at 3×. It never uses the unprocessed original as its fallback. The preview is embedded in the HTML, dimensions prevent layout shifts, and normal images lazy-load. Use `priority` only for above-the-fold / LCP images.
+`CmsImage` uses native `srcset` / `sizes` selection: a 390px slot can use the 480px variant at 1×, 780px at 2×, or 1280px at 3×. It never uses the unprocessed original as its fallback. The preview is embedded in the HTML, dimensions prevent layout shifts, and normal images lazy-load. Use `priority` only for above-the-fold / LCP images.
 
 ```astro
 ---
@@ -83,7 +83,7 @@ const image = await getMedia(1);
 <CmsImage media={image} sizes="(max-width: 800px) 100vw, 800px" priority />
 ```
 
-Set `sizes` to the image's actual layout width. Use `alt=""` for decorative images. Process an upload before referencing it in a page; the component reports an error if variants are missing. CMS content is fetched from Astro frontmatter at build time, so publishing changes requires a frontend rebuild.
+Set `sizes` to the image's actual layout width. Use `alt=""` for decorative images. An image that is not processed yet renders as an empty box at its final size, and the build logs a warning instead of failing. CMS content is fetched from Astro frontmatter at build time, so publishing changes requires a frontend rebuild.
 
 ## Vercel, Neon, and Hetzner
 
@@ -95,6 +95,6 @@ For the frontend project, set `CMS_URL` to your deployed CMS origin. Only the CM
 
 Set Hetzner's endpoint and region to your bucket location. `S3_PUBLIC_URL` is the bucket's public base URL, such as `https://your-bucket.fsn1.your-objectstorage.com`. Objects use the `media/originals` and `media/variants` prefixes. Make the website's media objects publicly readable, and apply the CORS policy in `apps/cms/s3-cors.example.json` with your actual admin origins. Original uploads go directly from the admin browser to S3, bypassing Vercel's function upload-size limit. The CMS does no resizing or encoding.
 
-Run the worker on your computer with the production CMS environment, or use the optional manual **Process uploaded images** GitHub Actions workflow. It needs the CMS's Neon connection, Payload secret, and S3 variables as repository secrets. Actions usage follows your GitHub plan's allowance; no schedule is enabled by default. `pnpm --filter @site/cms media:process --retry-failed` retries failed uploads. Each invocation processes up to 100 images.
+Each new or replaced upload starts the **Process uploaded images** GitHub Actions workflow when the CMS has `GITHUB_DISPATCH_TOKEN`. Use a fine-grained token for this repository with only the **Actions: write** permission. A burst of uploads folds into one run, and a failed trigger never blocks the upload. Without the token, start the workflow by hand or run the worker on your computer with the production CMS environment. The workflow needs the CMS's Neon connection, Payload secret, and S3 variables as repository secrets. Standard runners are free for public repositories, so this uses no Actions minutes while the repository stays public. `pnpm --filter @site/cms media:process --retry-failed` retries failed uploads. Each invocation processes up to 100 images.
 
 Optionally set `WEB_DEPLOY_HOOK` in the worker environment to trigger a frontend deployment after processing. Otherwise, redeploy the frontend manually. New uploads stay pending until a worker runs. Configure an email adapter before relying on admin password-reset emails; development email currently goes to the console.
