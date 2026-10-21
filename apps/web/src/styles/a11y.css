@@ -1,0 +1,139 @@
+/* Accessibility preferences */
+
+/* Dyslexia-friendly typeface */
+@font-face {
+  font-family: "NB Reading";
+  src: url("/fonts/opendyslexic-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NB Reading";
+  src: url("/fonts/opendyslexic-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+html[data-a11y-font="dyslexic"] {
+  --font-sans: "NB Reading", var(--font-hanken);
+
+  /* The dyslexic face sets much wider than Hanken Grotesk at the same size */
+  --text-display: clamp(30px, 4.4vw, 52px);
+  --text-hero: clamp(32px, 4.2vw, 53px);
+  --text-h1: clamp(28px, 3.9vw, 44px);
+  --text-h1-sm: clamp(28px, 4.3vw, 40px);
+  --text-h1-entry: clamp(26px, 3.4vw, 37px);
+  --text-h2: clamp(19px, 2.1vw, 23px);
+
+  --tracking-display: -0.005em;
+  --tracking-title: 0;
+
+  --leading-body: 1.7;
+  --leading-prose: 1.85;
+}
+
+html[data-a11y-font="dyslexic"] h1 {
+  font-size: clamp(28px, 3.4vw, 44px);
+}
+
+html[data-a11y-font="dyslexic"] {
+  --tracking-eyebrow: 0.1em;
+  --tracking-meta: 0.08em;
+}
+html[data-a11y-font="dyslexic"] :is(.eyebrow, .meta, .lmeta, .kick, .legal, .cta, .top, .bottom) {
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+
+html[data-a11y-font="dyslexic"] :is(.btn, .cta a, .tag, .wb) {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+html[data-a11y-font="dyslexic"] time {
+  white-space: normal;
+}
+
+@media (max-width: 560px) {
+  html[data-a11y-font="dyslexic"] .arrow,
+  html[data-a11y-font="dyslexic"] .go .arrow {
+    display: none;
+  }
+}
+
+/* Turn off the scanline overlay */
+html[data-a11y-scanlines="off"] .scan {
+  display: none;
+}
+
+/* Text size */
+html[data-a11y-size="large"] {
+  --text-display: clamp(42px, 6.6vw, 84px);
+  --text-hero: clamp(44px, 5.7vw, 73px);
+  --text-h1: clamp(37px, 5.3vw, 59px);
+  --text-h1-sm: clamp(37px, 5.9vw, 55px);
+  --text-h1-entry: clamp(35px, 4.6vw, 51px);
+  --text-h2: clamp(24px, 2.9vw, 30px);
+  --text-h3: 22px;
+  --text-lead: 21px;
+  --text-body: 20px;
+  --text-body-sm: 17px;
+  --text-caption: 15.5px;
+  --text-meta: 12px;
+  --text-micro: 10.5px;
+}
+
+html[data-a11y-size="larger"] {
+  --text-display: clamp(47px, 7.4vw, 94px);
+  --text-hero: clamp(49px, 6.4vw, 81px);
+  --text-h1: clamp(41px, 5.9vw, 66px);
+  --text-h1-sm: clamp(41px, 6.6vw, 61px);
+  --text-h1-entry: clamp(39px, 5.1vw, 56px);
+  --text-h2: clamp(27px, 3.2vw, 33px);
+  --text-h3: 24px;
+  --text-lead: 23px;
+  --text-body: 22px;
+  --text-body-sm: 19px;
+  --text-caption: 17px;
+  --text-meta: 13px;
+  --text-micro: 11.5px;
+}
+
+html[data-a11y-motion="off"] *,
+html[data-a11y-motion="off"] *::before,
+html[data-a11y-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+html[data-a11y-motion="off"] .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+html[data-a11y-motion="off"] .caret,
+html[data-a11y-motion="off"] .blink {
+  animation: none !important;
+  opacity: 1;
+}
+/* The NEW badge's fill is animated on a pseudo-element */
+html[data-a11y-motion="off"] .badge::before {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* The pulsing status LEDs keep their colour but stop expanding. */
+html[data-a11y-motion="off"] .led {
+  animation: none !important;
+}
+
+/* Underline every link in running text, not just on hover */
+/* Every link in running text, not just the unclassed ones */
+html[data-a11y-links="underline"] :where(main, footer, aside) a {
+  text-decoration-line: underline !important;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}

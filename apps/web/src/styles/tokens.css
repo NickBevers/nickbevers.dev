@@ -1,0 +1,183 @@
+:root {
+  /* Colours */
+  /* GENERAL */
+  --white: #fff;
+  --black: #000;
+
+  /* GRAY */
+  --gray-050: #fafafa;
+  --gray-100: #f2f2f2;
+  --gray-200: #e6e6e6;
+  --gray-300: #cccccc;
+  --gray-400: #b3b3b3;
+  --gray-500: #999999;
+  --gray-600: #737373;
+  --gray-700: #545454;
+  --gray-800: #333333;
+  --gray-900: #1a1a1a;
+
+  /* GREEN */
+  --green-050: #f1f4f3;
+  --green-100: #e5ebe9;
+  --green-200: #d7e0dd;
+  --green-300: #c6d2ce;
+  --green-400: #a9bcb6;
+  --green-500: #8ca69d;
+  --green-600: #6f9085;
+  --green-700: #435650;
+  --green-800: #2d3935;
+  --green-900: #10221b;
+
+  /* CLAY */
+  --clay-050: #f6f4f3;
+  --clay-100: #e9e4e2;
+  --clay-200: #e1dad6;
+  --clay-300: #d4c9c4;
+  --clay-400: #c9bcb6;
+  --clay-500: #b19f96;
+  --clay-600: #998175;
+  --clay-700: #756157;
+  --clay-800: #584941;
+  --clay-900: #3b302b;
+
+  /* SAND */
+  --sand-050: #f7f5f2;
+  --sand-100: #ece7df;
+  --sand-200: #e4ddd2;
+  --sand-300: #d9cebf;
+  --sand-400: #cfc2af;
+  --sand-500: #c0ae96;
+  --sand-600: #9f8560;
+  --sand-700: #806a4c;
+  --sand-800: #605039;
+  --sand-900: #403526;
+
+  /* FONTS */
+  /* --font-hanken and --font-mono come from the <Font /> components in BaseLayout. --font-sans points at Hanken so a11y.css can put another face in front of it. */
+  --font-sans: var(--font-hanken);
+
+  /* TYPE SCALE */
+  /* The clamps grow between a 375px and a 1280px viewport. 'rem' keeps them scaling when the visitor zooms (a11y). */
+  --text-display: clamp(2.625rem, 1.7445rem + 3.7569vw, 4.75rem);
+  --text-h1: clamp(2.25rem, 1.7838rem + 1.989vw, 3.375rem);
+  --text-h2: 1.6875rem;
+  --text-h3: 1.25rem;
+  --text-lead: 1.1875rem;
+  --text-body: 1.125rem;
+  --text-body-sm: 0.9375rem;
+  --text-caption: 0.875rem;
+  --text-meta: 0.6875rem;
+  --text-micro: 0.59375rem;
+
+  /* LEADING */
+  --leading-display: 0.99;
+  --leading-title: 1.2;
+  --leading-body: 1.6;
+  --leading-prose: 1.72;
+
+  /* TRACKING */
+  --tracking-display: -0.035em;
+  --tracking-title: -0.02em;
+  --tracking-meta: 0.14em;
+  --tracking-micro: 0.16em;
+  --tracking-eyebrow: 0.2em;
+}
+
+/* THEME */
+/* Light is the default. Dark follows the OS unless data-theme on <html> sets a choice. */
+/* Contrast: --accent-2 and --line-strong are for borders and icons, never text, and --accent-2 stays off --bg-alt. --warm text goes on --bg or --surface only. Text on --accent-bg uses --text, --text-2 or --accent-fg. Text on --band uses --band-text and --band-text-2, which stay the same in both themes. */
+:root {
+  color-scheme: light dark;
+
+  --bg: var(--sand-050);
+  --bg-alt: var(--sand-100);
+  --surface: var(--white);
+  --text: var(--gray-900);
+  --text-2: var(--clay-800);
+  --text-3: var(--clay-700);
+  --line-strong: var(--gray-900);
+  --accent: var(--green-700);
+  --accent-2: var(--green-600);
+  --accent-bg: var(--green-100);
+  --accent-fg: var(--green-700);
+  --warm: var(--sand-700);
+  --warm-2: var(--sand-300);
+  --warm-bg: var(--clay-100);
+  --band: var(--green-800);
+  --band-text: var(--green-050);
+  --band-text-2: var(--green-300);
+  --shadow: var(--gray-900);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Fallback for browsers without light-dark(): swap the values in by hand. */
+@supports not (color: light-dark(#000, #fff)) {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --bg: var(--green-900);
+      --bg-alt: var(--green-800);
+      --surface: var(--green-800);
+      --text: var(--green-050);
+      --text-2: var(--green-300);
+      --text-3: var(--green-500);
+      --line-strong: var(--green-500);
+      --accent: var(--green-400);
+      --accent-2: var(--green-600);
+      --accent-bg: var(--green-700);
+      --accent-fg: var(--green-200);
+      --warm: var(--sand-500);
+      --warm-2: var(--sand-800);
+      --warm-bg: var(--clay-900);
+      --band: var(--green-700);
+      --shadow: var(--green-600);
+    }
+  }
+
+  :root[data-theme='dark'] {
+    --bg: var(--green-900);
+    --bg-alt: var(--green-800);
+    --surface: var(--green-800);
+    --text: var(--green-050);
+    --text-2: var(--green-300);
+    --text-3: var(--green-500);
+    --line-strong: var(--green-500);
+    --accent: var(--green-400);
+    --accent-2: var(--green-600);
+    --accent-bg: var(--green-700);
+    --accent-fg: var(--green-200);
+    --warm: var(--sand-500);
+    --warm-2: var(--sand-800);
+    --warm-bg: var(--clay-900);
+    --band: var(--green-700);
+    --shadow: var(--green-600);
+  }
+}
+
+/* light-dark() picks a value from the element's color-scheme. Setting color-scheme on any element flips the tokens inside it, so a section can be dark on a light page. */
+@supports (color: light-dark(#000, #fff)) {
+  :root {
+    --bg: light-dark(var(--sand-050), var(--green-900));
+    --bg-alt: light-dark(var(--sand-100), var(--green-800));
+    --surface: light-dark(var(--white), var(--green-800));
+    --text: light-dark(var(--gray-900), var(--green-050));
+    --text-2: light-dark(var(--clay-800), var(--green-300));
+    --text-3: light-dark(var(--clay-700), var(--green-500));
+    --line-strong: light-dark(var(--gray-900), var(--green-500));
+    --accent: light-dark(var(--green-700), var(--green-400));
+    --accent-2: light-dark(var(--green-600), var(--green-600));
+    --accent-bg: light-dark(var(--green-100), var(--green-700));
+    --accent-fg: light-dark(var(--green-700), var(--green-200));
+    --warm: light-dark(var(--sand-700), var(--sand-500));
+    --warm-2: light-dark(var(--sand-300), var(--sand-800));
+    --warm-bg: light-dark(var(--clay-100), var(--clay-900));
+    --band: light-dark(var(--green-800), var(--green-700));
+    --shadow: light-dark(var(--gray-900), var(--green-600));
+  }
+}

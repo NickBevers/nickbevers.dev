@@ -9,7 +9,7 @@ export default defineConfig({
     {
       provider: fontProviders.google(),
       name: 'Hanken Grotesk',
-      cssVariable: '--font-sans',
+      cssVariable: '--font-hanken',
       weights: ['400 800'],
       styles: ['normal'],
       subsets: ['latin'],

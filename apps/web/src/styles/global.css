@@ -1,86 +1,5 @@
-:root {
-  /* Colours */
-  /* GENERAL */
-  --white: #fff;
-  --black: #000;
-
-  /* GRAY */
-  --gray-050: #fafafa;
-  --gray-100: #f2f2f2;
-  --gray-200: #e6e6e6;
-  --gray-300: #cccccc;
-  --gray-400: #b3b3b3;
-  --gray-500: #999999;
-  --gray-600: #737373;
-  --gray-700: #545454;
-  --gray-800: #333333;
-  --gray-900: #1a1a1a;
-
-  /* GREEN */
-  --green-050: #f1f4f3;
-  --green-100: #e5ebe9;
-  --green-200: #d7e0dd;
-  --green-300: #c6d2ce;
-  --green-400: #a9bcb6;
-  --green-500: #8ca69d;
-  --green-600: #6f9085;
-  --green-700: #435650;
-  --green-800: #2d3935;
-  --green-900: #10221b;
-
-  /* CLAY */
-  --clay-050: #f6f4f3;
-  --clay-100: #e9e4e2;
-  --clay-200: #e1dad6;
-  --clay-300: #d4c9c4;
-  --clay-400: #c9bcb6;
-  --clay-500: #b19f96;
-  --clay-600: #998175;
-  --clay-700: #756157;
-  --clay-800: #584941;
-  --clay-900: #3b302b;
-
-  /* SAND */
-  --sand-050: #f7f5f2;
-  --sand-100: #ece7df;
-  --sand-200: #e4ddd2;
-  --sand-300: #d9cebf;
-  --sand-400: #cfc2af;
-  --sand-500: #c0ae96;
-  --sand-600: #9f8560;
-  --sand-700: #806a4c;
-  --sand-800: #605039;
-  --sand-900: #403526;
-
-  /* FONTS */
-  /* --font-sans and --font-mono come from the <Font /> components in BaseLayout, so they are not defined here. */
-
-  /* TYPE SCALE */
-  /* The clamps grow between a 375px and a 1280px viewport. 'rem' keeps them scaling when the visitor zooms (a11y). */
-  --text-display: clamp(2.625rem, 1.7445rem + 3.7569vw, 4.75rem);
-  --text-h1: clamp(2.25rem, 1.7838rem + 1.989vw, 3.375rem);
-  --text-h2: 1.6875rem;
-  --text-h3: 1.25rem;
-  --text-lead: 1.1875rem;
-  --text-body: 1.125rem;
-  --text-body-sm: 0.9375rem;
-  --text-caption: 0.875rem;
-  --text-meta: 0.6875rem;
-  --text-micro: 0.59375rem;
-
-  /* LEADING */
-  --leading-display: 0.99;
-  --leading-title: 1.2;
-  --leading-body: 1.6;
-  --leading-prose: 1.72;
-
-  /* TRACKING */
-  --tracking-display: -0.035em;
-  --tracking-title: -0.02em;
-  --tracking-meta: 0.14em;
-  --tracking-micro: 0.16em;
-  --tracking-eyebrow: 0.2em;
-}
+@import './tokens.css';
+@import './a11y.css';
 
 *,
 *::before,
@@ -90,6 +9,8 @@
 
 body {
   margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: var(--leading-prose);
