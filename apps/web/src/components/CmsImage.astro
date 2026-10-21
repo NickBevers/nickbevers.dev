@@ -1,0 +1,97 @@
+---
+import type { Media } from '@site/cms/types';
+import { mediaFallback, mediaSrcSet } from '@/lib/media';
+
+interface Props {
+  media: Media;
+  /** Match the rendered width in your layout so the browser selects the smallest useful image. */
+  sizes: string;
+  alt?: string;
+  /** Enable only for an above-the-fold / LCP image. */
+  priority?: boolean;
+  class?: string;
+}
+
+const { media, sizes, alt = media.alt, priority = false, class: className } = Astro.props;
+const avif = mediaSrcSet(media, 'avif');
+const webp = mediaSrcSet(media, 'webp');
+const fallback = mediaFallback(media);
+
+if (!media.url || !media.width || !media.height) {
+  throw new Error('CmsImage needs a populated Media document with an image URL and dimensions.');
+}
+
+const placeholder = media.blurDataURL?.startsWith('data:image/webp;base64,')
+  ? media.blurDataURL
+  : undefined;
+---
+
+<cms-image
+  class={className}
+  style={{ '--preview': placeholder ? `url("${placeholder}")` : 'none' }}
+>
+  <picture>
+    {avif && <source type="image/avif" srcset={avif} sizes={sizes} />}
+    <img
+      src={fallback}
+      srcset={webp}
+      sizes={sizes}
+      alt={alt}
+      width={media.width}
+      height={media.height}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      decoding="async"
+    />
+  </picture>
+</cms-image>
+
+<style>
+  cms-image {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  cms-image::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    z-index: -1;
+    background: var(--preview) center / 100% 100%;
+    filter: blur(8px);
+  }
+
+  cms-image[data-loaded]::before {
+    display: none;
+  }
+
+  picture,
+  img {
+    display: block;
+    width: 100%;
+  }
+
+  img {
+    height: auto;
+  }
+</style>
+
+<script>
+  class CmsImage extends HTMLElement {
+    connectedCallback() {
+      const image = this.querySelector('img');
+      if (!image) return;
+
+      const loaded = () => this.setAttribute('data-loaded', '');
+      if (image.complete) loaded();
+      else {
+        image.addEventListener('load', loaded, { once: true });
+        image.addEventListener('error', loaded, { once: true });
+      }
+    }
+  }
+
+  if (!customElements.get('cms-image')) customElements.define('cms-image', CmsImage);
+</script>

@@ -1,0 +1,16 @@
+node_modules/
+.astro/
+.next/
+dist/
+coverage/
+*.tsbuildinfo
+*.db
+*.db-*
+.env
+.env.*
+!.env.example
+apps/cms/media/*
+!apps/cms/media/.gitkeep
+apps/web/public/media/
+.DS_Store
+.claude/settings.local.json

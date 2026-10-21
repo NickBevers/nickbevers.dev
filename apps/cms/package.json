@@ -1,0 +1,44 @@
+{
+  "name": "@site/cms",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./types": "./src/payload-types.ts"
+  },
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "payload generate:importmap && next build",
+    "start": "next start --port 3000",
+    "check": "tsc --noEmit",
+    "generate:types": "payload generate:types",
+    "generate:importmap": "payload generate:importmap",
+    "payload": "payload",
+    "media:process": "NODE_ENV=production tsx scripts/process-media.ts",
+    "media:watch": "NODE_ENV=production tsx scripts/process-media.ts --watch",
+    "test": "NODE_ENV=test tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1153.0",
+    "@payloadcms/db-postgres": "3.91.0",
+    "@payloadcms/next": "3.91.0",
+    "@payloadcms/storage-s3": "3.91.0",
+    "graphql": "^16.8.1",
+    "next": "16.4.2",
+    "payload": "3.91.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@payloadcms/db-sqlite": "3.91.0",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "packageManager": "pnpm@12.14.0"
+}

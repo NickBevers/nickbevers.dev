@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "oxc", "unicorn"],
+  "categories": { "correctness": "error", "suspicious": "warn" },
+  "env": { "browser": true, "node": true },
+  "overrides": [
+    {
+      "files": ["**/*.tsx"],
+      "plugins": ["react", "jsx-a11y"],
+      "rules": { "react/react-in-jsx-scope": "off" }
+    }
+  ],
+  "ignorePatterns": [
+    "**/payload-types.ts",
+    "**/importMap.js",
+    "**/next-env.d.ts",
+    "**/migrations/**",
+    "**/.astro/**",
+    "**/.next/**",
+    "**/dist/**"
+  ]
+}

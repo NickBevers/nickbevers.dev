@@ -1,0 +1,37 @@
+{
+  "name": "nickbevers.dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "pnpm setup && pnpm --parallel --filter @site/web --filter @site/cms dev",
+    "dev:web": "pnpm --filter @site/web dev",
+    "dev:cms": "pnpm --filter @site/cms dev",
+    "build": "pnpm --filter @site/cms build && pnpm --filter @site/web build",
+    "check": "pnpm format:check && pnpm lint && pnpm -r check",
+    "lint": "oxlint --deny-warnings .",
+    "lint:fix": "oxlint --fix .",
+    "format": "oxfmt . && prettier --write \"apps/web/src/**/*.astro\"",
+    "format:check": "oxfmt --check . && prettier --check \"apps/web/src/**/*.astro\"",
+    "cms:types": "pnpm --filter @site/cms generate:types",
+    "cms:migrate": "pnpm --filter @site/cms payload migrate",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "media:process": "pnpm --filter @site/cms media:process",
+    "media:watch": "pnpm --filter @site/cms media:watch",
+    "test": "pnpm --filter @site/cms test"
+  },
+  "devDependencies": {
+    "@emnapi/core": "1.11.3",
+    "oxfmt": "0.74.0",
+    "oxlint": "1.89.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-astro": "1.1.1",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25",
+    "pnpm": "12.14.0"
+  },
+  "packageManager": "pnpm@12.14.0"
+}
