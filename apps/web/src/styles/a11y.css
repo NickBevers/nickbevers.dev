@@ -101,6 +101,34 @@ html[data-a11y-size="larger"] {
   --text-micro: 11.5px;
 }
 
+/* Reduced motion. The OS setting applies by default. The menu can override it either way: data-a11y-motion="off" stops motion, and "on" keeps it for someone whose OS asks for less. A media query can't share a selector with an attribute, so the rules appear twice. Keep both blocks in sync. */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-a11y-motion="on"]) *,
+  html:not([data-a11y-motion="on"]) *::before,
+  html:not([data-a11y-motion="on"]) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html:not([data-a11y-motion="on"]) .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  html:not([data-a11y-motion="on"]) .caret,
+  html:not([data-a11y-motion="on"]) .blink {
+    animation: none !important;
+    opacity: 1;
+  }
+  html:not([data-a11y-motion="on"]) .badge::before {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  html:not([data-a11y-motion="on"]) .led {
+    animation: none !important;
+  }
+}
+
 html[data-a11y-motion="off"] *,
 html[data-a11y-motion="off"] *::before,
 html[data-a11y-motion="off"] *::after {

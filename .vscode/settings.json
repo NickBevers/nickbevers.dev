@@ -2,6 +2,6 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "oxc.oxc-vscode",
   "prettier.documentSelectors": ["**/*.astro"],
-  "[astro]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[astro]": { "editor.defaultFormatter": "astro-build.astro-vscode" },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

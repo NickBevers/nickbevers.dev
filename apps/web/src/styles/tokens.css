@@ -81,6 +81,36 @@
   --tracking-meta: 0.14em;
   --tracking-micro: 0.16em;
   --tracking-eyebrow: 0.2em;
+
+  --border-hair: 1px solid var(--line);
+  --border-strong: 1px solid var(--line-strong);
+  --rule-heavy: 2px solid var(--line-strong);
+  --rule-dashed: 1px dashed var(--line-strong);
+  --leader: 2px dotted var(--text-3);
+
+  /* ANIMATIONS */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --press-shift: 3px;
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 650ms;
+
+  /* LAYOUT BASED THINGS */
+  --measure: 1240px;
+  --gutter: 32px;
+  --rail: 236px;
+  --rail-gap: 44px;
+  --prose: 680px;
+  --card-pad: 20px;
+  --row-pad: 20px;
+
+  /* BEVELS */
+  /* Pressed is 1px plus --press-shift, so it lines up with the 4px bevels: --bevel and --bevel-warm. */
+  --bevel: 4px 4px 0 var(--shadow);
+  --bevel-lg: 7px 7px 0 var(--shadow);
+  --bevel-soft: 6px 6px 0 var(--soft-shadow);
+  --bevel-warm: 4px 4px 0 var(--warm-2);
+  --bevel-pressed: 1px 1px 0 var(--shadow);
 }
 
 /* THEME */
@@ -107,6 +137,8 @@
   --band-text: var(--green-050);
   --band-text-2: var(--green-300);
   --shadow: var(--gray-900);
+  --line: var(--sand-300);
+  --soft-shadow: var(--clay-100);
 }
 
 :root[data-theme='light'] {
@@ -137,6 +169,8 @@
       --warm-bg: var(--clay-900);
       --band: var(--green-700);
       --shadow: var(--green-600);
+      --line: var(--green-700);
+      --soft-shadow: var(--clay-900);
     }
   }
 
@@ -157,6 +191,8 @@
     --warm-bg: var(--clay-900);
     --band: var(--green-700);
     --shadow: var(--green-600);
+    --line: var(--green-700);
+    --soft-shadow: var(--clay-900);
   }
 }
 
@@ -179,5 +215,7 @@
     --warm-bg: light-dark(var(--clay-100), var(--clay-900));
     --band: light-dark(var(--green-800), var(--green-700));
     --shadow: light-dark(var(--gray-900), var(--green-600));
+    --line: light-dark(var(--sand-300), var(--green-700));
+    --soft-shadow: light-dark(var(--clay-100), var(--clay-900));
   }
 }

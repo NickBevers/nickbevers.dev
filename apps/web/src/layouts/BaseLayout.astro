@@ -1,13 +1,10 @@
 ---
+import type { ComponentProps } from 'astro/types';
 import { Font } from 'astro:assets';
+import Seo from '@/layouts/Seo.astro';
 import '@/styles/global.css';
 
-interface Props {
-  title?: string;
-  description?: string;
-}
-
-const { title = 'Nick Bevers', description } = Astro.props;
+type Props = ComponentProps<typeof Seo>;
 ---
 
 <!doctype html>
@@ -15,8 +12,7 @@ const { title = 'Nick Bevers', description } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {description && <meta name="description" content={description} />}
-    <title>{title}</title>
+    <Seo {...Astro.props} />
     <Font cssVariable="--font-hanken" preload />
     <Font cssVariable="--font-mono" />
   </head>

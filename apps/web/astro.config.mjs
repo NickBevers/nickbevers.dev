@@ -1,8 +1,10 @@
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 
 export default defineConfig({
   site: 'https://nickbevers.dev',
   output: 'static',
+  integrations: [sitemap()],
   // Astro downloads these at build time and serves them from our own domain,
   // so visitors never connect to Google.
   fonts: [
